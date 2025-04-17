@@ -19,32 +19,43 @@
 
   let {items = [], speed = 30, class: className = '', gap = 20, pauseOnHover = true} = $props();
 
-  // Duplicate items for seamless looping
+  // Clone items for seamless looping
+  let clonedItems = $state([]);
+
+  // Create cloned item sets for seamless looping
   $effect(() => {
     if (items.length > 0) {
-      // Clone the original items to ensure seamless looping
-      clonedItems = [...items, ...items];
+      // Create multiple copies to ensure we have enough items for any screen width
+      clonedItems = [...items, ...items, ...items];
     }
   });
 
   let containerRef = $state(null);
   let carouselRef = $state(null);
-  let clonedItems = $state([]);
   let animationPaused = $state(false);
-  let containerWidth = $state(0);
-  let carouselWidth = $state(0);
   let animationId = $state(null);
+
+  // Track properties needed for animation
+  let scrollPosition = $state(0);
+  let totalWidth = $state(0);
+  let viewportWidth = $state(0);
+  let itemWidth = $state(0);
+  let itemSetWidth = $state(0);
 
   // Add event listeners when component mounts
   onMount(() => {
-    // Calculate initial dimensions for animation
     calculateDimensions();
+    startAnimation();
 
     // Set up resize observer for responsive behavior
     if (typeof ResizeObserver !== 'undefined' && containerRef) {
       const resizeObserver = new ResizeObserver(() => {
         calculateDimensions();
-        restartAnimation();
+        // Make sure animation continues with updated dimensions
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+          startAnimation();
+        }
       });
 
       resizeObserver.observe(containerRef);
@@ -67,73 +78,78 @@
   function calculateDimensions() {
     if (!containerRef || !carouselRef) return;
 
-    containerWidth = containerRef.offsetWidth;
-    carouselWidth = carouselRef.offsetWidth;
+    // Get dimensions needed for proper animation
+    viewportWidth = containerRef.offsetWidth;
 
-    // Start animation if dimensions are valid
-    if (containerWidth > 0 && carouselWidth > 0) {
-      startAnimation();
-    }
+    // Wait for next tick to ensure items are rendered
+    setTimeout(() => {
+      // Get the first set of items (first group up to original items.length)
+      const itemElements = carouselRef.querySelectorAll('.carousel-item');
+      if (itemElements.length === 0) return;
+
+      // Calculate the width of one item including gap
+      const firstItem = itemElements[0];
+      itemWidth = firstItem.offsetWidth + gap;
+
+      // Calculate the width of one complete set of items
+      itemSetWidth = itemWidth * items.length;
+
+      // Calculate total width of the track
+      totalWidth = itemWidth * clonedItems.length;
+
+      // Set initial scroll position
+      scrollPosition = 0;
+      if (carouselRef) {
+        carouselRef.style.transform = `translateX(0px)`;
+      }
+    }, 0);
   }
 
   function handleResize() {
     calculateDimensions();
-    restartAnimation();
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      startAnimation();
+    }
   }
-
-  let startTime = 0;
-  let currentPosition = 0;
 
   function startAnimation() {
     if (animationId) {
       cancelAnimationFrame(animationId);
     }
 
-    startTime = performance.now();
+    // Animation constants
+    const pixelsPerSecond = 50 * (30 / speed); // Base speed adjusted by user speed setting
+    let lastTime = performance.now();
 
     function animate(timestamp) {
-      if (animationPaused) {
-        startTime = timestamp - currentPosition * speed * 10;
+      // Calculate time delta for smooth animation regardless of frame rate
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+
+      if (animationPaused || !carouselRef || itemSetWidth === 0) {
         animationId = requestAnimationFrame(animate);
         return;
       }
 
-      const elapsed = timestamp - startTime;
-      // Calculate position based on time and speed
-      // Faster speed = smaller divisor
-      currentPosition = (elapsed / (speed * 10)) % 100;
+      // Calculate movement based on elapsed time and speed
+      const pixelsToMove = (pixelsPerSecond * deltaTime) / 1000;
+      scrollPosition += pixelsToMove;
 
-      if (carouselRef) {
-        // Use translateX for hardware acceleration
-        carouselRef.style.transform = `translateX(-${currentPosition}%)`;
-
-        // If we've moved a full item width, reset position for seamless loop
-        if (currentPosition >= 50) {
-          // Instantly move back to start without animation
-          // This creates the infinite loop effect
-          startTime = timestamp;
-          currentPosition = 0;
-          carouselRef.style.transform = `translateX(0%)`;
-        }
+      // The key to seamless looping: reset position when we've scrolled one full set
+      if (scrollPosition >= itemSetWidth) {
+        // Reset to beginning of next set
+        scrollPosition = scrollPosition - itemSetWidth;
       }
+
+      // Apply transform with hardware acceleration
+      carouselRef.style.transform = `translateX(-${scrollPosition}px)`;
 
       animationId = requestAnimationFrame(animate);
     }
 
+    lastTime = performance.now();
     animationId = requestAnimationFrame(animate);
-  }
-
-  function restartAnimation() {
-    if (animationId) {
-      cancelAnimationFrame(animationId);
-    }
-
-    // Reset position
-    if (carouselRef) {
-      carouselRef.style.transform = 'translateX(0)';
-    }
-
-    startAnimation();
   }
 
   function handleMouseEnter() {
@@ -192,8 +208,7 @@
     /* Preserve 3D for performance */
     transform-style: preserve-3d;
     will-change: transform;
-    /* Use transition for smoother animation updates */
-    transition: transform 0.1s linear;
+    /* Remove transition for smoother animation */
   }
 
   .carousel-item {
