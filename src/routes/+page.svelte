@@ -1,12 +1,12 @@
 <script>
   import {fade} from 'svelte/transition';
-  import {Button} from '$components/jera';
-  import DagazLogo from '$components/DagazLogo.svelte';
-  import SystemStatus from '$features/status/SystemStatus.svelte';
-  import {Markdown, Languages, Moon, ServerOff, Svelte, Tailwind} from '$components/icons';
   import Metadata from '$features/seo/Metadata.svelte';
-  import {appName, author, domain} from '$settings/global';
   import JsonLd from '$features/seo/JsonLd.svelte';
+  import {appName, author, domain} from '$settings/global';
+  import DagazLogo from '$components/DagazLogo.svelte';
+  import InfiniteCarousel from '$components/InfiniteCarousel.svelte';
+  import {Button} from '$components/jera';
+  import {Markdown, Languages, Moon, ServerOff, Svelte, Tailwind} from '$components/icons';
 
   let {data} = $props();
   const l10n = data.l10n;
@@ -37,11 +37,20 @@
     }
   ];
 
+  // The technology stack items for the carousel
   const techStack = [
-    {name: 'svelteKit', icon: Svelte},
-    {name: 'tailwind', icon: Tailwind},
-    {name: 'cloudflare', emoji: '☁️'},
-    {name: 'pnpm', emoji: '📦'}
+    {name: l10n.t('svelteKit'), icon: Svelte, color: '#FF3E00'},
+    {name: l10n.t('tailwind'), icon: Tailwind, color: '#38BDF8'},
+    {name: l10n.t('cloudflare'), emoji: '☁️', color: '#F38020'},
+    {name: l10n.t('pnpm'), emoji: '📦', color: '#F69220'},
+    {name: 'JavaScript', emoji: '⚡', color: '#F7DF1E'},
+    {name: 'TypeScript', emoji: '🔷', color: '#3178C6'},
+    {name: 'Canvas API', emoji: '🎨', color: '#E34F26'},
+    {name: 'Svelte 5', emoji: '🔥', color: '#FF3E00'},
+    {name: 'Vite', emoji: '⚡', color: '#646CFF'},
+    {name: 'Ramda', emoji: '🧠', color: '#884499'},
+    {name: 'Functional JS', emoji: '🧩', color: '#44AA88'},
+    {name: 'ESBuild', emoji: '⚒️', color: '#FFCF00'}
   ];
 </script>
 
@@ -123,20 +132,14 @@
   <section class="tech-section">
     <h2 class="section-title">{l10n.t('builtWithModernTech')}</h2>
 
-    <div class="tech-grid">
-      {#each techStack as tech, i}
-        <div class="tech-item" in:fade={{duration: 300, delay: 150 + i * 75}}>
-          {#if tech.emoji}
-            <div class="tech-emoji">{tech.emoji}</div>
-          {:else}
-            <div class="tech-icon">
-              <svelte:component this={tech.icon} size={24} />
-            </div>
-          {/if}
-          <div class="tech-name">{l10n.t(tech.name)}</div>
-        </div>
-      {/each}
-    </div>
+    <!-- Replace the static tech grid with the carousel -->
+    <InfiniteCarousel
+      items={techStack}
+      speed={40}
+      gap={24}
+      pauseOnHover={true}
+      class="tech-carousel"
+    />
   </section>
 </div>
 
@@ -209,25 +212,8 @@
     @apply pb-16;
   }
 
-  .tech-grid {
-    @apply flex flex-wrap justify-center gap-8;
-  }
-
-  .tech-item {
-    @apply flex flex-col items-center bg-base1/30 p-4 rounded-lg;
-    @apply w-32 transition-all hover:bg-base1/60;
-  }
-
-  .tech-icon,
-  .tech-emoji {
-    @apply mb-2 text-base14;
-  }
-
-  .tech-emoji {
-    @apply text-2xl;
-  }
-
-  .tech-name {
-    @apply text-sm font-medium text-base6;
+  /* Add some margin/padding for the carousel */
+  .tech-carousel {
+    @apply my-8 px-2;
   }
 </style>

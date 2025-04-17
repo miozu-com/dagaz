@@ -1,19 +1,18 @@
 <script>
   import {Sun, Moon} from '$components/icons';
 
-  // Get theme from props
   let {theme} = $props();
 
-  console.log('theme ??', theme);
-  // Use the reactive state directly
   let isDarkMode = $derived(theme.isDark);
-
-  function toggleTheme() {
-    theme.toggle();
-  }
 </script>
 
-<button type="button" class="theme-toggle" onclick={toggleTheme} aria-pressed={isDarkMode}>
+<button
+  type="button"
+  class="theme-toggle"
+  onclick={() => theme.toggle()}
+  aria-pressed={isDarkMode}
+  aria-label="theme switcher"
+>
   <div class="icon-container">
     {#if isDarkMode}
       <Moon size={16} />
