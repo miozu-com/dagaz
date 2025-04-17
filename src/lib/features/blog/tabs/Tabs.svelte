@@ -1,8 +1,9 @@
 <script>
   import {any, includes, filter, path, prop, pipe, tap, curry} from 'ramda';
   import {assoc, keys, reduce, map, fromPairs} from 'ramda';
-  import Tab from '$features/tabs/Tab.svelte';
   import {toUniqArr, filterArrByString} from '$utils';
+
+  import Tab from './Tab.svelte';
 
   let {payload, children, propPath = [], triggerEvent = () => {}} = $props();
   let tabsContainer, indicator;
@@ -80,7 +81,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '../../../../theme.css' theme(reference);
   .tabs-w {
     @apply relative;
   }

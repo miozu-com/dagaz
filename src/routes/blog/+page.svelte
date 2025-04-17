@@ -1,7 +1,7 @@
 <script>
   import {fade} from 'svelte/transition';
-  import Tags from '$features/tags/Tags.svelte';
-  import Tabs from '$features/tabs/Tabs.svelte';
+  import Tags from '$features/blog/tags/Tags.svelte';
+  import Tabs from '$features/blog/tabs/Tabs.svelte';
   import Post from '$features/blog/Post.svelte';
   import NoPosts from '$features/blog/NoPosts.svelte';
   import {Button} from '$components/jera';
