@@ -1,0 +1,9 @@
+name = "dagaz"
+account_id = ""
+
+main = "./.svelte-kit/cloudflare/_worker.js"
+
+build.command = "pnpm build"
+
+compatibility_date = "2025-04-14"
+workers_dev = true

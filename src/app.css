@@ -1,0 +1,111 @@
+@import 'tailwindcss';
+@variant dark (&:where(.dark, .dark *));
+@import './theme.css';
+
+:root {
+  /* Miozu theme color variables for Shiki syntax highlighting */
+  --shiki-color-text: var(--color-base6);
+  --shiki-color-background: var(--color-base1);
+  --shiki-token-constant: var(--color-base12); /* blue */
+  --shiki-token-string: var(--color-base10); /* green */
+  --shiki-token-comment: var(--color-base4); /* comments */
+  --shiki-token-keyword: var(--color-base14); /* peach */
+  --shiki-token-parameter: var(--color-base5);
+  --shiki-token-function: var(--color-base13); /* magenta */
+  --shiki-token-string-expression: var(--color-base10); /* green */
+  --shiki-token-punctuation: var(--color-base7);
+  --shiki-token-link: var(--color-base15); /* cyan */
+  --shiki-token-variable: var(--color-base7);
+  --shiki-token-class: var(--color-base11); /* yellow */
+  --shiki-token-operator: var(--color-base9); /* orange */
+}
+
+*::selection {
+  @apply text-base0 bg-base14 dark:text-base0 dark:bg-base14;
+}
+
+::-webkit-scrollbar {
+  width: 6px; /* Thin scrollbar width */
+  height: 6px; /* For horizontal scrollbars */
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-base3; /* Thumb (scrollbar handle) color */
+  border: 1px solid transparent; /* Adds spacing inside the track */
+  border-radius: 4px; /* Rounded edges */
+  background-clip: padding-box; /* Ensures the thumb respects the border */
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-base1; /* Track (background) color */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-base4;
+}
+
+:global(.dark) ::-webkit-scrollbar-thumb {
+  @apply bg-base4;
+}
+
+:global(.dark) ::-webkit-scrollbar-track {
+  @apply bg-base1;
+}
+
+:global(.dark) ::-webkit-scrollbar-thumb:hover {
+  @apply bg-base5;
+}
+
+html {
+  @apply overflow-hidden;
+  @apply text-base5 dark:text-base7 bg-base0 dark:bg-base0;
+}
+
+body {
+  @apply bg-base0 dark:bg-base0 text-base5 dark:text-base7;
+}
+
+/* TAB */
+.tabs {
+  @apply flex gap-1;
+}
+
+.tab {
+  @apply relative flex items-center gap-2.5;
+  @apply border-b-3 border-transparent transition-all font-medium;
+  @apply text-base4 dark:text-base4;
+  @apply cursor-pointer;
+  @apply pl-8 pr-4 pb-2 pt-1.5;
+}
+
+.tab::before {
+  content: '';
+  @apply absolute h-2 w-2 rounded-full left-3 bg-transparent;
+  transition: all 0.3s ease;
+}
+
+.tab:hover::before {
+  @apply bg-base3 dark:bg-base4;
+}
+
+.tab.active {
+  @apply bg-base1/55 dark:bg-base2/55 text-base7 dark:text-base7;
+  border-image: linear-gradient(to right, #6c76f1 0%, #8165d8 100%) 1;
+}
+
+.tab.active::before {
+  background-color: #6c76f1;
+}
+
+.tab.active:hover {
+  @apply text-base7/90 dark:text-base7/90;
+}
+
+.tab:hover {
+  @apply bg-base2/10 dark:bg-base2/20 text-base6/60 dark:text-base6/70;
+}
+
+.tab-count {
+  @apply text-sm self-center;
+}

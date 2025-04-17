@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Dagaz Blog</title>
+    <style>
+      body {
+        font-family: 'IBM Plex Sans', sans-serif;
+        background-color: #232733;
+        color: #d0d2db;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+      }
+      .logo {
+        margin-bottom: 2rem;
+      }
+      .message {
+        max-width: 600px;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #ff9982;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+      }
+      button {
+        background-color: #2c3040;
+        border: 1px solid #565e78;
+        color: #d0d2db;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+      button:hover {
+        background-color: #3e4359;
+        border-color: #737e99;
+      }
+      svg {
+        fill: #ff9982;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 45 66">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12 0L28 25.0076L44 0V56L28 30.9924L12 56V0ZM26.0854 28L15.0236 10.7107V45.2893L26.0854 28ZM29.9146 28L40.9764 45.2893V10.7107L29.9146 28Z"
+        />
+      </svg>
+    </div>
+    <div class="message">
+      <h1>You're Offline</h1>
+      <p>
+        It looks like you're not connected to the internet. Some content might be unavailable until
+        you reconnect.
+      </p>
+      <p>You can still browse previously visited pages that have been cached.</p>
+      <button onclick="window.location.href='/'">Try Going Home</button>
+    </div>
+  </body>
+</html>

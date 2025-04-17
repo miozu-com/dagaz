@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#ff9982" />
+    <meta
+      name="description"
+      content="A modern, serverless blog built with SvelteKit & Cloudflare"
+    />
+    <link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+    <link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png" />
+
+    <!-- Preconnect to Google Fonts to establish early connection -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload fonts with high priority but non-blocking -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+    />
+
+    <!-- Load the stylesheet with non-blocking approach -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+
+    <!-- Fallback for browsers that don't support JS -->
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
+      />
+    </noscript>
+
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        // Only register once on window load
+        window.addEventListener('load', () => {
+          // Skip registration if already controlled
+          if (navigator.serviceWorker.controller) return;
+
+          // Register service worker
+          navigator.serviceWorker
+            .register('/service-worker.js')
+            .then(reg => console.log('Service worker registered'))
+            .catch(err => console.error('Service worker registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>
