@@ -1,11 +1,10 @@
 @import 'tailwindcss';
 @import './theme.css';
 
-/* Base Typography */
 html {
   @apply overflow-hidden;
   @apply text-base5 bg-base0;
-  /* Typography improvements */
+  /* Base typography improvements */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -16,6 +15,12 @@ body {
   /* Improved line height for better readability */
   line-height: 1.6;
   letter-spacing: -0.011em;
+}
+
+/* Global Layout Classes */
+.rtl {
+  direction: rtl;
+  unicode-bidi: bidi-override;
 }
 
 /* Scrollbar improvements */
@@ -112,6 +117,101 @@ body {
 
   /* Component element colors */
   --shiki-token-component-tag: var(--color-base13); /* Svelte component name */
+}
+
+/* Global Blog Post Styles - These need to be global because they target content from {@html} */
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  @apply font-sans text-base14 font-bold;
+  @apply scroll-mt-24;
+}
+
+.post-body h1 {
+  @apply text-2xl sm:text-3xl mt-8 sm:mt-12 mb-4 sm:mb-6 pb-1 border-b border-base3/20;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h2 {
+  @apply text-xl sm:text-2xl mt-8 sm:mt-10 mb-4 sm:mb-5 pb-1 border-b border-base3/10;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h3 {
+  @apply text-lg sm:text-xl mt-6 sm:mt-8 mb-3 sm:mb-4;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h4 {
+  @apply text-base sm:text-lg mt-4 sm:mt-6 mb-2 sm:mb-3 text-base13;
+}
+
+.post-body a {
+  @apply text-base14 hover:text-base13 transition-colors;
+  @apply border-b border-base14/30 hover:border-base13 no-underline;
+}
+
+.post-body blockquote {
+  @apply border-l-4 border-base14/30 bg-base1/50 px-4 sm:px-6 py-3 sm:py-4 my-4 sm:my-6 italic;
+  @apply text-base sm:text-lg text-base5;
+}
+
+.post-body blockquote p {
+  @apply text-base5;
+}
+
+.post-body p {
+  @apply my-4 sm:my-6 text-base6;
+  @apply text-base sm:text-lg leading-relaxed;
+}
+
+.post-body ul,
+.post-body ol {
+  @apply my-4 sm:my-6 ml-6 sm:ml-8;
+}
+
+.post-body li {
+  @apply my-2 text-base6;
+  @apply text-base sm:text-lg leading-relaxed;
+}
+
+.post-body li::marker {
+  @apply text-base14;
+}
+
+.post-body table {
+  @apply w-full border-collapse my-6;
+  @apply shadow-sm rounded-lg overflow-hidden;
+}
+
+.post-body th,
+.post-body td {
+  @apply border border-base3/10 py-2 sm:py-3 px-2 sm:px-4;
+  @apply text-sm sm:text-base;
+}
+
+.post-body th {
+  @apply bg-base1 text-base14 text-left font-semibold;
+}
+
+.post-body td {
+  @apply bg-base1/50;
+}
+
+.post-body tr:nth-child(even) td {
+  @apply bg-base1/80;
+}
+
+.post-body img {
+  @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
+}
+
+/* Inline code */
+.post-body :not(pre) > code {
+  @apply bg-base1 text-base12 rounded-md px-1.5 py-0.5;
+  @apply text-sm font-mono border border-base3/10;
+  @apply whitespace-nowrap;
 }
 
 /* Code highlighting specifics for blog posts */
@@ -283,97 +383,29 @@ body {
   @apply font-sans text-sm text-base4;
 }
 
-/* Blog post typography */
-.post-body h1,
-.post-body h2,
-.post-body h3,
-.post-body h4 {
-  @apply font-sans text-base14 font-bold;
-  @apply scroll-mt-24;
+/* Loading and Error States */
+.loading-spinner {
+  @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
+  @apply animate-spin mb-4;
 }
 
-.post-body h1 {
-  @apply text-2xl sm:text-3xl mt-8 sm:mt-12 mb-4 sm:mb-6 pb-1 border-b border-base3/20;
-  @apply tracking-tight leading-tight;
+.loading-state,
+.error-state {
+  @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
 }
 
-.post-body h2 {
-  @apply text-xl sm:text-2xl mt-8 sm:mt-10 mb-4 sm:mb-5 pb-1 border-b border-base3/10;
-  @apply tracking-tight leading-tight;
+/* Global Layout Utility Classes */
+.container {
+  @apply max-w-7xl mx-auto px-4 py-8;
 }
 
-.post-body h3 {
-  @apply text-lg sm:text-xl mt-6 sm:mt-8 mb-3 sm:mb-4;
-  @apply tracking-tight leading-tight;
+.section {
+  @apply py-8 sm:py-12;
 }
 
-.post-body h4 {
-  @apply text-base sm:text-lg mt-4 sm:mt-6 mb-2 sm:mb-3 text-base13;
-}
-
-.post-body a {
-  @apply text-base14 hover:text-base13 transition-colors;
-  @apply border-b border-base14/30 hover:border-base13 no-underline;
-}
-
-.post-body blockquote {
-  @apply border-l-4 border-base14/30 bg-base1/50 px-4 sm:px-6 py-3 sm:py-4 my-4 sm:my-6 italic;
-  @apply text-base sm:text-lg text-base5;
-}
-
-.post-body blockquote p {
-  @apply text-base5;
-}
-
-.post-body p {
-  @apply my-4 sm:my-6 text-base6;
-  @apply text-base sm:text-lg leading-relaxed;
-}
-
-.post-body ul,
-.post-body ol {
-  @apply my-4 sm:my-6 ml-6 sm:ml-8;
-}
-
-.post-body li {
-  @apply my-2 text-base6;
-  @apply text-base sm:text-lg leading-relaxed;
-}
-
-.post-body li::marker {
-  @apply text-base14;
-}
-
-.post-body table {
-  @apply w-full border-collapse my-6;
-  @apply shadow-sm rounded-lg overflow-hidden;
-}
-
-.post-body th,
-.post-body td {
-  @apply border border-base3/10 py-2 sm:py-3 px-2 sm:px-4;
-  @apply text-sm sm:text-base;
-}
-
-.post-body th {
-  @apply bg-base1 text-base14 text-left font-semibold;
-}
-
-.post-body td {
-  @apply bg-base1/50;
-}
-
-.post-body tr:nth-child(even) td {
-  @apply bg-base1/80;
-}
-
-.post-body img {
-  @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
-}
-
-/* Inline code */
-.post-body :not(pre) > code {
-  @apply bg-base1 text-base12 rounded-md px-1.5 py-0.5;
-  @apply text-sm font-mono border border-base3/10;
-  @apply whitespace-nowrap;
+/* Global UI element styles */
+.badge {
+  @apply inline-flex items-center;
+  @apply px-2 py-0.5 rounded-sm;
+  @apply text-xs font-medium;
 }
