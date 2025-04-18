@@ -31,7 +31,7 @@
   @import '../../../theme.css' theme(reference);
 
   .header {
-    @apply z-10 bg-base0 dark:bg-base0/90;
+    @apply z-10 bg-base0;
     @apply sticky top-0;
   }
 
