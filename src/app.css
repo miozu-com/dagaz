@@ -2,22 +2,60 @@
 @variant dark (&:where(.dark, .dark *));
 @import './theme.css';
 
+/* Miozu theme color variables for Shiki syntax highlighting - Updated to match screenshots */
 :root {
-  /* Miozu theme color variables for Shiki syntax highlighting */
-  --shiki-color-text: var(--color-base6);
-  --shiki-color-background: var(--color-base1);
-  --shiki-token-constant: var(--color-base12); /* blue */
-  --shiki-token-string: var(--color-base10); /* green */
-  --shiki-token-comment: var(--color-base4); /* comments */
-  --shiki-token-keyword: var(--color-base14); /* peach */
-  --shiki-token-parameter: var(--color-base5);
-  --shiki-token-function: var(--color-base13); /* magenta */
-  --shiki-token-string-expression: var(--color-base10); /* green */
-  --shiki-token-punctuation: var(--color-base7);
-  --shiki-token-link: var(--color-base15); /* cyan */
-  --shiki-token-variable: var(--color-base7);
-  --shiki-token-class: var(--color-base11); /* yellow */
-  --shiki-token-operator: var(--color-base9); /* orange */
+  /* Base colors */
+  --shiki-color-text: var(--color-base7); /* Main text in code blocks */
+  --shiki-color-background: var(--color-base1); /* Background of code blocks */
+
+  /* Primary token colors - matched directly from screenshots */
+  --shiki-token-constant: var(--color-base13); /* Purple for constants/objects like "browser" */
+  --shiki-token-string: var(--color-base10); /* Bright green for strings */
+  --shiki-token-comment: var(--color-base4); /* Dimmer gray for comments */
+  --shiki-token-keyword: var(
+    --color-base14
+  ); /* Peachy/orange color for keywords like import/export/const */
+  --shiki-token-parameter: var(--color-base7); /* Light gray/white for parameters */
+  --shiki-token-function: var(--color-base13); /* Purple/magenta for function declarations */
+  --shiki-token-string-expression: var(--color-base10); /* Green for string expressions */
+  --shiki-token-punctuation: var(--color-base6); /* Light gray for punctuation */
+  --shiki-token-link: var(--color-base15); /* Cyan for links */
+
+  /* Additional token types - adjusted based on screenshots */
+  --shiki-token-variable: var(--color-base7); /* Light gray/white for most variables */
+  --shiki-token-property: var(--color-base15); /* Cyan for properties like .localStorage */
+  --shiki-token-operator: var(--color-base7); /* White for operators like => */
+  --shiki-token-boolean: var(--color-base9); /* Orange for true/false */
+  --shiki-token-number: var(--color-base9); /* Orange for numbers */
+
+  /* HTML/JSX specific */
+  --shiki-token-tag: var(--color-base14); /* Peachy for HTML tags */
+  --shiki-token-attr-name: var(--color-base10); /* Green for HTML attributes */
+  --shiki-token-attr-value: var(--color-base10); /* Green for attribute values */
+
+  /* Class names in HTML/component context */
+  --shiki-token-class-name: var(--color-base10); /* Green for class names */
+
+  /* Method invocations */
+  --shiki-token-method: var(--color-base15); /* Cyan for method calls like .getItem */
+
+  /* Special tokens */
+  --shiki-token-regex: var(--color-base10); /* Green for regex */
+  --shiki-token-escape: var(--color-base9); /* Orange for escape sequences */
+
+  /* Additional semantic tokens */
+  --shiki-token-inserted: var(--color-base10); /* Green */
+  --shiki-token-deleted: var(--color-base8); /* Red */
+  --shiki-token-changed: var(--color-base11); /* Yellow */
+  --shiki-token-error: var(--color-base8); /* Red */
+
+  /* CSS specific */
+  --shiki-token-selector: var(--color-base14); /* Peachy for CSS selectors */
+  --shiki-token-property-css: var(--color-base10); /* Green for CSS properties */
+  --shiki-token-value-css: var(--color-base7); /* White for CSS values */
+
+  /* JSON specific */
+  --shiki-token-json-property: var(--color-base15); /* Cyan for JSON property names */
 }
 
 *::selection {
