@@ -2,7 +2,7 @@
 @variant dark (&:where(.dark, .dark *));
 @import './theme.css';
 
-/* Miozu theme color variables for Shiki syntax highlighting - Updated to match screenshots */
+/* Miozu theme color variables for Shiki syntax highlighting - Enhanced for Svelte */
 :root {
   /* Base colors */
   --shiki-color-text: var(--color-base7); /* Main text in code blocks */
@@ -56,6 +56,19 @@
 
   /* JSON specific */
   --shiki-token-json-property: var(--color-base15); /* Cyan for JSON property names */
+
+  /* Svelte specific tokens */
+  --shiki-token-svelte-tag: var(--color-base14); /* Svelte component tags */
+  --shiki-token-svelte-directive: var(--color-base13); /* Svelte directives like bind:, on:, etc. */
+  --shiki-token-svelte-expression: var(--color-base15); /* Expressions in {} */
+  --shiki-token-svelte-control: var(--color-base14); /* Control flow like #if, #each */
+
+  /* Svelte 5 runes */
+  --shiki-token-svelte-rune: var(--color-base14); /* Svelte 5 runes like $state, $derived */
+  --shiki-token-keyword-rune-svelte: var(--color-base14); /* For the custom grammar rule */
+
+  /* Component element colors */
+  --shiki-token-component-tag: var(--color-base13); /* Svelte component name */
 }
 
 *::selection {
@@ -146,4 +159,51 @@ body {
 
 .tab-count {
   @apply text-sm self-center;
+}
+
+/* Code highlighting specifics for blog posts */
+:global(.post-body) {
+  :global(pre) {
+    @apply rounded-md my-6;
+    @apply bg-base1 dark:bg-base1;
+    @apply border border-base3/10;
+    @apply shadow-sm;
+  }
+
+  :global(pre code) {
+    @apply font-mono text-base6;
+    font-size: 0.9rem;
+  }
+
+  /* Svelte code block improvements */
+  :global(.language-svelte) {
+    :global(.tag) {
+      color: var(--color-base14);
+    }
+
+    :global(.attr-name) {
+      color: var(--color-base10);
+    }
+
+    :global(.attr-value) {
+      color: var(--color-base10);
+    }
+
+    :global(.punctuation) {
+      color: var(--color-base6);
+    }
+
+    /* Svelte 5 runes */
+    :global(.keyword:has(+ .punctuation:contains('$'))) {
+      color: var(--color-base14);
+    }
+
+    :global(.script-tag) {
+      color: var(--color-base14);
+    }
+
+    :global(.style-tag) {
+      color: var(--color-base14);
+    }
+  }
 }

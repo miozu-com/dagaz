@@ -170,6 +170,15 @@ async function compileMarkdown(post) {
       highlight: {
         highlighter: async (code, lang = 'text') => {
           try {
+            // If code looks like Svelte but isn't marked as such
+            if (
+              code.includes('$state') ||
+              code.includes('$effect') ||
+              code.includes('$derived') ||
+              code.includes('$props')
+            )
+              lang = 'svelte';
+
             return mdsvexLib.escapeSvelte(
               highlighter.codeToHtml(code, {
                 lang: lang || 'text',
@@ -191,18 +200,8 @@ async function compileMarkdown(post) {
       // Remove frontmatter before compiling
       const contentWithoutFrontmatter = post.content.replace(frontmatterRegex, '');
 
-      // More aggressive cleaning of problematic content
+      // Cleaning of problematic content
       const cleanedContent = contentWithoutFrontmatter
-        // Remove common function and reactive patterns that can cause rendering issues
-        .replace(/\$derived\s*\(\(\)\s*=>\s*\{[\s\S]*?\}\);?/g, '')
-        .replace(/\$effect\s*\(\(\)\s*=>\s*\{[\s\S]*?\}\);?/g, '')
-        .replace(/function\s*\w+\s*\([^)]*\)\s*\{[\s\S]*?\}/g, '')
-        .replace(/^\(\)\s*=>\s*\{\s*try\s*\{/g, '')
-        .replace(/return\s*\{\s*code\s*:\s*`/g, '')
-        .replace(/`\s*,\s*map\s*:\s*\{\s*\}\s*\}\s*\}\s*catch\s*\(e\)\s*\{/g, '')
-        .replace(/console\.log\(e\);\s*return\s*\{/g, '')
-        .replace(/code\s*:\s*e\.toString\(\),\s*map\s*:\s*\{\s*\}\s*\}/g, '')
-        .replace(/\}\s*\}/g, '')
         // Remove placeholder.com URLs completely and replace with reasonable defaults for images
         .replace(/https?:\/\/via\.placeholder\.com\/[^"'\s]*/g, '');
 
