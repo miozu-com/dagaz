@@ -1,4 +1,3 @@
-// src/routes/api/blog.json/+server.js
 import {json} from '@sveltejs/kit';
 import * as mdsvexLib from 'mdsvex';
 import {createHighlighter, createCssVariablesTheme} from 'shiki';
@@ -135,6 +134,11 @@ async function getBlogPosts() {
 
     console.log(`Found ${publishedPosts.length} published posts`);
 
+    // Log the first post's metadata to debug
+    if (publishedPosts.length > 0) {
+      console.log('Sample post metadata:', JSON.stringify(publishedPosts[0].meta, null, 2));
+    }
+
     return {compPosts: publishedPosts};
   } catch (err) {
     console.error('Error in getBlogPosts:', err);
@@ -158,12 +162,14 @@ async function compileMarkdown(post) {
           const key = line.substring(0, colonIndex).trim();
           const value = line.substring(colonIndex + 1).trim();
 
-          // Handle arrays in frontmatter (like tags, tabs)
+          // IMPORTANT: Properly handle arrays in frontmatter (like tags, tabs)
           if (value.startsWith('[') && value.endsWith(']')) {
+            // Parse array values
             meta[key] = value
               .slice(1, -1)
               .split(',')
-              .map(item => item.trim());
+              .map(item => item.trim())
+              .filter(item => item.length > 0); // Filter out empty values
           }
           // Handle string values
           else {
@@ -180,6 +186,17 @@ async function compileMarkdown(post) {
         }
       }
     }
+
+    // Ensure tabs and tags are arrays
+    if (!Array.isArray(meta.tabs)) meta.tabs = [];
+    if (!Array.isArray(meta.tags)) meta.tags = [];
+
+    // Log the extracted metadata
+    console.log(`Extracted metadata for ${post.slug}:`, {
+      title: meta.title,
+      tabs: meta.tabs,
+      tags: meta.tags
+    });
 
     // Set up MDSvex options with enhanced highlighting
     const mdsvexOptions = {

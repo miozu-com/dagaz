@@ -1,5 +1,4 @@
 <script>
-  import {onMount} from 'svelte';
   import {fade} from 'svelte/transition';
   import Tags from '$features/blog/tags/Tags.svelte';
   import Tabs from '$features/blog/tabs/Tabs.svelte';
@@ -7,10 +6,20 @@
   import NoPosts from '$features/blog/NoPosts.svelte';
   import {Button} from '$components/jera';
 
+  // Get data from +page.js
   let {data} = $props();
+
+  // State for active tab and filtered posts
   let activeTab = $state(null);
-  const posts = $state(data.posts);
+  let posts = $state(data.posts);
   let filteredPosts = $derived(posts);
+
+  // Debug information
+  let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
+  let hasTags = $derived(posts.some(post => post.meta?.tags?.length > 0));
+  let samplePostData = $derived(
+    posts.length > 0 ? JSON.stringify(posts[0].meta, null, 2) : 'No posts'
+  );
 
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
@@ -36,51 +45,54 @@
     <p>{data.l10n.t('blogDescription')}</p>
   </header>
 
-  {#if true}
-    <div class="filters-container">
-      <!-- Tabs for categorization -->
-      {#if posts.some(post => post.meta?.tabs?.length)}
-        <div class="filter-section">
-          <h2 class="filter-title">{data.l10n.t('categories')}</h2>
-          <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
-        </div>
-      {/if}
+  <!-- Debug information - only visible during development -->
+  <div class="debug-info">
+    <h3>Debug Information</h3>
+    <p>Posts count: {posts.length}</p>
+    <p>Has posts with tabs: {hasTabs}</p>
+    <p>Has posts with tags: {hasTags}</p>
+    <details>
+      <summary>Sample post metadata</summary>
+      <pre>{samplePostData}</pre>
+    </details>
+  </div>
 
-      <!-- Tags for filtering -->
-      {#if posts.some(post => post.meta?.tags?.length)}
-        <div class="filter-section">
-          <h2 class="filter-title">{data.l10n.t('tags')}</h2>
-          <Tags
-            payload={posts}
-            toggleEvent={handleTagToggle}
-            propPath={['meta', 'tags']}
-            isTagCount={true}
-          />
-        </div>
-      {/if}
-
-      <!-- Reset filters button when filters are active -->
-      {#if activeTab !== null}
-        <div class="filter-actions">
-          <Button variant="secondary" onclick={resetFilters}>{data.l10n.t('resetFilters')}</Button>
-        </div>
+  <!-- We'll force show the filters containers for debugging -->
+  <div class="filters-container">
+    <div class="filter-section">
+      <h2 class="filter-title">{data.l10n.t('categories')}</h2>
+      {#if hasTabs}
+        <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
+      {:else}
+        <p class="debug-message">
+          No tabs found in blog posts. Check meta.tabs in your markdown frontmatter.
+        </p>
       {/if}
     </div>
 
-    {#if filteredPosts.length > 0}
-      <ul class="posts-grid">
-        {#each filteredPosts as post, i (post.slug)}
-          <Post {post} index={i} l10n={data.l10n} />
-        {/each}
-      </ul>
-    {:else}
-      <div class="no-results">
-        <p>{data.l10n.t('noMatchingPosts')}</p>
-        <Button variant="primary" onclick={resetFilters} class="mt-4"
-          >{data.l10n.t('showAllPosts')}</Button
-        >
-      </div>
-    {/if}
+    <div class="filter-section">
+      <h2 class="filter-title">{data.l10n.t('tags')}</h2>
+      {#if hasTags}
+        <Tags
+          payload={posts}
+          toggleEvent={handleTagToggle}
+          propPath={['meta', 'tags']}
+          isTagCount={true}
+        />
+      {:else}
+        <p class="debug-message">
+          No tags found in blog posts. Check meta.tags in your markdown frontmatter.
+        </p>
+      {/if}
+    </div>
+  </div>
+
+  {#if filteredPosts.length > 0}
+    <ul class="posts-grid">
+      {#each filteredPosts as post, i (post.slug)}
+        <Post {post} index={i} l10n={data.l10n} />
+      {/each}
+    </ul>
   {:else if data.error}
     <NoPosts
       l10n={data.l10n}
@@ -106,6 +118,15 @@
         @apply text-base3 text-sm sm:text-base;
       }
     }
+  }
+
+  .debug-info {
+    @apply mb-6 p-4 bg-base8/10 border border-base8 rounded-md;
+    @apply text-sm;
+  }
+
+  .debug-message {
+    @apply text-base8 px-3 py-2 bg-base8/10 rounded-md text-sm;
   }
 
   .filters-container {
