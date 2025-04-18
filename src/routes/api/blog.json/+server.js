@@ -1,3 +1,4 @@
+// src/routes/api/blog.json/+server.js
 import {json} from '@sveltejs/kit';
 import * as mdsvexLib from 'mdsvex';
 import {createHighlighter, createCssVariablesTheme} from 'shiki';
@@ -18,9 +19,10 @@ export async function GET() {
 
 async function getBlogPosts() {
   try {
-    // Create highlighter only once
+    // Create highlighter only once with enhanced configuration
     if (!highlighter) {
       try {
+        // Create a theme using CSS variables for dynamic switching
         const myTheme = createCssVariablesTheme({
           name: 'css-variables',
           variablePrefix: '--shiki-',
@@ -28,17 +30,31 @@ async function getBlogPosts() {
           fontStyle: true
         });
 
+        // Initialize highlighter with more language support
         highlighter = await createHighlighter({
           themes: [myTheme],
           langs: [
             'css',
             'javascript',
             'typescript',
+            'jsx',
+            'tsx',
             'svelte',
             'html',
+            'xml',
             'bash',
+            'shell',
             'markdown',
             'json',
+            'yaml',
+            'sql',
+            'rust',
+            'python',
+            'php',
+            'go',
+            'c',
+            'cpp',
+            'java',
             'text'
           ]
         });
@@ -128,7 +144,7 @@ async function getBlogPosts() {
 
 async function compileMarkdown(post) {
   try {
-    // Parse frontmatter
+    // Parse frontmatter with improved handling
     const frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
     const frontmatterMatch = post.content.match(frontmatterRegex);
 
@@ -137,13 +153,14 @@ async function compileMarkdown(post) {
       const frontmatterLines = frontmatterMatch[1].trim().split('\n');
 
       for (const line of frontmatterLines) {
-        const [key, ...valueParts] = line.split(':');
-        if (key && valueParts.length) {
-          const value = valueParts.join(':').trim();
+        const colonIndex = line.indexOf(':');
+        if (colonIndex > 0) {
+          const key = line.substring(0, colonIndex).trim();
+          const value = line.substring(colonIndex + 1).trim();
 
           // Handle arrays in frontmatter (like tags, tabs)
           if (value.startsWith('[') && value.endsWith(']')) {
-            meta[key.trim()] = value
+            meta[key] = value
               .slice(1, -1)
               .split(',')
               .map(item => item.trim());
@@ -155,39 +172,80 @@ async function compileMarkdown(post) {
               (value.startsWith("'") && value.endsWith("'")) ||
               (value.startsWith('"') && value.endsWith('"'))
             ) {
-              meta[key.trim()] = value.slice(1, -1);
+              meta[key] = value.slice(1, -1);
             } else {
-              meta[key.trim()] = value;
+              meta[key] = value;
             }
           }
         }
       }
     }
 
-    // Set up MDSvex options
+    // Set up MDSvex options with enhanced highlighting
     const mdsvexOptions = {
       extensions: ['.md'],
       highlight: {
         highlighter: async (code, lang = 'text') => {
           try {
-            // If code looks like Svelte but isn't marked as such
-            if (
-              code.includes('$state') ||
-              code.includes('$effect') ||
-              code.includes('$derived') ||
-              code.includes('$props')
-            )
-              lang = 'svelte';
+            // Auto-detect Svelte content
+            const svelteTags = [
+              '<script',
+              '<style',
+              '{#if',
+              '{#each',
+              '{:else}',
+              '$state',
+              '$props'
+            ];
+            if (!lang || lang === 'text') {
+              for (const tag of svelteTags) {
+                if (code.includes(tag)) {
+                  lang = 'svelte';
+                  break;
+                }
+              }
+            }
 
-            return mdsvexLib.escapeSvelte(
-              highlighter.codeToHtml(code, {
-                lang: lang || 'text',
-                theme: 'css-variables'
-              })
+            // Auto-detect JavaScript
+            if (!lang || lang === 'text') {
+              const jsPatterns = [
+                'function',
+                'const ',
+                'let ',
+                'var ',
+                '=>',
+                'return',
+                'import',
+                'export',
+                'class ',
+                'new ',
+                'async ',
+                'await '
+              ];
+              for (const pattern of jsPatterns) {
+                if (code.includes(pattern)) {
+                  lang = 'javascript';
+                  break;
+                }
+              }
+            }
+
+            // Create HTML with language data attribute for CSS styling
+            const html = highlighter.codeToHtml(code, {
+              lang: lang || 'text',
+              theme: 'css-variables'
+            });
+
+            // Add language identification to pre tag
+            const enhancedHtml = html.replace(
+              '<pre class="',
+              `<pre data-language="${lang || 'text'}" class="`
             );
+
+            return mdsvexLib.escapeSvelte(enhancedHtml);
           } catch (err) {
             console.error(`Highlighting error for ${lang}:`, err);
-            return `<pre class="error-highlight"><code>${code}</code></pre>`;
+            return `<pre class="error-highlight" data-language="${lang || 'text'}"><code>${code}</code></pre>`;
           }
         }
       },
@@ -213,16 +271,35 @@ async function compileMarkdown(post) {
         /!\[.*?\]\(https?:\/\/via\.placeholder\.com\/[^)]*\)/g,
         ''
       );
+
+      // Improve code block readability with line numbering for longer blocks
+      compiledContent = compiledContent.replace(
+        /<pre([^>]*)>([\s\S]*?)<\/pre>/g,
+        (match, attrs, content) => {
+          // Count number of lines in the code block
+          const lineCount = (content.match(/\n/g) || []).length;
+
+          // Only add line numbers for blocks with 5+ lines
+          if (lineCount >= 5) {
+            return `<pre${attrs} data-line-numbers="true">${content}</pre>`;
+          }
+
+          return match;
+        }
+      );
     } catch (error) {
       console.error(`MDSvex compile error for ${post.slug}:`, error);
       compiledContent = `<p class="error">Error compiling content: ${error.message}</p>`;
     }
 
-    // Calculate read time (rough estimate: 200 words per minute)
+    // Calculate read time (improved formula: 200 words per minute for normal text, slower for code)
     const wordCount = post.content.split(/\s+/).length;
-    const readMinutes = Math.ceil(wordCount / 200);
+    const codeBlockCount = (post.content.match(/```/g) || []).length / 2;
+    const codeComplexity = codeBlockCount * 50; // Add 50 words equivalent for each code block
+    const adjustedWordCount = wordCount + codeComplexity;
+    const readMinutes = Math.max(1, Math.ceil(adjustedWordCount / 200));
 
-    // Generate table of contents
+    // Generate table of contents with improved heading processing
     const toc = generateTOC(post.content, post.slug);
 
     return {
@@ -239,17 +316,25 @@ async function compileMarkdown(post) {
 
 function generateTOC(content, slug) {
   try {
-    // Extract headings using regex
-    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    // Extract headings using regex - improved to catch more heading formats
+    const headingRegex = /^(#{1,6})\s+(.+?)(?:\s*{#([a-z0-9-]+)})?$/gm;
     const matches = [...content.matchAll(headingRegex)];
 
     const headings = matches.map(match => {
       const level = match[1].length;
       const text = match[2].trim();
-      const id = text
-        .toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-');
+
+      // Try to get custom ID from {#custom-id} format if present
+      let id = match[3] || null;
+
+      // If no custom ID, generate one from the text
+      if (!id) {
+        id = text
+          .toLowerCase()
+          .replace(/[^a-z0-9 -]/g, '') // Remove special chars
+          .replace(/\s+/g, '-') // Replace spaces with hyphens
+          .replace(/-+/g, '-'); // Replace multiple hyphens with single
+      }
 
       return {
         level,

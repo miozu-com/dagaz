@@ -144,7 +144,7 @@ Need assistance with your web project? I'm available for:
 - Application architecture consulting
 - Performance optimization
 
-Learn more at [nicgl.com](https://nicgl.com) or [nicgl.com/links](https://nicgl.com/links).
+Learn more at [nicgl.com](https://nicgl.com)
 
 ## License
 

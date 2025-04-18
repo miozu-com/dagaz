@@ -1,3 +1,4 @@
+<!-- src/routes/blog/[slug]/+page.svelte -->
 <script>
   import {onMount} from 'svelte';
   import {fade} from 'svelte/transition';
@@ -11,6 +12,8 @@
   let isLoading = $state(true);
   let htmlContent = $state('');
   let scrollContainer = $state(null);
+  let tableOfContents = $state([]);
+  let showToc = $state(false);
 
   // Get the post from the data
   const post = $derived(data.post || {});
@@ -60,6 +63,20 @@
     }
   }
 
+  function extractToc() {
+    if (post?.toc?.data && Array.isArray(post.toc.data)) {
+      tableOfContents = post.toc.data.filter(item => item.level <= 3);
+      showToc = tableOfContents.length > 2;
+    }
+  }
+
+  function scrollToHeading(id) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+  }
+
   onMount(() => {
     isLoading = false;
 
@@ -82,6 +99,9 @@
         .replace(/^\(\)\s*=>\s*\{\s*try\s*\{[\s\S]*?\}\s*\}/g, '')
         // Remove script tags for security
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '<!-- scripts removed -->');
+
+      // Extract ToC after content is loaded
+      extractToc();
 
       console.log('Post content loaded:', post.slug);
     } else {
@@ -125,12 +145,10 @@
         '@type': 'WebPage',
         '@id': postUrl
       },
-      // Fix: Safely handle keywords whether it's an array or not
       keywords:
         Array.isArray(post.meta?.keywords) ?
           post.meta.keywords.join(', ')
         : post.meta?.keywords || '',
-      // Fix: Safely handle tabs whether it's an array or not
       articleSection:
         Array.isArray(post.meta?.tabs) ? post.meta.tabs.join(', ') : post.meta?.tabs || ''
     }}
@@ -153,46 +171,70 @@
       <p>Loading post...</p>
     </div>
   {:else if post?.code}
-    <article class="post-content">
-      <header class="post-header">
-        <div class="post-meta">
-          <span class="author">{author}</span>
-          <time datetime={post.meta?.created_at || ''}>{formattedDate}</time>
-
-          {#if post.meta?.readMin}
-            <span class="read-time">{post.meta.readMin} min read</span>
-          {/if}
-        </div>
-
-        <h1 class="post-title">{post.meta?.title || 'Untitled Post'}</h1>
-
-        {#if post.meta?.description}
-          <p class="post-description">{post.meta.description}</p>
-        {/if}
-
-        {#if post.meta?.tags?.length}
-          <div class="post-tags">
-            {#each post.meta.tags as tag}
-              <span class="tag">{tag}</span>
-            {/each}
+    <div class="post-grid">
+      {#if showToc}
+        <aside class="post-toc">
+          <div class="toc-container">
+            <h2 class="toc-title">Table of Contents</h2>
+            <nav class="toc-nav">
+              <ul class="toc-list">
+                {#each tableOfContents as heading}
+                  <li class="toc-item level-{heading.level}">
+                    <a
+                      href="#{heading.id}"
+                      on:click|preventDefault={() => scrollToHeading(heading.id)}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                {/each}
+              </ul>
+            </nav>
           </div>
-        {/if}
-      </header>
+        </aside>
+      {/if}
 
-      <Divider />
+      <article class="post-content">
+        <header class="post-header">
+          <div class="post-meta">
+            <span class="author">{author}</span>
+            <time datetime={post.meta?.created_at || ''}>{formattedDate}</time>
 
-      <div class="post-body" bind:this={scrollContainer}>
-        <!-- This is where the compiled markdown content is rendered -->
-        {@html htmlContent}
-      </div>
+            {#if post.meta?.readMin}
+              <span class="read-time">{post.meta.readMin} min read</span>
+            {/if}
+          </div>
 
-      <footer class="post-footer">
+          <h1 class="post-title">{post.meta?.title || 'Untitled Post'}</h1>
+
+          {#if post.meta?.description}
+            <p class="post-description">{post.meta.description}</p>
+          {/if}
+
+          {#if post.meta?.tags?.length}
+            <div class="post-tags">
+              {#each post.meta.tags as tag}
+                <span class="tag">{tag}</span>
+              {/each}
+            </div>
+          {/if}
+        </header>
+
         <Divider />
-        <div class="post-actions">
-          <Button variant="primary" onclick={() => window.history.back()}>Back to posts</Button>
+
+        <div class="post-body" bind:this={scrollContainer}>
+          <!-- This is where the compiled markdown content is rendered -->
+          {@html htmlContent}
         </div>
-      </footer>
-    </article>
+
+        <footer class="post-footer">
+          <Divider />
+          <div class="post-actions">
+            <Button variant="primary" onclick={() => window.history.back()}>Back to posts</Button>
+          </div>
+        </footer>
+      </article>
+    </div>
 
     <!-- Static footer at the bottom of the page, not part of the layout -->
     <div class="page-footer">
@@ -220,49 +262,103 @@
   @import '../../../theme.css' theme(reference);
 
   .post-container {
-    @apply w-full max-w-4xl mx-auto my-8 px-4;
+    @apply w-full max-w-6xl mx-auto my-12 px-4;
+  }
+
+  .post-grid {
+    @apply flex gap-10;
   }
 
   .post-content {
-    @apply bg-base0/50 rounded-md overflow-hidden;
-    @apply shadow-sm;
+    @apply flex-1 bg-base0/50 rounded-lg overflow-hidden;
+    @apply shadow-sm max-w-3xl mx-auto;
+  }
+
+  .post-toc {
+    @apply hidden lg:block w-64 flex-shrink-0;
+    align-self: start;
+    position: sticky;
+    top: 100px;
+  }
+
+  .toc-container {
+    @apply p-6 bg-base1/30 rounded-lg;
+    @apply border border-base3/10;
+  }
+
+  .toc-title {
+    @apply text-base14 text-lg font-semibold mb-4;
+    @apply border-b border-base3/20 pb-2;
+  }
+
+  .toc-list {
+    @apply space-y-2;
+  }
+
+  .toc-item {
+    @apply text-base5 hover:text-base14 transition-colors;
+    @apply text-sm;
+  }
+
+  .toc-item a {
+    @apply block py-1 no-underline;
+  }
+
+  .toc-item.level-1 {
+    @apply font-semibold;
+  }
+
+  .toc-item.level-2 {
+    @apply pl-3;
+  }
+
+  .toc-item.level-3 {
+    @apply pl-6 text-base4;
   }
 
   .post-header {
-    @apply px-8 pt-8 pb-4;
+    @apply px-8 pt-12 pb-6;
   }
 
   .post-meta {
-    @apply flex flex-wrap items-center gap-4 mb-4 text-sm text-base3;
+    @apply flex flex-wrap items-center gap-4 mb-6 text-sm;
   }
 
   .author {
-    @apply font-medium text-base4;
+    @apply font-medium text-base14/90 bg-base14/10 px-3 py-1 rounded-full;
   }
 
   .read-time {
-    @apply text-base4/80;
+    @apply text-base4/90 bg-base2/40 px-3 py-1 rounded-full;
+  }
+
+  time {
+    @apply text-base4/90 bg-base2/40 px-3 py-1 rounded-full;
   }
 
   .post-title {
-    @apply text-3xl font-bold mb-4 text-base14 tracking-wide;
+    @apply text-4xl font-bold mb-6 text-base14;
+    @apply tracking-tight leading-tight;
     @apply dark:text-base14;
   }
 
   .post-description {
-    @apply text-lg text-base3 mb-6;
+    @apply text-xl text-base5 mb-6;
+    @apply leading-relaxed;
   }
 
   .post-tags {
-    @apply flex flex-wrap gap-2 mb-2;
+    @apply flex flex-wrap gap-2 mb-4;
   }
 
   .tag {
-    @apply text-xs bg-base1 px-3 py-1 rounded-full text-base3;
+    @apply text-xs font-medium bg-base1/70 px-3 py-1.5 rounded-md text-base6;
+    @apply hover:bg-base1 transition-colors;
   }
 
   .post-body {
-    @apply px-8 py-6;
+    @apply px-8 py-8;
+    @apply font-serif;
 
     /* Better scrolling */
     scrollbar-gutter: stable;
@@ -278,74 +374,155 @@
       @apply bg-base4/40 rounded-full hover:bg-base4/60 transition-colors;
     }
 
+    /* Typography improvements */
     :global(h1),
     :global(h2),
     :global(h3),
     :global(h4) {
-      @apply text-base14 dark:text-base14 font-bold my-4;
+      @apply font-sans text-base14 font-bold;
+      @apply scroll-mt-24;
     }
 
     :global(h1) {
-      @apply text-2xl mt-8 mb-4;
+      @apply text-3xl mt-12 mb-6 pb-1 border-b border-base3/20;
+      @apply tracking-tight leading-tight;
     }
 
     :global(h2) {
-      @apply text-xl mt-6 mb-3;
+      @apply text-2xl mt-10 mb-5 pb-1 border-b border-base3/10;
+      @apply tracking-tight leading-tight;
     }
 
     :global(h3) {
-      @apply text-lg mt-5 mb-2;
+      @apply text-xl mt-8 mb-4;
+      @apply tracking-tight leading-tight;
+    }
+
+    :global(h4) {
+      @apply text-lg mt-6 mb-3 text-base13;
     }
 
     :global(a) {
-      @apply text-base14 underline hover:text-base13 transition-colors;
+      @apply text-base14 hover:text-base13 transition-colors;
+      @apply border-b border-base14/30 hover:border-base13 no-underline;
     }
 
     :global(blockquote) {
-      @apply border-l-4 border-base14/30 bg-base1/50 px-4 py-2 my-4;
+      @apply border-l-4 border-base14/30 bg-base1/50 px-6 py-4 my-6 italic;
+      @apply text-lg text-base5;
+    }
+
+    :global(blockquote p) {
+      @apply text-base5;
     }
 
     :global(pre) {
-      @apply bg-base1 p-4 overflow-x-auto my-4;
+      @apply rounded-lg my-8 shadow-md;
+      @apply bg-base1 dark:bg-base0/80;
+      @apply border border-base3/10 dark:border-base3/5;
+      @apply backdrop-blur-sm;
     }
 
-    :global(code) {
-      @apply font-mono text-base12;
+    :global(pre code) {
+      @apply font-mono text-base6;
+      @apply text-sm lg:text-base;
+      @apply leading-relaxed tracking-tight;
+    }
+
+    :global(.shiki) {
+      @apply p-5 rounded-lg overflow-auto;
     }
 
     :global(p) {
-      @apply my-4 text-base6 dark:text-base7;
+      @apply my-6 text-base6 dark:text-base6;
+      @apply text-lg leading-relaxed;
     }
 
     :global(ul),
     :global(ol) {
-      @apply my-4 ml-6;
+      @apply my-6 ml-8;
     }
 
     :global(li) {
-      @apply my-2;
+      @apply my-2 text-base6;
+      @apply text-lg leading-relaxed;
+    }
+
+    :global(li::marker) {
+      @apply text-base14;
     }
 
     :global(table) {
-      @apply w-full border-collapse my-4;
+      @apply w-full border-collapse my-6;
+      @apply shadow-sm rounded-lg overflow-hidden;
     }
 
     :global(th),
     :global(td) {
-      @apply border border-base3/20 p-2;
+      @apply border border-base3/10 py-3 px-4;
     }
 
     :global(th) {
-      @apply bg-base1;
+      @apply bg-base1 text-base14 text-left font-semibold;
+    }
+
+    :global(td) {
+      @apply bg-base1/50;
+    }
+
+    :global(tr:nth-child(even) td) {
+      @apply bg-base1/80;
     }
 
     :global(img) {
-      @apply max-w-full shadow-sm my-4;
+      @apply max-w-full rounded-lg shadow-md my-8 mx-auto;
+    }
+
+    /* Inline code */
+    :global(:not(pre) > code) {
+      @apply bg-base1 text-base12 rounded-md px-1.5 py-0.5;
+      @apply text-sm font-mono border border-base3/10;
+      @apply whitespace-nowrap;
+    }
+
+    /* Syntax Highlighting Enhancements */
+    :global(.token.comment),
+    :global(.token.prolog),
+    :global(.token.doctype),
+    :global(.token.cdata) {
+      @apply text-base3 italic;
+    }
+
+    :global(.token.keyword),
+    :global(.token.property) {
+      @apply text-base14 font-semibold;
+    }
+
+    :global(.token.function),
+    :global(.token.class-name) {
+      @apply text-base13;
+    }
+
+    :global(.token.string) {
+      @apply text-base10;
+    }
+
+    :global(.token.number),
+    :global(.token.boolean) {
+      @apply text-base9;
+    }
+
+    :global(.language-svelte .tag) {
+      @apply text-base14;
+    }
+
+    :global(.language-svelte .attr-name) {
+      @apply text-base10;
     }
   }
 
   .post-footer {
-    @apply px-8 py-6;
+    @apply px-8 py-8;
   }
 
   .post-actions {
@@ -362,25 +539,55 @@
     @apply animate-spin mb-4;
   }
 
-  /* Footer styles (fixed at the bottom of the page) */
+  /* Footer styles */
   .page-footer {
     @apply mt-16 mb-8;
   }
 
   .footer-content {
-    @apply max-w-4xl mx-auto px-4 py-4;
+    @apply max-w-3xl mx-auto px-4 py-6;
     @apply flex justify-between items-center text-sm text-base3;
-    @apply bg-base0 dark:bg-base0;
+    @apply bg-base0;
+  }
+
+  @media (max-width: 1024px) {
+    .post-title {
+      @apply text-3xl;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .post-header {
+      @apply px-6 pt-8;
+    }
+
+    .post-body {
+      @apply px-6;
+    }
+
+    .post-footer {
+      @apply px-6;
+    }
   }
 
   @media (max-width: 640px) {
     .footer-content {
-      @apply flex-col gap-1 py-3;
+      @apply flex-col gap-2 py-4;
     }
-  }
 
-  /* Dark mode adjustments */
-  :global(.dark) .post-content {
-    @apply bg-base1/50;
+    .post-title {
+      @apply text-2xl;
+    }
+
+    .post-description {
+      @apply text-base;
+    }
+
+    .post-body {
+      :global(p),
+      :global(li) {
+        @apply text-base;
+      }
+    }
   }
 </style>

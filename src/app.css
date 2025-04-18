@@ -1,14 +1,72 @@
+/* src/app.css - Updating key typography and code highlighting styles */
+
 @import 'tailwindcss';
 @variant dark (&:where(.dark, .dark *));
 @import './theme.css';
 
-/* Miozu theme color variables for Shiki syntax highlighting - Enhanced for Svelte */
+/* Add typography improvements */
+html {
+  @apply overflow-hidden;
+  @apply text-base5 dark:text-base7 bg-base0 dark:bg-base0;
+  /* Typography improvements */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-base0 dark:bg-base0 text-base5 dark:text-base7;
+  /* Improved line height for better readability */
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+}
+
+/* Scrollbar improvements */
+::-webkit-scrollbar {
+  width: 6px; /* Thin scrollbar width */
+  height: 6px; /* For horizontal scrollbars */
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-base3/50; /* Thumb (scrollbar handle) color */
+  border: 1px solid transparent; /* Adds spacing inside the track */
+  border-radius: 4px; /* Rounded edges */
+  background-clip: padding-box; /* Ensures the thumb respects the border */
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-base1/50; /* Track (background) color */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-base4/60;
+}
+
+:global(.dark) ::-webkit-scrollbar-thumb {
+  @apply bg-base4/60;
+}
+
+:global(.dark) ::-webkit-scrollbar-track {
+  @apply bg-base1/60;
+}
+
+:global(.dark) ::-webkit-scrollbar-thumb:hover {
+  @apply bg-base5/60;
+}
+
+/* Selection highlighting */
+*::selection {
+  @apply text-base0 bg-base14/80 dark:text-base0 dark:bg-base14/80;
+}
+
+/* Enhanced Miozu theme color variables for Shiki syntax highlighting */
 :root {
   /* Base colors */
   --shiki-color-text: var(--color-base7); /* Main text in code blocks */
   --shiki-color-background: var(--color-base1); /* Background of code blocks */
 
-  /* Primary token colors - matched directly from screenshots */
+  /* Primary token colors - Enhanced for better readability */
   --shiki-token-constant: var(--color-base13); /* Purple for constants/objects like "browser" */
   --shiki-token-string: var(--color-base10); /* Bright green for strings */
   --shiki-token-comment: var(--color-base4); /* Dimmer gray for comments */
@@ -21,7 +79,7 @@
   --shiki-token-punctuation: var(--color-base6); /* Light gray for punctuation */
   --shiki-token-link: var(--color-base15); /* Cyan for links */
 
-  /* Additional token types - adjusted based on screenshots */
+  /* Additional token types - Adjusted for better readability */
   --shiki-token-variable: var(--color-base7); /* Light gray/white for most variables */
   --shiki-token-property: var(--color-base15); /* Cyan for properties like .localStorage */
   --shiki-token-operator: var(--color-base7); /* White for operators like => */
@@ -57,13 +115,13 @@
   /* JSON specific */
   --shiki-token-json-property: var(--color-base15); /* Cyan for JSON property names */
 
-  /* Svelte specific tokens */
+  /* Svelte specific tokens - Enhanced colors */
   --shiki-token-svelte-tag: var(--color-base14); /* Svelte component tags */
   --shiki-token-svelte-directive: var(--color-base13); /* Svelte directives like bind:, on:, etc. */
   --shiki-token-svelte-expression: var(--color-base15); /* Expressions in {} */
   --shiki-token-svelte-control: var(--color-base14); /* Control flow like #if, #each */
 
-  /* Svelte 5 runes */
+  /* Svelte 5 runes - More visible */
   --shiki-token-svelte-rune: var(--color-base14); /* Svelte 5 runes like $state, $derived */
   --shiki-token-keyword-rune-svelte: var(--color-base14); /* For the custom grammar rule */
 
@@ -71,50 +129,92 @@
   --shiki-token-component-tag: var(--color-base13); /* Svelte component name */
 }
 
-*::selection {
-  @apply text-base0 bg-base14 dark:text-base0 dark:bg-base14;
-}
+/* Code highlighting specifics for blog posts */
+:global(.post-body) {
+  :global(pre) {
+    @apply rounded-lg my-6;
+    @apply bg-base1 dark:bg-base1;
+    @apply border border-base3/10;
+    @apply shadow-sm;
+    @apply relative;
+  }
 
-::-webkit-scrollbar {
-  width: 6px; /* Thin scrollbar width */
-  height: 6px; /* For horizontal scrollbars */
-}
+  :global(pre code) {
+    @apply font-mono text-base6;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    padding: 1.25rem !important;
+  }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-base3; /* Thumb (scrollbar handle) color */
-  border: 1px solid transparent; /* Adds spacing inside the track */
-  border-radius: 4px; /* Rounded edges */
-  background-clip: padding-box; /* Ensures the thumb respects the border */
-}
+  /* Add language label to code blocks */
+  :global(pre::before) {
+    content: attr(data-language);
+    @apply absolute top-0 right-0 px-3 py-1 text-xs font-mono;
+    @apply bg-base2/70 text-base5 rounded-bl-md rounded-tr-md;
+    @apply uppercase tracking-wider;
+  }
 
-::-webkit-scrollbar-track {
-  @apply bg-base1; /* Track (background) color */
-  border-radius: 4px;
-}
+  /* Svelte code block improvements */
+  :global(.language-svelte) {
+    :global(.tag) {
+      color: var(--color-base14);
+      font-weight: 600;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-base4;
-}
+    :global(.attr-name) {
+      color: var(--color-base10);
+    }
 
-:global(.dark) ::-webkit-scrollbar-thumb {
-  @apply bg-base4;
-}
+    :global(.attr-value) {
+      color: var(--color-base10);
+    }
 
-:global(.dark) ::-webkit-scrollbar-track {
-  @apply bg-base1;
-}
+    :global(.punctuation) {
+      color: var(--color-base6);
+    }
 
-:global(.dark) ::-webkit-scrollbar-thumb:hover {
-  @apply bg-base5;
-}
+    /* Svelte 5 runes */
+    :global(.keyword:has(+ .punctuation:contains('$'))) {
+      color: var(--color-base14);
+      font-weight: 600;
+    }
 
-html {
-  @apply overflow-hidden;
-  @apply text-base5 dark:text-base7 bg-base0 dark:bg-base0;
-}
+    :global(.script-tag) {
+      color: var(--color-base14);
+      font-weight: 600;
+    }
 
-body {
-  @apply bg-base0 dark:bg-base0 text-base5 dark:text-base7;
+    :global(.style-tag) {
+      color: var(--color-base14);
+      font-weight: 600;
+    }
+  }
+
+  /* JavaScript improvements */
+  :global(.language-javascript),
+  :global(.language-js) {
+    :global(.keyword) {
+      color: var(--color-base14);
+      font-weight: 600;
+    }
+
+    :global(.function) {
+      color: var(--color-base13);
+    }
+
+    :global(.string) {
+      color: var(--color-base10);
+    }
+
+    :global(.number) {
+      color: var(--color-base9);
+    }
+
+    :global(.comment) {
+      color: var(--color-base4);
+      font-style: italic;
+    }
+  }
 }
 
 /* TAB */
@@ -161,49 +261,41 @@ body {
   @apply text-sm self-center;
 }
 
-/* Code highlighting specifics for blog posts */
-:global(.post-body) {
-  :global(pre) {
-    @apply rounded-md my-6;
-    @apply bg-base1 dark:bg-base1;
-    @apply border border-base3/10;
-    @apply shadow-sm;
-  }
+/* Add custom utility classes for typography */
+.typography-article {
+  @apply font-serif text-lg text-base6 leading-relaxed;
+  @apply tracking-normal;
+}
 
-  :global(pre code) {
-    @apply font-mono text-base6;
-    font-size: 0.9rem;
-  }
+.typography-heading {
+  @apply font-sans font-bold tracking-tight text-base14;
+}
 
-  /* Svelte code block improvements */
-  :global(.language-svelte) {
-    :global(.tag) {
-      color: var(--color-base14);
-    }
+.typography-heading-1 {
+  @apply text-4xl leading-tight;
+  @apply tracking-tight;
+}
 
-    :global(.attr-name) {
-      color: var(--color-base10);
-    }
+.typography-heading-2 {
+  @apply text-3xl leading-tight;
+  @apply tracking-tight;
+}
 
-    :global(.attr-value) {
-      color: var(--color-base10);
-    }
+.typography-heading-3 {
+  @apply text-2xl leading-tight;
+  @apply tracking-tight;
+}
 
-    :global(.punctuation) {
-      color: var(--color-base6);
-    }
+.typography-heading-4 {
+  @apply text-xl leading-tight;
+  @apply tracking-tight;
+}
 
-    /* Svelte 5 runes */
-    :global(.keyword:has(+ .punctuation:contains('$'))) {
-      color: var(--color-base14);
-    }
+.typography-subheading {
+  @apply font-sans font-medium text-base3 text-sm uppercase;
+  @apply tracking-wider;
+}
 
-    :global(.script-tag) {
-      color: var(--color-base14);
-    }
-
-    :global(.style-tag) {
-      color: var(--color-base14);
-    }
-  }
+.typography-caption {
+  @apply font-sans text-sm text-base4;
 }

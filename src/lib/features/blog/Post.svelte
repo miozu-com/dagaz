@@ -1,3 +1,4 @@
+<!-- src/lib/features/blog/Post.svelte -->
 <script>
   import {fade} from 'svelte/transition';
 
@@ -5,7 +6,6 @@
 
   // Generate a consistent color based on the post slug
   function getColorFromSlug(slug) {
-    // TODO reconsider
     const colors = [
       '#ff9982', // Base14 - Primary accent
       '#6dd672', // Base10 - Success
@@ -14,7 +14,6 @@
       '#e8d176' // Base11 - Warning
     ];
 
-    // NOTE rly?
     // Simple hashing function for consistent color selection
     let hash = 0;
     for (let i = 0; i < slug.length; i++) {
@@ -47,13 +46,25 @@
     }
   }
 
+  // Truncate description to a specific length while preserving words
+  function truncateDescription(text, maxLength = 120) {
+    if (!text || text.length <= maxLength) return text;
+
+    const truncated = text.slice(0, maxLength).split(' ').slice(0, -1).join(' ');
+    return `${truncated}...`;
+  }
+
   const cardColor = getColorFromSlug(post.slug);
   const formattedDate = formatDate(post.meta?.created_at);
+  const truncatedDescription = truncateDescription(post.meta?.description);
 </script>
 
 <li in:fade={{duration: 300, delay: index * 75}} class="post-item">
   <a href="/blog/{post.slug}" class="post-card">
     <div class="post-image" style="background-color: {cardColor}">
+      <div class="post-image-inner">
+        <!-- If the blog had featured images, they would go here -->
+      </div>
       <div class="post-overlay">
         <span class="read-more">{l10n.t('readArticle')}</span>
       </div>
@@ -62,11 +73,11 @@
     <div class="post-content">
       {#if post.meta?.tags?.length}
         <div class="post-tags">
-          {#each post.meta.tags.slice(0, 2) as tag}
+          {#each post.meta.tags.slice(0, 3) as tag}
             <span class="tag">{tag}</span>
           {/each}
-          {#if post.meta?.tags?.length > 2}
-            <span class="tag more-tag">+{post.meta.tags.length - 2}</span>
+          {#if post.meta?.tags?.length > 3}
+            <span class="tag more-tag">+{post.meta.tags.length - 3}</span>
           {/if}
         </div>
       {/if}
@@ -74,7 +85,7 @@
       <h2 class="post-title">{post.meta?.title || 'Untitled Post'}</h2>
 
       {#if post.meta?.description}
-        <p class="post-description">{post.meta?.description}</p>
+        <p class="post-description">{truncatedDescription}</p>
       {/if}
 
       <div class="post-meta">
@@ -92,51 +103,59 @@
   @import '../../../theme.css' theme(reference);
 
   .post-item {
-    @apply mb-8;
+    @apply mb-8 flex;
   }
 
   .post-card {
-    @apply flex flex-col h-full rounded-md overflow-hidden;
+    @apply flex flex-col h-full w-full rounded-lg overflow-hidden;
     @apply bg-base1/40 hover:bg-base1/70 transition-colors;
-    @apply shadow-sm transform hover:-translate-y-1 transition-all duration-300;
+    @apply shadow-sm transform hover:-translate-y-1 hover:shadow-md transition-all duration-300;
     @apply no-underline border border-base3/10;
   }
 
   .post-image {
-    @apply h-40 relative;
+    @apply h-48 relative flex items-center justify-center;
+    @apply bg-gradient-to-br from-[color:var(--color,#ff9982)] to-[color:var(--color,#ff9982)]/70;
+  }
+
+  .post-image-inner {
+    @apply h-full w-full;
   }
 
   .post-overlay {
     @apply absolute inset-0 flex items-center justify-center;
-    @apply bg-black/0 hover:bg-black/30 transition-colors;
+    @apply bg-base0/0 hover:bg-base0/40 transition-colors;
     @apply opacity-0 hover:opacity-100;
   }
 
   .read-more {
-    @apply px-4 py-2 bg-base0/80 text-base7 text-sm font-medium;
+    @apply px-4 py-2 bg-base0/90 text-base7 text-sm font-medium rounded-md;
     @apply transform scale-95 hover:scale-100 transition-transform;
+    @apply border border-base7/20;
   }
 
   .post-content {
-    @apply p-5 flex-1 flex flex-col;
+    @apply p-6 flex-1 flex flex-col;
   }
 
   .post-tags {
-    @apply flex flex-wrap gap-1.5 mb-3;
+    @apply flex flex-wrap gap-1.5 mb-4;
   }
 
   .tag {
-    @apply text-xs bg-base1 px-2 py-0.5 rounded-full text-base3;
-    @apply dark:bg-base2/50 dark:text-base5;
+    @apply text-xs bg-base1 px-2.5 py-1 rounded-md text-base5;
+    @apply dark:bg-base2/50 dark:text-base6 font-medium;
+    @apply transition-colors;
   }
 
   .more-tag {
-    @apply bg-base1/60;
-    @apply dark:bg-base1/60;
+    @apply bg-base1/60 text-base4;
+    @apply dark:bg-base1/60 dark:text-base5;
   }
 
   .post-title {
     @apply text-xl font-bold mb-3 text-base7;
+    @apply tracking-tight leading-tight;
     @apply line-clamp-2;
     @apply transition-colors;
   }
@@ -146,11 +165,12 @@
   }
 
   .post-description {
-    @apply text-sm text-base4 mb-4 line-clamp-2 flex-1;
+    @apply text-sm text-base4 mb-4 line-clamp-3 flex-1;
+    @apply leading-relaxed;
   }
 
   .post-meta {
-    @apply flex items-center gap-3 text-xs text-base3 mt-auto;
+    @apply flex items-center gap-3 text-xs text-base4 mt-auto;
     @apply pt-3 border-t border-base3/10;
   }
 
@@ -161,5 +181,24 @@
   /* Dark mode adjustments */
   :global(.dark) .post-card {
     @apply bg-base1/30 hover:bg-base1/50 border-base3/5;
+  }
+
+  :global(.dark) .post-content {
+    @apply text-base6;
+  }
+
+  :global(.dark) .post-description {
+    @apply text-base5;
+  }
+
+  :global(.dark) .read-more {
+    @apply bg-base0/80 text-base7;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .post-image {
+      @apply h-40;
+    }
   }
 </style>
