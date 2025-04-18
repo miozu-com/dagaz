@@ -1,13 +1,10 @@
-/* src/app.css - Updating key typography and code highlighting styles */
-
 @import 'tailwindcss';
-@variant dark (&:where(.dark, .dark *));
 @import './theme.css';
 
-/* Add typography improvements */
+/* Base Typography */
 html {
   @apply overflow-hidden;
-  @apply text-base5 dark:text-base7 bg-base0 dark:bg-base0;
+  @apply text-base5 bg-base0;
   /* Typography improvements */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,7 +12,7 @@ html {
 }
 
 body {
-  @apply bg-base0 dark:bg-base0 text-base5 dark:text-base7;
+  @apply bg-base0 text-base5;
   /* Improved line height for better readability */
   line-height: 1.6;
   letter-spacing: -0.011em;
@@ -43,21 +40,9 @@ body {
   @apply bg-base4/60;
 }
 
-:global(.dark) ::-webkit-scrollbar-thumb {
-  @apply bg-base4/60;
-}
-
-:global(.dark) ::-webkit-scrollbar-track {
-  @apply bg-base1/60;
-}
-
-:global(.dark) ::-webkit-scrollbar-thumb:hover {
-  @apply bg-base5/60;
-}
-
 /* Selection highlighting */
 *::selection {
-  @apply text-base0 bg-base14/80 dark:text-base0 dark:bg-base14/80;
+  @apply text-base0 bg-base14/80;
 }
 
 /* Enhanced Miozu theme color variables for Shiki syntax highlighting */
@@ -130,94 +115,92 @@ body {
 }
 
 /* Code highlighting specifics for blog posts */
-:global(.post-body) {
-  :global(pre) {
-    @apply rounded-lg my-6;
-    @apply bg-base1 dark:bg-base1;
-    @apply border border-base3/10;
-    @apply shadow-sm;
-    @apply relative;
-  }
-
-  :global(pre code) {
-    @apply font-mono text-base6;
-    font-size: 0.94rem;
-    line-height: 1.6;
-    padding: 1.25rem !important;
-  }
-
-  /* Add language label to code blocks */
-  :global(pre::before) {
-    content: attr(data-language);
-    @apply absolute top-0 right-0 px-3 py-1 text-xs font-mono;
-    @apply bg-base2/70 text-base5 rounded-bl-md rounded-tr-md;
-    @apply uppercase tracking-wider;
-  }
-
-  /* Svelte code block improvements */
-  :global(.language-svelte) {
-    :global(.tag) {
-      color: var(--color-base14);
-      font-weight: 600;
-    }
-
-    :global(.attr-name) {
-      color: var(--color-base10);
-    }
-
-    :global(.attr-value) {
-      color: var(--color-base10);
-    }
-
-    :global(.punctuation) {
-      color: var(--color-base6);
-    }
-
-    /* Svelte 5 runes */
-    :global(.keyword:has(+ .punctuation:contains('$'))) {
-      color: var(--color-base14);
-      font-weight: 600;
-    }
-
-    :global(.script-tag) {
-      color: var(--color-base14);
-      font-weight: 600;
-    }
-
-    :global(.style-tag) {
-      color: var(--color-base14);
-      font-weight: 600;
-    }
-  }
-
-  /* JavaScript improvements */
-  :global(.language-javascript),
-  :global(.language-js) {
-    :global(.keyword) {
-      color: var(--color-base14);
-      font-weight: 600;
-    }
-
-    :global(.function) {
-      color: var(--color-base13);
-    }
-
-    :global(.string) {
-      color: var(--color-base10);
-    }
-
-    :global(.number) {
-      color: var(--color-base9);
-    }
-
-    :global(.comment) {
-      color: var(--color-base4);
-      font-style: italic;
-    }
-  }
+.post-body pre {
+  @apply rounded-lg my-6;
+  @apply bg-base1;
+  @apply border border-base3/10;
+  @apply shadow-sm;
+  @apply relative;
 }
 
-/* TAB */
+.post-body pre code {
+  @apply font-mono text-base6;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  padding: 1.25rem !important;
+}
+
+/* Add language label to code blocks */
+.post-body pre::before {
+  content: attr(data-language);
+  @apply absolute top-0 right-0 px-3 py-1 text-xs font-mono;
+  @apply bg-base2/70 text-base5 rounded-bl-md rounded-tr-md;
+  @apply uppercase tracking-wider;
+}
+
+/* Svelte code block improvements */
+.post-body .language-svelte .tag {
+  color: var(--color-base14);
+  font-weight: 600;
+}
+
+.post-body .language-svelte .attr-name {
+  color: var(--color-base10);
+}
+
+.post-body .language-svelte .attr-value {
+  color: var(--color-base10);
+}
+
+.post-body .language-svelte .punctuation {
+  color: var(--color-base6);
+}
+
+/* Svelte 5 runes */
+.post-body .language-svelte .keyword:has(+ .punctuation:contains('$')) {
+  color: var(--color-base14);
+  font-weight: 600;
+}
+
+.post-body .language-svelte .script-tag {
+  color: var(--color-base14);
+  font-weight: 600;
+}
+
+.post-body .language-svelte .style-tag {
+  color: var(--color-base14);
+  font-weight: 600;
+}
+
+/* JavaScript improvements */
+.post-body .language-javascript .keyword,
+.post-body .language-js .keyword {
+  color: var(--color-base14);
+  font-weight: 600;
+}
+
+.post-body .language-javascript .function,
+.post-body .language-js .function {
+  color: var(--color-base13);
+}
+
+.post-body .language-javascript .string,
+.post-body .language-js .string {
+  color: var(--color-base10);
+}
+
+.post-body .language-javascript .number,
+.post-body .language-js .number {
+  color: var(--color-base9);
+}
+
+.post-body .language-javascript .comment,
+.post-body .language-js .comment {
+  color: var(--color-base4);
+  font-style: italic;
+}
+
+/* TAB Component Styles */
 .tabs {
   @apply flex gap-1;
 }
@@ -225,7 +208,7 @@ body {
 .tab {
   @apply relative flex items-center gap-2.5;
   @apply border-b-3 border-transparent transition-all font-medium;
-  @apply text-base4 dark:text-base4;
+  @apply text-base4;
   @apply cursor-pointer;
   @apply pl-8 pr-4 pb-2 pt-1.5;
 }
@@ -237,11 +220,11 @@ body {
 }
 
 .tab:hover::before {
-  @apply bg-base3 dark:bg-base4;
+  @apply bg-base3;
 }
 
 .tab.active {
-  @apply bg-base1/55 dark:bg-base2/55 text-base7 dark:text-base7;
+  @apply bg-base1/55 text-base7;
   border-image: linear-gradient(to right, #6c76f1 0%, #8165d8 100%) 1;
 }
 
@@ -250,11 +233,11 @@ body {
 }
 
 .tab.active:hover {
-  @apply text-base7/90 dark:text-base7/90;
+  @apply text-base7/90;
 }
 
 .tab:hover {
-  @apply bg-base2/10 dark:bg-base2/20 text-base6/60 dark:text-base6/70;
+  @apply bg-base2/10 text-base6/60;
 }
 
 .tab-count {
@@ -298,4 +281,99 @@ body {
 
 .typography-caption {
   @apply font-sans text-sm text-base4;
+}
+
+/* Blog post typography */
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  @apply font-sans text-base14 font-bold;
+  @apply scroll-mt-24;
+}
+
+.post-body h1 {
+  @apply text-2xl sm:text-3xl mt-8 sm:mt-12 mb-4 sm:mb-6 pb-1 border-b border-base3/20;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h2 {
+  @apply text-xl sm:text-2xl mt-8 sm:mt-10 mb-4 sm:mb-5 pb-1 border-b border-base3/10;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h3 {
+  @apply text-lg sm:text-xl mt-6 sm:mt-8 mb-3 sm:mb-4;
+  @apply tracking-tight leading-tight;
+}
+
+.post-body h4 {
+  @apply text-base sm:text-lg mt-4 sm:mt-6 mb-2 sm:mb-3 text-base13;
+}
+
+.post-body a {
+  @apply text-base14 hover:text-base13 transition-colors;
+  @apply border-b border-base14/30 hover:border-base13 no-underline;
+}
+
+.post-body blockquote {
+  @apply border-l-4 border-base14/30 bg-base1/50 px-4 sm:px-6 py-3 sm:py-4 my-4 sm:my-6 italic;
+  @apply text-base sm:text-lg text-base5;
+}
+
+.post-body blockquote p {
+  @apply text-base5;
+}
+
+.post-body p {
+  @apply my-4 sm:my-6 text-base6;
+  @apply text-base sm:text-lg leading-relaxed;
+}
+
+.post-body ul,
+.post-body ol {
+  @apply my-4 sm:my-6 ml-6 sm:ml-8;
+}
+
+.post-body li {
+  @apply my-2 text-base6;
+  @apply text-base sm:text-lg leading-relaxed;
+}
+
+.post-body li::marker {
+  @apply text-base14;
+}
+
+.post-body table {
+  @apply w-full border-collapse my-6;
+  @apply shadow-sm rounded-lg overflow-hidden;
+}
+
+.post-body th,
+.post-body td {
+  @apply border border-base3/10 py-2 sm:py-3 px-2 sm:px-4;
+  @apply text-sm sm:text-base;
+}
+
+.post-body th {
+  @apply bg-base1 text-base14 text-left font-semibold;
+}
+
+.post-body td {
+  @apply bg-base1/50;
+}
+
+.post-body tr:nth-child(even) td {
+  @apply bg-base1/80;
+}
+
+.post-body img {
+  @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
+}
+
+/* Inline code */
+.post-body :not(pre) > code {
+  @apply bg-base1 text-base12 rounded-md px-1.5 py-0.5;
+  @apply text-sm font-mono border border-base3/10;
+  @apply whitespace-nowrap;
 }

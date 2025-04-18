@@ -9,7 +9,6 @@ export async function load({fetch}) {
     }
 
     const data = await response.json();
-    console.log(`Received blog data with ${data.compPosts?.length || 0} posts`);
 
     if (data.error) {
       console.error('Error from API:', data.error);
@@ -19,12 +18,7 @@ export async function load({fetch}) {
       };
     }
 
-    // Ensure we always return an array, even if the API response structure changes
-    const posts = data.compPosts || [];
-
-    console.log('Post slugs:', posts.map(p => p.slug).join(', '));
-
-    return {posts};
+    return {posts: data.compPosts || []};
   } catch (err) {
     console.error('Error in blog/+page.js: ', err);
     return {

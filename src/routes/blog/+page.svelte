@@ -1,4 +1,5 @@
 <script>
+  import {onMount} from 'svelte';
   import {fade} from 'svelte/transition';
   import Tags from '$features/blog/tags/Tags.svelte';
   import Tabs from '$features/blog/tabs/Tabs.svelte';
@@ -7,24 +8,9 @@
   import {Button} from '$components/jera';
 
   let {data} = $props();
-  let isLoading = $state(true);
   let activeTab = $state(null);
-  let filteredPosts = $state([]);
-  const l10n = data.l10n;
-
-  // Reactivity with runes
-  const posts = $derived(data.posts || []);
-
-  // Determine if filters are active
-  const hasActiveFilters = $derived(activeTab !== null);
-
-  // Handle when posts data changes
-  $effect(() => {
-    isLoading = false;
-    if (posts.length > 0 && filteredPosts.length === 0) {
-      filteredPosts = [...posts];
-    }
-  });
+  const posts = $state(data.posts);
+  let filteredPosts = $derived(posts);
 
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
@@ -46,21 +32,16 @@
 
 <div class="blog-container" in:fade={{duration: 300}}>
   <header class="blog-header">
-    <h1>{l10n.t('articles')}</h1>
-    <p class="blog-description">{l10n.t('blogDescription')}</p>
+    <h1>{data.l10n.t('articles')}</h1>
+    <p>{data.l10n.t('blogDescription')}</p>
   </header>
 
-  {#if isLoading}
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>{l10n.t('loadingArticles')}</p>
-    </div>
-  {:else if posts.length > 0}
+  {#if true}
     <div class="filters-container">
       <!-- Tabs for categorization -->
       {#if posts.some(post => post.meta?.tabs?.length)}
         <div class="filter-section">
-          <h2 class="filter-title">{l10n.t('categories')}</h2>
+          <h2 class="filter-title">{data.l10n.t('categories')}</h2>
           <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
         </div>
       {/if}
@@ -68,7 +49,7 @@
       <!-- Tags for filtering -->
       {#if posts.some(post => post.meta?.tags?.length)}
         <div class="filter-section">
-          <h2 class="filter-title">{l10n.t('tags')}</h2>
+          <h2 class="filter-title">{data.l10n.t('tags')}</h2>
           <Tags
             payload={posts}
             toggleEvent={handleTagToggle}
@@ -79,9 +60,9 @@
       {/if}
 
       <!-- Reset filters button when filters are active -->
-      {#if hasActiveFilters}
+      {#if activeTab !== null}
         <div class="filter-actions">
-          <Button variant="secondary" onclick={resetFilters}>{l10n.t('resetFilters')}</Button>
+          <Button variant="secondary" onclick={resetFilters}>{data.l10n.t('resetFilters')}</Button>
         </div>
       {/if}
     </div>
@@ -89,21 +70,24 @@
     {#if filteredPosts.length > 0}
       <ul class="posts-grid">
         {#each filteredPosts as post, i (post.slug)}
-          <Post {post} index={i} {l10n} />
+          <Post {post} index={i} l10n={data.l10n} />
         {/each}
       </ul>
     {:else}
       <div class="no-results">
-        <p>{l10n.t('noMatchingPosts')}</p>
+        <p>{data.l10n.t('noMatchingPosts')}</p>
         <Button variant="primary" onclick={resetFilters} class="mt-4"
-          >{l10n.t('showAllPosts')}</Button
+          >{data.l10n.t('showAllPosts')}</Button
         >
       </div>
     {/if}
   {:else if data.error}
-    <NoPosts {l10n} message="There was an error loading blog posts. Please try again later." />
+    <NoPosts
+      l10n={data.l10n}
+      message="There was an error loading blog posts. Please try again later."
+    />
   {:else}
-    <NoPosts {l10n} message="No blog posts found yet. Check back soon for new content!" />
+    <NoPosts l10n={data.l10n} message="No blog posts found yet. Check back soon for new content!" />
   {/if}
 </div>
 
@@ -112,27 +96,16 @@
 
   .blog-container {
     @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;
-  }
 
-  .blog-header {
-    @apply mb-6 sm:mb-8 text-center;
-  }
-
-  .blog-header h1 {
-    @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
-  }
-
-  .blog-description {
-    @apply text-base3 text-sm sm:text-base;
-  }
-
-  .loading-state {
-    @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
-  }
-
-  .loading-spinner {
-    @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
-    @apply animate-spin mb-4;
+    .blog-header {
+      @apply mb-6 sm:mb-8 text-center;
+      > h1 {
+        @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
+      }
+      > p {
+        @apply text-base3 text-sm sm:text-base;
+      }
+    }
   }
 
   .filters-container {
@@ -162,10 +135,5 @@
 
   .no-results {
     @apply text-center py-10 sm:py-16 text-base3;
-  }
-
-  /* Dark mode adjustments */
-  :global(.dark) .filters-container {
-    @apply bg-base1/20 border-base3/5;
   }
 </style>

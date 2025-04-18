@@ -36,31 +36,29 @@
     @apply inline-flex items-center;
     @apply pl-4 pr-3 py-0.5;
     @apply border rounded-[2px];
-    @apply border-base3 dark:border-base4;
-    @apply text-base4 dark:text-base5;
-    @apply bg-base1/40 dark:bg-base2/40;
+    @apply border-base3 text-base4;
+    @apply bg-base1/40;
     @apply text-sm whitespace-nowrap cursor-pointer;
     @apply transition-colors duration-200 ease-in-out;
     @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
   }
 
   .badge:hover {
-    @apply bg-base1 dark:bg-base1 text-base6 dark:text-base6;
-    @apply border-base4 dark:border-base5;
+    @apply bg-base1 text-base6;
+    @apply border-base4;
   }
 
   .badge.selected {
-    @apply bg-base2 dark:bg-base3;
-    @apply text-base7 dark:text-base7;
-    @apply border-base14/40 dark:border-base14/60;
+    @apply bg-base2 text-base7;
+    @apply border-base14/40;
   }
 
   .badge-count {
     @apply ml-2 text-xs font-semibold;
-    @apply text-base4 dark:text-base5;
+    @apply text-base4;
   }
 
   .badge.selected .badge-count {
-    @apply text-base7 dark:text-base7 font-bold;
+    @apply text-base7 font-bold;
   }
 </style>
