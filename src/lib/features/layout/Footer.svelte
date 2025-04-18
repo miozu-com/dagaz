@@ -147,7 +147,6 @@
 
   $effect(() => {
     if (online !== undefined || swStatus !== 'checking' || performance.pageLoad > 0) {
-      console.log('upd');
       updateStatusItems();
     }
   });
@@ -162,12 +161,11 @@
           <DagazLogo size={22} />
           <span class="footer-name">{appName}</span>
         </a>
-        <a href="/blog" class="footer-link ml-10">{l10n.t('blog')}</a>
+        <a href="/blog" class="footer-link">{l10n.t('blog')}</a>
       </div>
 
       <div class="footer-tools">
         <ThemeSwitcher {theme} />
-        <!-- Replace LocaleSwitcher with Jera Select -->
         <Select
           options={localeOptions}
           value={l10n.value}
@@ -176,7 +174,7 @@
           buttonVariant="sm"
         />
 
-        <!-- Status Indicator Button TODO fix hardcoded colors -->
+        <!-- Status Indicator Button -->
         <button
           class="status-indicator"
           onclick={toggleStatus}
@@ -236,11 +234,11 @@
   }
 
   .footer-content {
-    @apply flex justify-between items-center mb-2;
+    @apply flex flex-wrap justify-between items-center mb-2 gap-3;
   }
 
   .footer-branding {
-    @apply flex items-center;
+    @apply flex items-center flex-wrap gap-4;
   }
 
   .footer-logo {
@@ -260,11 +258,11 @@
   }
 
   .footer-legal {
-    @apply flex flex-wrap justify-between text-xs text-base3;
+    @apply flex flex-wrap justify-between text-xs text-base3 gap-2;
   }
 
   .footer-tools {
-    @apply flex items-center gap-3 ml-auto mr-4;
+    @apply flex items-center gap-3 order-last sm:order-none w-full sm:w-auto justify-end sm:ml-auto sm:mr-4;
   }
 
   .copyright,
@@ -325,18 +323,17 @@
     @apply py-1 px-2 text-sm;
   }
 
-  /* TODO add breakpoints */
   @media (max-width: 640px) {
     .footer-content {
       @apply flex-col gap-3 items-start;
     }
 
     .footer-links {
-      @apply mb-2;
+      @apply mb-2 mr-auto;
     }
 
     .footer-tools {
-      @apply mr-0 ml-0;
+      @apply mr-0 ml-0 mt-2;
     }
 
     .footer-legal {

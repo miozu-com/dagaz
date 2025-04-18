@@ -103,7 +103,7 @@
   @import '../../../theme.css' theme(reference);
 
   .post-item {
-    @apply mb-8 flex;
+    @apply mb-4 sm:mb-8 flex;
   }
 
   .post-card {
@@ -114,7 +114,7 @@
   }
 
   .post-image {
-    @apply h-48 relative flex items-center justify-center;
+    @apply h-36 sm:h-48 relative flex items-center justify-center;
     @apply bg-gradient-to-br from-[color:var(--color,#ff9982)] to-[color:var(--color,#ff9982)]/70;
   }
 
@@ -129,21 +129,21 @@
   }
 
   .read-more {
-    @apply px-4 py-2 bg-base0/90 text-base7 text-sm font-medium rounded-md;
+    @apply px-3 py-1.5 sm:px-4 sm:py-2 bg-base0/90 text-base7 text-xs sm:text-sm font-medium rounded-md;
     @apply transform scale-95 hover:scale-100 transition-transform;
     @apply border border-base7/20;
   }
 
   .post-content {
-    @apply p-6 flex-1 flex flex-col;
+    @apply p-2.5 sm:p-5 flex-1 flex flex-col;
   }
 
   .post-tags {
-    @apply flex flex-wrap gap-1.5 mb-4;
+    @apply flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4;
   }
 
   .tag {
-    @apply text-xs bg-base1 px-2.5 py-1 rounded-md text-base5;
+    @apply text-xs bg-base1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-base5;
     @apply dark:bg-base2/50 dark:text-base6 font-medium;
     @apply transition-colors;
   }
@@ -154,7 +154,7 @@
   }
 
   .post-title {
-    @apply text-xl font-bold mb-3 text-base7;
+    @apply text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-base7;
     @apply tracking-tight leading-tight;
     @apply line-clamp-2;
     @apply transition-colors;
@@ -165,40 +165,16 @@
   }
 
   .post-description {
-    @apply text-sm text-base4 mb-4 line-clamp-3 flex-1;
+    @apply text-xs sm:text-sm text-base4 mb-3 sm:mb-4 line-clamp-3 flex-1;
     @apply leading-relaxed;
   }
 
   .post-meta {
-    @apply flex items-center gap-3 text-xs text-base4 mt-auto;
-    @apply pt-3 border-t border-base3/10;
+    @apply flex items-center gap-2 sm:gap-3 text-xs text-base4 mt-auto;
+    @apply pt-2 sm:pt-3 border-t border-base3/10;
   }
 
   .read-time {
-    @apply before:content-['•'] before:mr-3 before:text-base4/50;
-  }
-
-  /* Dark mode adjustments */
-  :global(.dark) .post-card {
-    @apply bg-base1/30 hover:bg-base1/50 border-base3/5;
-  }
-
-  :global(.dark) .post-content {
-    @apply text-base6;
-  }
-
-  :global(.dark) .post-description {
-    @apply text-base5;
-  }
-
-  :global(.dark) .read-more {
-    @apply bg-base0/80 text-base7;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 640px) {
-    .post-image {
-      @apply h-40;
-    }
+    @apply before:content-['•'] before:mr-2 sm:before:mr-3 before:text-base4/50;
   }
 </style>

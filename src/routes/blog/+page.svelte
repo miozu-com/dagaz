@@ -111,37 +111,37 @@
   @import '../../theme.css' theme(reference);
 
   .blog-container {
-    @apply w-full max-w-6xl mx-auto pb-16;
+    @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;
   }
 
   .blog-header {
-    @apply mb-8 text-center;
+    @apply mb-6 sm:mb-8 text-center;
   }
 
   .blog-header h1 {
-    @apply text-3xl font-bold mb-2 text-base14;
+    @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
   }
 
   .blog-description {
-    @apply text-base3;
+    @apply text-base3 text-sm sm:text-base;
   }
 
   .loading-state {
-    @apply flex flex-col items-center justify-center py-16 text-base3;
+    @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
   }
 
   .loading-spinner {
-    @apply h-10 w-10 rounded-full border-4 border-base3/20 border-t-base14;
+    @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
     @apply animate-spin mb-4;
   }
 
   .filters-container {
-    @apply mb-10 p-5 rounded-lg bg-base1/30;
+    @apply mb-6 sm:mb-10 p-3 sm:p-5 rounded-lg bg-base1/30;
     @apply border border-base3/10;
   }
 
   .filter-section {
-    @apply mb-6;
+    @apply mb-4 sm:mb-6;
   }
 
   .filter-section:last-of-type {
@@ -149,19 +149,19 @@
   }
 
   .filter-title {
-    @apply text-lg font-medium mb-3 text-base7;
+    @apply text-base sm:text-lg font-medium mb-2 sm:mb-3 text-base7;
   }
 
   .filter-actions {
-    @apply flex justify-end mt-6 pt-4 border-t border-base3/10;
+    @apply flex justify-end mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-base3/10;
   }
 
   .posts-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
   }
 
   .no-results {
-    @apply text-center py-16 text-base3;
+    @apply text-center py-10 sm:py-16 text-base3;
   }
 
   /* Dark mode adjustments */

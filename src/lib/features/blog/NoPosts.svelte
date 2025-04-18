@@ -12,14 +12,16 @@
 
 <div class="empty-container {className}">
   <div class="empty-icon">
-    <BookDashed size={64} />
+    <BookDashed size={48} class="sm:size-64" />
   </div>
   <h2 class="empty-title">{l10n.t('blogComingSoon')}</h2>
   <p class="empty-message">{message}</p>
   <p class="empty-subtitle">{l10n.t('checkBackLater')}</p>
 
   {#if refreshAction}
-    <Button variant="primary" onclick={refreshAction} class="mt-6">{l10n.t('refresh')}</Button>
+    <Button variant="primary" onclick={refreshAction} class="mt-4 sm:mt-6"
+      >{l10n.t('refresh')}</Button
+    >
   {/if}
 </div>
 
@@ -28,38 +30,26 @@
 
   .empty-container {
     @apply flex flex-col items-center justify-center;
-    @apply py-16 px-4 rounded-md bg-base1/30;
-    @apply text-center max-w-lg mx-auto my-8;
+    @apply py-10 sm:py-16 px-4 rounded-md bg-base1/30;
+    @apply text-center max-w-sm sm:max-w-lg mx-auto my-6 sm:my-8;
   }
 
   .empty-icon {
-    @apply text-base14/70 mb-6;
+    @apply text-base14/70 mb-4 sm:mb-6;
     @apply animate-pulse;
     animation-duration: 3s;
   }
 
   .empty-title {
-    @apply text-2xl font-bold mb-3;
+    @apply text-xl sm:text-2xl font-bold mb-2 sm:mb-3;
     @apply text-base14;
   }
 
   .empty-message {
-    @apply text-base3 mb-2 text-lg;
+    @apply text-base3 mb-2 text-base sm:text-lg;
   }
 
   .empty-subtitle {
-    @apply text-base3/70 max-w-sm;
-  }
-
-  :global(.dark) .empty-title {
-    @apply text-base14;
-  }
-
-  :global(.dark) .empty-icon {
-    @apply text-base14/70;
-  }
-
-  :global(.dark) .empty-container {
-    @apply bg-base1/30;
+    @apply text-base3/70 max-w-sm text-sm sm:text-base;
   }
 </style>

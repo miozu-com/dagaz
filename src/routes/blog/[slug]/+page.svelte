@@ -1,4 +1,3 @@
-<!-- src/routes/blog/[slug]/+page.svelte -->
 <script>
   import {onMount} from 'svelte';
   import {fade} from 'svelte/transition';
@@ -235,18 +234,6 @@
         </footer>
       </article>
     </div>
-
-    <!-- Static footer at the bottom of the page, not part of the layout -->
-    <div class="page-footer">
-      <Divider />
-      <div class="footer-content">
-        <div class="footer-left">
-          © {new Date().getFullYear()}
-          {author}
-        </div>
-        <div class="footer-right">Built with Dagaz · All rights reserved</div>
-      </div>
-    </div>
   {:else}
     <div class="error-state">
       <h2>Post Not Found</h2>
@@ -262,11 +249,11 @@
   @import '../../../theme.css' theme(reference);
 
   .post-container {
-    @apply w-full max-w-6xl mx-auto my-12 px-4;
+    @apply w-full max-w-6xl mx-auto my-8 sm:my-12;
   }
 
   .post-grid {
-    @apply flex gap-10;
+    @apply flex gap-6 sm:gap-10;
   }
 
   .post-content {
@@ -317,33 +304,30 @@
   }
 
   .post-header {
-    @apply px-8 pt-12 pb-6;
+    @apply px-0.5 md:px-5 lg:px-8 pt-8 sm:pt-12 pb-4 sm:pb-6;
   }
 
   .post-meta {
-    @apply flex flex-wrap items-center gap-4 mb-6 text-sm;
-  }
-
-  .author {
-    @apply font-medium text-base14/90 bg-base14/10 px-3 py-1 rounded-full;
-  }
-
-  .read-time {
-    @apply text-base4/90 bg-base2/40 px-3 py-1 rounded-full;
-  }
-
-  time {
-    @apply text-base4/90 bg-base2/40 px-3 py-1 rounded-full;
+    @apply flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-6 text-xs sm:text-sm;
+    .author {
+      @apply font-medium text-base14/90 bg-base14/10 px-3 py-1 rounded-full;
+    }
+    time {
+      @apply text-base4 px-3 py-1 ml-auto;
+    }
+    .read-time {
+      @apply text-base4 px-2.5 py-1.5;
+    }
   }
 
   .post-title {
-    @apply text-4xl font-bold mb-6 text-base14;
+    @apply text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-base14;
     @apply tracking-tight leading-tight;
     @apply dark:text-base14;
   }
 
   .post-description {
-    @apply text-xl text-base5 mb-6;
+    @apply text-lg sm:text-xl text-base5 mb-4 sm:mb-6;
     @apply leading-relaxed;
   }
 
@@ -357,7 +341,7 @@
   }
 
   .post-body {
-    @apply px-8 py-8;
+    @apply px-0.5 md:px-5 lg:px-8 py-6 sm:py-8;
     @apply font-serif;
 
     /* Better scrolling */
@@ -384,22 +368,22 @@
     }
 
     :global(h1) {
-      @apply text-3xl mt-12 mb-6 pb-1 border-b border-base3/20;
+      @apply text-2xl sm:text-3xl mt-8 sm:mt-12 mb-4 sm:mb-6 pb-1 border-b border-base3/20;
       @apply tracking-tight leading-tight;
     }
 
     :global(h2) {
-      @apply text-2xl mt-10 mb-5 pb-1 border-b border-base3/10;
+      @apply text-xl sm:text-2xl mt-8 sm:mt-10 mb-4 sm:mb-5 pb-1 border-b border-base3/10;
       @apply tracking-tight leading-tight;
     }
 
     :global(h3) {
-      @apply text-xl mt-8 mb-4;
+      @apply text-lg sm:text-xl mt-6 sm:mt-8 mb-3 sm:mb-4;
       @apply tracking-tight leading-tight;
     }
 
     :global(h4) {
-      @apply text-lg mt-6 mb-3 text-base13;
+      @apply text-base sm:text-lg mt-4 sm:mt-6 mb-2 sm:mb-3 text-base13;
     }
 
     :global(a) {
@@ -408,8 +392,8 @@
     }
 
     :global(blockquote) {
-      @apply border-l-4 border-base14/30 bg-base1/50 px-6 py-4 my-6 italic;
-      @apply text-lg text-base5;
+      @apply border-l-4 border-base14/30 bg-base1/50 px-4 sm:px-6 py-3 sm:py-4 my-4 sm:my-6 italic;
+      @apply text-base sm:text-lg text-base5;
     }
 
     :global(blockquote p) {
@@ -417,35 +401,36 @@
     }
 
     :global(pre) {
-      @apply rounded-lg my-8 shadow-md;
+      @apply rounded-lg my-6 sm:my-8 shadow-md;
       @apply bg-base1 dark:bg-base0/80;
       @apply border border-base3/10 dark:border-base3/5;
       @apply backdrop-blur-sm;
+      @apply text-sm;
     }
 
     :global(pre code) {
       @apply font-mono text-base6;
-      @apply text-sm lg:text-base;
+      @apply text-sm;
       @apply leading-relaxed tracking-tight;
     }
 
     :global(.shiki) {
-      @apply p-5 rounded-lg overflow-auto;
+      @apply p-3 sm:p-5 rounded-lg overflow-auto;
     }
 
     :global(p) {
-      @apply my-6 text-base6 dark:text-base6;
-      @apply text-lg leading-relaxed;
+      @apply my-4 sm:my-6 text-base6 dark:text-base6;
+      @apply text-base sm:text-lg leading-relaxed;
     }
 
     :global(ul),
     :global(ol) {
-      @apply my-6 ml-8;
+      @apply my-4 sm:my-6 ml-6 sm:ml-8;
     }
 
     :global(li) {
       @apply my-2 text-base6;
-      @apply text-lg leading-relaxed;
+      @apply text-base sm:text-lg leading-relaxed;
     }
 
     :global(li::marker) {
@@ -459,7 +444,8 @@
 
     :global(th),
     :global(td) {
-      @apply border border-base3/10 py-3 px-4;
+      @apply border border-base3/10 py-2 sm:py-3 px-2 sm:px-4;
+      @apply text-sm sm:text-base;
     }
 
     :global(th) {
@@ -475,7 +461,7 @@
     }
 
     :global(img) {
-      @apply max-w-full rounded-lg shadow-md my-8 mx-auto;
+      @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
     }
 
     /* Inline code */
@@ -522,72 +508,26 @@
   }
 
   .post-footer {
-    @apply px-8 py-8;
+    @apply px-4 sm:px-6 lg:px-8 py-6 sm:py-8;
   }
 
   .post-actions {
-    @apply flex justify-between items-center mt-6;
+    @apply flex justify-between items-center mt-4 sm:mt-6;
   }
 
   .loading-state,
   .error-state {
-    @apply flex flex-col items-center justify-center py-16 text-base3;
+    @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
   }
 
   .loading-spinner {
-    @apply h-10 w-10 rounded-full border-4 border-base3/20 border-t-base14;
+    @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
     @apply animate-spin mb-4;
   }
 
-  /* Footer styles */
-  .page-footer {
-    @apply mt-16 mb-8;
-  }
-
-  .footer-content {
-    @apply max-w-3xl mx-auto px-4 py-6;
-    @apply flex justify-between items-center text-sm text-base3;
-    @apply bg-base0;
-  }
-
-  @media (max-width: 1024px) {
-    .post-title {
-      @apply text-3xl;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .post-header {
-      @apply px-6 pt-8;
-    }
-
-    .post-body {
-      @apply px-6;
-    }
-
-    .post-footer {
-      @apply px-6;
-    }
-  }
-
   @media (max-width: 640px) {
-    .footer-content {
-      @apply flex-col gap-2 py-4;
-    }
-
     .post-title {
       @apply text-2xl;
-    }
-
-    .post-description {
-      @apply text-base;
-    }
-
-    .post-body {
-      :global(p),
-      :global(li) {
-        @apply text-base;
-      }
     }
   }
 </style>

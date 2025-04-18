@@ -36,22 +36,22 @@
   }
 
   .header-content {
-    @apply h-14 w-full px-4 flex items-center;
+    @apply h-12 sm:h-14 w-full px-4 flex items-center;
   }
 
   .header-right {
-    @apply w-24; /* Fixed width to balance logo on left */
+    @apply w-16 sm:w-24; /* Fixed width to balance logo on left */
   }
 
   .header-left {
-    @apply w-24 flex items-center; /* Fixed width to balance empty space on right */
+    @apply w-16 sm:w-24 flex items-center; /* Fixed width to balance empty space on right */
   }
 
   .logo-link {
     @apply flex items-center gap-2 no-underline;
 
     span {
-      @apply font-medium text-base14 text-lg;
+      @apply font-medium text-base14 text-base sm:text-lg;
     }
   }
 
@@ -70,13 +70,6 @@
 
   .nav-link {
     @apply px-3 py-1.5 text-base7 hover:text-base14 transition-colors;
-    @apply text-lg font-medium;
-  }
-
-  @media (max-width: 640px) {
-    .header-left,
-    .header-right {
-      @apply w-16;
-    }
+    @apply text-base sm:text-lg font-medium;
   }
 </style>
