@@ -82,15 +82,18 @@ export async function GET({params}) {
     // Generate table of contents
     const toc = generateTableOfContents(bodyContent);
 
-    // Instead of using mdsvex, let's use a simpler approach for now
-    // This will at least get the content displaying while we troubleshoot
-    const htmlContent = bodyContent;
+    // Properly compile the markdown with mdsvex instead of just returning raw markdown
+    const compiled = await mdsvexLib.compile(bodyContent, {
+      smartypants: true,
+      remarkPlugins: [],
+      rehypePlugins: []
+    });
 
     // Return the complete post data
     return json({
       slug,
       meta: fullMeta,
-      code: htmlContent, // Just return the raw markdown for now
+      code: compiled.code, // Return the properly compiled svelte code
       toc
     });
   } catch (err) {
@@ -176,7 +179,7 @@ function generateTableOfContents(content) {
     headings.push({level, text, id});
   }
 
-  return {data: headings};
+  return {id: 'toc', data: headings};
 }
 
 /**
