@@ -1,4 +1,3 @@
-<!-- src/lib/features/blog/Post.svelte -->
 <script>
   import {fade} from 'svelte/transition';
 
@@ -61,7 +60,7 @@
 
 <li in:fade={{duration: 300, delay: index * 75}} class="post-item">
   <a href="/blog/{post.slug}" class="post-card">
-    <div class="post-image" style="background-color: {cardColor}">
+    <div class="post-image" style="--color: {cardColor}">
       <div class="post-image-inner">
         <!-- If the blog had featured images, they would go here -->
       </div>
@@ -114,7 +113,7 @@
   }
 
   .post-image {
-    @apply h-36 sm:h-48 relative flex items-center justify-center;
+    @apply h-36 sm:h-20 relative flex items-center justify-center;
     @apply bg-gradient-to-br from-[color:var(--color,#ff9982)] to-[color:var(--color,#ff9982)]/70;
   }
 
@@ -135,7 +134,7 @@
   }
 
   .post-content {
-    @apply p-2.5 sm:p-5 flex-1 flex flex-col;
+    @apply p-4 sm:p-5 flex-1 flex flex-col;
   }
 
   .post-tags {

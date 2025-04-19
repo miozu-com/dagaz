@@ -1,7 +1,7 @@
 <script>
-  import {any, includes, filter, path, prop, pipe, tap, curry} from 'ramda';
+  import {any, includes, filter, path, prop, pipe, curry} from 'ramda';
   import {assoc, keys, reduce, map, fromPairs} from 'ramda';
-  import {toUniqArr, filterArrByString} from '$utils';
+  import {toUniqArr} from '$utils';
 
   import Tab from './Tab.svelte';
 
@@ -63,7 +63,7 @@
   const selectTab = tab => {
     updateTabs(tab);
     updateIndicator(tab);
-    // Handle tab selection with  filtering
+    // Handle tab selection with filtering
     triggerEvent(filterPayload(propPath, tab)(payload), tab);
   };
 </script>
@@ -71,7 +71,7 @@
 <div class="tabs-w">
   <div class="tabs" bind:this={tabsContainer}>
     {#each keys(tabs) as tab (tab)}
-      <Tab onclick={() => selectTab(tab)} label={tab} />
+      <Tab onclick={() => selectTab(tab)} label={tab} selected={tabs[tab]} />
     {/each}
     {#if children}
       {@render children()}

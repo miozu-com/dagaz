@@ -1,6 +1,6 @@
 ---
 published: true
-featured: true
+featured: false
 slug: interactive-content-with-svelte-in-markdown
 title: Using Interactive Svelte Components in Markdown
 description: Learn how to add interactive Svelte components directly in your Markdown content

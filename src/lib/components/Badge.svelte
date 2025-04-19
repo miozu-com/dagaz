@@ -10,7 +10,6 @@
 
   // Handle click events, toggle selection, and call the onClick handler
   function handleClick() {
-    selected = !selected;
     onclick(selected); // Notify parent about the change
   }
 </script>

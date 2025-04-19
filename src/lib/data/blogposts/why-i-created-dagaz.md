@@ -1,6 +1,6 @@
 ---
 published: true
-featured: true
+featured: false
 slug: motivation-behind-this-starter
 title: The motivation behind this starter
 description: 

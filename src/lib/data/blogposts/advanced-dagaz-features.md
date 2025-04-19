@@ -1,6 +1,6 @@
 ---
 published: true
-featured: true
+featured: false
 slug: advanced-dagaz-features
 title: Practical Advanced Features in Dagaz
 description: How to leverage reactive state classes, Canvas API, and functional programming in your Dagaz landing page

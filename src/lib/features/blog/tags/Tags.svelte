@@ -1,6 +1,5 @@
 <script>
   import {
-    tap,
     pipe,
     defaultTo,
     keys,
@@ -31,8 +30,10 @@
   let tags = $state(
     reduce((acc, tag) => ({...acc, [tag]: false}), {}, toUniqArr(propPath, payload))
   );
+
   // Return selected tags only
   const activeTagNames = $derived(filter(tag => tags[tag], keys(tags)));
+
   // Display posts that includes selected tags
   const filterByTagNames = $derived(filterArrByString(propPath, activeTagNames));
 
@@ -55,6 +56,14 @@
       tap(() => (tags[tag] = !tags[tag])), // toggle the value in the tags object
       tap(() => toggleEvent(activeTagNames.length ? filterByTagNames(payload) : payload, tag))
     )(tag);
+
+  // Explicit tap implementation since Ramda's tap doesn't seem to be working correctly
+  function tap(fn) {
+    return x => {
+      fn(x);
+      return x;
+    };
+  }
 </script>
 
 <div class="tags">
@@ -62,6 +71,7 @@
     <Badge
       onclick={() => toggleTag(tag)}
       label={tag}
+      selected={tags[tag]}
       count={isTagCount ? tagCounts[tag] : undefined}
     />
   {/each}

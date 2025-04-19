@@ -5,6 +5,8 @@
   import Post from '$features/blog/Post.svelte';
   import NoPosts from '$features/blog/NoPosts.svelte';
   import {Button} from '$components/jera';
+  import Metadata from '$features/seo/Metadata.svelte';
+  import {appName, domain} from '$settings/global';
 
   // Get data from +page.js
   let {data} = $props();
@@ -13,12 +15,10 @@
   let activeTab = $state(null);
   let posts = $state(data.posts);
   let filteredPosts = $state(data.posts);
-  console.log('data', posts);
 
-  // Debug information
-  let hasTabs = $derived(posts.some(post => post.tabs?.length > 0));
-  let hasTags = $derived(posts.some(post => post.tags?.length > 0));
-  let samplePostData = $derived(posts.length > 0 ? JSON.stringify(posts[0], null, 2) : 'No posts');
+  // Check if we have posts with tabs or tags
+  let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
+  let hasTags = $derived(posts.some(post => post.meta?.tags?.length > 0));
 
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
@@ -38,48 +38,49 @@
   }
 </script>
 
+<Metadata
+  title="Blog | {appName}"
+  description="Insights and tutorials on modern web development"
+  canonicalUrl={`${domain}/blog`}
+  ogType="website"
+/>
+
 <div class="blog-container" in:fade={{duration: 300}}>
   <header class="blog-header">
     <h1>{data.l10n.t('articles')}</h1>
     <p>{data.l10n.t('blogDescription')}</p>
   </header>
 
-  <!-- Debug information - only visible during development -->
-  <div class="debug-info">
-    <h3>Debug Information</h3>
-    <p>Posts count: {posts.length}</p>
-    <p>Has posts with tabs: {hasTabs}</p>
-    <p>Has posts with tags: {hasTags}</p>
-    <details>
-      <summary>Sample post metadata</summary>
-      <pre>{samplePostData}</pre>
-    </details>
-  </div>
-
-  <!-- We'll force show the filters containers for debugging -->
-  <div class="filters-container">
-    <div class="filter-section">
-      <h2 class="filter-title">{data.l10n.t('categories')}</h2>
+  {#if hasTabs || hasTags}
+    <div class="filters-container">
       {#if hasTabs}
-        <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['tabs']} />
-      {:else}
-        <p class="debug-message">
-          No tabs found in blog posts. Check meta.tabs in your markdown frontmatter.
-        </p>
+        <div class="filter-section">
+          <h2 class="filter-title">{data.l10n.t('categories')}</h2>
+          <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
+        </div>
       {/if}
-    </div>
 
-    <div class="filter-section">
-      <h2 class="filter-title">{data.l10n.t('tags')}</h2>
       {#if hasTags}
-        <Tags payload={posts} toggleEvent={handleTagToggle} propPath={['tags']} isTagCount={true} />
-      {:else}
-        <p class="debug-message">
-          No tags found in blog posts. Check meta.tags in your markdown frontmatter.
-        </p>
+        <div class="filter-section">
+          <h2 class="filter-title">{data.l10n.t('tags')}</h2>
+          <Tags
+            payload={posts}
+            toggleEvent={handleTagToggle}
+            propPath={['meta', 'tags']}
+            isTagCount={true}
+          />
+        </div>
+      {/if}
+
+      {#if activeTab || filteredPosts.length !== posts.length}
+        <div class="filter-actions">
+          <Button variant="secondary sm" onclick={resetFilters}>
+            {data.l10n.t('resetFilters')}
+          </Button>
+        </div>
       {/if}
     </div>
-  </div>
+  {/if}
 
   {#if filteredPosts.length > 0}
     <ul class="posts-grid">
@@ -87,6 +88,13 @@
         <Post {post} index={i} l10n={data.l10n} />
       {/each}
     </ul>
+  {:else if posts.length > 0}
+    <div class="no-results">
+      <p>{data.l10n.t('noMatchingPosts')}</p>
+      <Button variant="secondary" onclick={resetFilters}>
+        {data.l10n.t('showAllPosts')}
+      </Button>
+    </div>
   {:else if data.error}
     <NoPosts
       l10n={data.l10n}
@@ -102,29 +110,22 @@
 
   .blog-container {
     @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;
-
-    .blog-header {
-      @apply mb-6 sm:mb-8 text-center;
-      > h1 {
-        @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
-      }
-      > p {
-        @apply text-base3 text-sm sm:text-base;
-      }
-    }
   }
 
-  .debug-info {
-    @apply mb-6 p-4 bg-base8/10 border border-base8 rounded-md;
-    @apply text-sm;
+  .blog-header {
+    @apply mb-6 sm:mb-8 text-center;
   }
 
-  .debug-message {
-    @apply text-base8 px-3 py-2 bg-base8/10 rounded-md text-sm;
+  .blog-header h1 {
+    @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
+  }
+
+  .blog-header p {
+    @apply text-base5 text-sm sm:text-base;
   }
 
   .filters-container {
-    @apply mb-6 sm:mb-10 p-3 sm:p-5 rounded-lg bg-base1/30;
+    @apply mb-6 sm:mb-10 p-4 sm:p-5 rounded-lg bg-base1/30;
     @apply border border-base3/10;
   }
 
@@ -149,6 +150,8 @@
   }
 
   .no-results {
-    @apply text-center py-10 sm:py-16 text-base3;
+    @apply flex flex-col items-center justify-center text-center py-8 sm:py-10 gap-4;
+    @apply text-base4;
+    @apply bg-base1/30 rounded-lg border border-base3/10;
   }
 </style>
