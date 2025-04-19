@@ -1,6 +1,8 @@
 export {default as Check} from './Check.svelte';
 export {default as ChevronDown} from './ChevronDown.svelte';
 export {default as ChevronUp} from './ChevronUp.svelte';
+export {default as ChevronLeft} from './ChevronLeft.svelte';
+export {default as ChevronRight} from './ChevronRight.svelte';
 export {default as BookDashed} from './BookDashed.svelte';
 export {default as Markdown} from './Markdown.svelte';
 export {default as Languages} from './Languages.svelte';
@@ -9,6 +11,12 @@ export {default as Sun} from './Sun.svelte';
 export {default as ServerOff} from './ServerOff.svelte';
 export {default as RotateCcw} from './RotateCcw.svelte';
 export {default as Star} from './Star.svelte';
+export {default as Share2} from './Share2.svelte';
+export {default as Copy} from './Copy.svelte';
+export {default as Calendar} from './Calendar.svelte';
+export {default as ClockFading} from './ClockFading.svelte';
+export {default as Link} from './Link.svelte';
+export {default as UserRound} from './UserRound.svelte';
 
 export {default as Svelte} from './Svelte.svelte';
 export {default as Tailwind} from './Tailwind.svelte';

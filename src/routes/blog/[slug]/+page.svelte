@@ -3,8 +3,11 @@
   import {fade} from 'svelte/transition';
   import Divider from '$components/Divider.svelte';
   import {Button} from '$components/jera';
+  import SkeletonLoader from '$components/SkeletonLoader.svelte';
   import JsonLd from '$features/seo/JsonLd.svelte';
   import BreadcrumbsSchema from '$features/seo/BreadcrumbsSchema.svelte';
+  import BlogPostFooter from '$features/blog/BlogPostFooter.svelte';
+  import {ChevronUp} from '$components/icons';
   import {author, domain, appName} from '$lib/settings/global';
 
   let {data} = $props();
@@ -12,6 +15,8 @@
   let scrollContainer = $state(null);
   let tableOfContents = $state([]);
   let showToc = $state(false);
+  let isLoading = $state(true);
+  let showBackToTop = $state(false);
 
   // Get the post from the data
   const post = $derived(data.post || {});
@@ -75,6 +80,15 @@
     }
   }
 
+  function scrollToTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  // Handle scroll events to show/hide back to top button
+  function handleScroll() {
+    showBackToTop = window.scrollY > 300;
+  }
+
   onMount(() => {
     // Calculate formatted values
     formattedDate = formatDate(post.meta?.created_at);
@@ -82,18 +96,31 @@
     modifiedIsoDate = post.meta?.modified_at ? formatISODate(post.meta.modified_at) : isoDate;
     postUrl = `${domain}/blog/${post.slug}`;
 
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+
     if (post?.code) {
       // The updated part - no processing needed for HTML content
-      console.log('post,', post);
       htmlContent = post.code;
 
       // Extract ToC after content is loaded
       extractToc();
 
+      // Use a short delay to simulate content loading
+      // This ensures proper rendering of skeleton loaders
+      setTimeout(() => {
+        isLoading = false;
+      }, 300);
+
       console.log('Post content loaded:', post.slug);
     } else {
       console.error('Post content not available:', post);
+      isLoading = false;
     }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   });
 </script>
 
@@ -151,27 +178,41 @@
   />
 {/if}
 
+<!-- Back to top button -->
+{#if showBackToTop}
+  <button
+    transition:fade={{duration: 200}}
+    class="back-to-top"
+    onclick={scrollToTop}
+    aria-label="Back to top"
+  >
+    <ChevronUp size={20} />
+  </button>
+{/if}
+
 <main in:fade={{duration: 300}} class="post-container">
-  {#if post?.code}
+  {#if isLoading || post?.code}
     <div class="post-grid">
-      {#if showToc}
+      <!-- Table of Contents -->
+      {#if showToc || isLoading}
         <aside class="post-toc">
           <div class="toc-container">
             <h2 class="toc-title">Table of Contents</h2>
-            <nav class="toc-nav">
-              <ul class="toc-list">
-                {#each tableOfContents as heading}
-                  <li class="toc-item level-{heading.level}">
-                    <a
-                      href="#{heading.id}"
-                      on:click|preventDefault={() => scrollToHeading(heading.id)}
-                    >
-                      {heading.text}
-                    </a>
-                  </li>
-                {/each}
-              </ul>
-            </nav>
+            {#if isLoading}
+              <SkeletonLoader type="toc" lines={8} class="toc-skeleton" />
+            {:else}
+              <nav class="toc-nav">
+                <ul class="toc-list">
+                  {#each tableOfContents as heading}
+                    <li class="toc-item level-{heading.level}">
+                      <a href="#{heading.id}" onclick={() => scrollToHeading(heading.id)}>
+                        {heading.text}
+                      </a>
+                    </li>
+                  {/each}
+                </ul>
+              </nav>
+            {/if}
           </div>
         </aside>
       {/if}
@@ -205,15 +246,28 @@
         <Divider />
 
         <div class="post-body" bind:this={scrollContainer}>
-          <!-- This is where the compiled markdown content is rendered -->
-          {@html htmlContent}
+          {#if isLoading}
+            <!-- Post content skeleton -->
+            <SkeletonLoader type="content" lines={20} class="content-skeleton" />
+          {:else}
+            <!-- This is where the compiled markdown content is rendered -->
+            {@html htmlContent}
+          {/if}
         </div>
 
         <footer class="post-footer">
           <Divider />
-          <div class="post-actions">
-            <Button variant="primary" onclick={() => window.history.back()}>Back to posts</Button>
-          </div>
+          <!-- Enhanced blog post footer -->
+          <BlogPostFooter
+            title={post.meta?.title || ''}
+            slug={post.slug}
+            tags={post.meta?.tags || []}
+            url={postUrl}
+            publishDate={post.meta?.created_at}
+            readTime={post.meta?.readMin}
+            nextPost={post.nextPost}
+            previousPost={post.previousPost}
+          />
         </footer>
       </article>
     </div>
@@ -249,6 +303,8 @@
     align-self: start;
     position: sticky;
     top: 100px;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
   }
 
   .toc-container {
@@ -325,6 +381,7 @@
   .post-body {
     @apply px-0.5 md:px-5 lg:px-8 py-6 sm:py-8;
     @apply font-serif;
+    min-height: 400px; /* Prevent layout shift while loading */
 
     /* Better scrolling */
     scrollbar-gutter: stable;
@@ -345,13 +402,41 @@
     @apply px-4 sm:px-6 lg:px-8 py-6 sm:py-8;
   }
 
-  .post-actions {
-    @apply flex justify-between items-center mt-4 sm:mt-6;
+  .error-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+    @apply bg-base1/30 rounded-lg max-w-md mx-auto;
+    @apply border border-base3/10 p-8;
+  }
+
+  /* Skeleton loader styles */
+  .content-skeleton {
+    @apply min-h-[400px];
+  }
+
+  .toc-skeleton {
+    @apply min-h-[200px];
+  }
+
+  /* Back to top button styles */
+  .back-to-top {
+    @apply fixed bottom-6 right-6 z-50 bg-base1/70 hover:bg-base1 text-base14 rounded-full p-3;
+    @apply shadow-md border border-base3/20 backdrop-blur-sm;
+    @apply transition-all duration-300 ease-out;
+    @apply flex items-center justify-center;
+    @apply focus:outline-none focus:ring-2 focus:ring-base14/30;
+  }
+
+  .back-to-top:hover {
+    @apply transform -translate-y-1 shadow-lg;
   }
 
   @media (max-width: 640px) {
     .post-title {
       @apply text-2xl;
+    }
+
+    .back-to-top {
+      @apply bottom-4 right-4 p-2;
     }
   }
 </style>

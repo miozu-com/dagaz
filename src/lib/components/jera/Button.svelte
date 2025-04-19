@@ -29,7 +29,7 @@
   >
     {#if icon && icon.position === 'left'}
       <span class="icon-wrapper">
-        {@render icon.icon({...icon})}
+        {@render icon?.icon({...icon})}
       </span>
     {/if}
 
@@ -39,7 +39,7 @@
 
     {#if icon && icon.position === 'right'}
       <span class="icon-wrapper">
-        {@render icon.icon({...icon})}
+        {@render icon?.icon({...icon})}
       </span>
     {/if}
   </a>
@@ -67,7 +67,7 @@
     {:else}
       {#if icon && icon.position === 'left'}
         <span class="icon-wrapper">
-          {@render icon.icon({...icon})}
+          {@render icon?.icon({...icon})}
         </span>
       {/if}
 
@@ -77,7 +77,7 @@
 
       {#if icon && icon.position === 'right'}
         <span class="icon-wrapper">
-          {@render icon.icon({...icon})}
+          {@render icon?.icon({...icon})}
         </span>
       {/if}
     {/if}

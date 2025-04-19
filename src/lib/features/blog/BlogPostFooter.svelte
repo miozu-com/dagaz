@@ -1,8 +1,18 @@
 <script>
+  import {onMount} from 'svelte';
   import {fly, fade} from 'svelte/transition';
   import {quintOut} from 'svelte/easing';
-  import {onMount} from 'svelte';
-  import {Twitter, Facebook, Linkedin, Copy, Check, Share, ArrowLeft} from 'lucide-svelte';
+  import {
+    Copy,
+    Check,
+    Share2,
+    Link,
+    ChevronRight,
+    ChevronLeft,
+    Calendar,
+    ClockFading,
+    UserRound
+  } from '$components/icons';
   import {Button} from '$components/jera';
   import {domain, author} from '$settings/global';
 
@@ -22,8 +32,9 @@
   let shareExpanded = $state(false);
 
   // Format date nicely if provided
-  const formattedDate = publishDate
-    ? new Date(publishDate.replace(/\//g, '-')).toLocaleDateString('en-US', {
+  const formattedDate =
+    publishDate ?
+      new Date(publishDate.replace(/\//g, '-')).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
@@ -32,7 +43,7 @@
 
   onMount(() => {
     // Construct the full URL for sharing
-    shareUrl = `${domain}/blog/${slug}`;
+    shareUrl = url || `${domain}/blog/${slug}`;
   });
 
   function toggleShare() {
@@ -41,7 +52,8 @@
 
   function copyToClipboard() {
     if (navigator.clipboard && shareUrl) {
-      navigator.clipboard.writeText(shareUrl)
+      navigator.clipboard
+        .writeText(shareUrl)
         .then(() => {
           copied = true;
           setTimeout(() => {
@@ -68,117 +80,126 @@
   function shareOnLinkedin() {
     const title = encodeURIComponent(title);
     const url = encodeURIComponent(shareUrl);
-    window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`, '_blank');
+    window.open(
+      `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`,
+      '_blank'
+    );
   }
 </script>
 
 <footer class="blog-post-footer">
-  <div class="footer-divider"></div>
+  <!-- Top Section - Article Metadata and Sharing -->
+  <div class="footer-top">
+    <!-- Post metadata -->
+    <div class="post-meta-card">
+      <h3 class="meta-title">Article Information</h3>
+      <div class="meta-items">
+        {#if formattedDate}
+          <div class="meta-item">
+            <div class="meta-icon">
+              <Calendar size={16} />
+            </div>
+            <span class="meta-label">Published:</span>
+            <span class="meta-value">{formattedDate}</span>
+          </div>
+        {/if}
 
-  <div class="footer-content">
-    <!-- Share section -->
-    <div class="share-section">
-      <button
-        class="share-button"
-        on:click={toggleShare}
-        aria-expanded={shareExpanded}
-        aria-label="Share this post"
-      >
-        <Share size={18} />
-        <span>Share</span>
-      </button>
+        {#if readTime}
+          <div class="meta-item">
+            <div class="meta-icon">
+              <ClockFading size={16} />
+            </div>
+            <span class="meta-label">Reading time:</span>
+            <span class="meta-value">{readTime} min{readTime !== 1 ? 's' : ''}</span>
+          </div>
+        {/if}
 
-      {#if shareExpanded}
-        <div class="share-options" in:fly={{y: 10, duration: 200, easing: quintOut}}>
-          <button
-            class="share-option twitter"
-            on:click={shareOnTwitter}
-            aria-label="Share on Twitter"
-          >
-            <Twitter size={16} />
-          </button>
-
-          <button
-            class="share-option facebook"
-            on:click={shareOnFacebook}
-            aria-label="Share on Facebook"
-          >
-            <Facebook size={16} />
-          </button>
-
-          <button
-            class="share-option linkedin"
-            on:click={shareOnLinkedin}
-            aria-label="Share on LinkedIn"
-          >
-            <Linkedin size={16} />
-          </button>
-
-          <button
-            class="share-option copy"
-            on:click={copyToClipboard}
-            aria-label="Copy link"
-          >
-            {#if copied}
-              <Check size={16} />
-            {:else}
-              <Copy size={16} />
-            {/if}
-          </button>
+        <div class="meta-item">
+          <div class="meta-icon">
+            <UserRound size={16} />
+          </div>
+          <span class="meta-label">Author:</span>
+          <span class="meta-value">{author}</span>
         </div>
-      {/if}
+      </div>
     </div>
 
-    <!-- Tags cloud (if available) -->
-    {#if tags && tags.length > 0}
+    <!-- Share section -->
+    <div class="share-card">
+      <h3 class="share-title">Share This Article</h3>
+
+      <div class="share-buttons">
+        <button
+          class="share-button twitter"
+          on:click={shareOnTwitter}
+          aria-label="Share on Twitter"
+        >
+          <span>Twitter</span>
+        </button>
+
+        <button
+          class="share-button facebook"
+          on:click={shareOnFacebook}
+          aria-label="Share on Facebook"
+        >
+          <span>Facebook</span>
+        </button>
+
+        <button
+          class="share-button linkedin"
+          on:click={shareOnLinkedin}
+          aria-label="Share on LinkedIn"
+        >
+          <span>LinkedIn</span>
+        </button>
+
+        <button class="share-button copy" on:click={copyToClipboard} aria-label="Copy article link">
+          {#if copied}
+            <Check size={16} />
+            <span>Copied!</span>
+          {:else}
+            <Link size={16} />
+            <span>Copy Link</span>
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Middle Section - Tags -->
+  {#if tags && tags.length > 0}
+    <div class="tags-section">
+      <h3 class="tags-title">Tags</h3>
       <div class="tags-cloud">
         {#each tags as tag}
           <a href="/blog?tag={tag}" class="tag">#{tag}</a>
         {/each}
       </div>
-    {/if}
-
-    <!-- Post metadata -->
-    <div class="post-meta">
-      {#if formattedDate}
-        <div class="meta-item">
-          <span class="meta-label">Published:</span>
-          <span class="meta-value">{formattedDate}</span>
-        </div>
-      {/if}
-
-      {#if readTime}
-        <div class="meta-item">
-          <span class="meta-label">Reading time:</span>
-          <span class="meta-value">{readTime} min{readTime !== 1 ? 's' : ''}</span>
-        </div>
-      {/if}
-
-      <div class="meta-item">
-        <span class="meta-label">Author:</span>
-        <span class="meta-value">{author}</span>
-      </div>
     </div>
+  {/if}
 
-    <div class="navigation-buttons">
-      <Button
-        variant="primary"
-        onclick={() => window.history.back()}
-        icon={{
-          icon: ArrowLeft,
-          position: 'left'
-        }}
-      >
-        Back to posts
-      </Button>
-    </div>
+  <!-- Bottom Section - Navigation -->
+  <div class="navigation-section">
+    <Button
+      variant="primary"
+      onclick={() => window.history.back()}
+      icon={{
+        icon: ChevronRight,
+        position: 'left'
+      }}
+    >
+      Back to posts
+    </Button>
 
     <!-- Next/Previous navigation -->
     {#if nextPost || previousPost}
       <div class="post-navigation">
         {#if previousPost}
           <a href="/blog/{previousPost.slug}" class="prev-post">
-            <span class="nav-label">← Previous</span>
+            <div class="nav-indicator">
+              <ChevronRight size={14} />
+              <span>Previous</span>
+            </div>
             <span class="nav-title">{previousPost.title}</span>
           </a>
         {:else}
@@ -187,7 +208,10 @@
 
         {#if nextPost}
           <a href="/blog/{nextPost.slug}" class="next-post">
-            <span class="nav-label">Next →</span>
+            <div class="nav-indicator">
+              <span>Next</span>
+              <ChevronLeft size={14} />
+            </div>
             <span class="nav-title">{nextPost.title}</span>
           </a>
         {/if}
@@ -200,72 +224,33 @@
   @import '../../../theme.css' theme(reference);
 
   .blog-post-footer {
-    @apply mt-16 mb-8;
+    @apply mt-8 mb-12 flex flex-col gap-8;
   }
 
-  .footer-divider {
-    @apply h-px w-full bg-base3/20 mb-8;
+  /* Footer top section - flex layout for metadata and sharing */
+  .footer-top {
+    @apply flex flex-col md:flex-row gap-6 md:gap-8;
   }
 
-  .footer-content {
-    @apply flex flex-col gap-6;
+  /* Metadata Card */
+  .post-meta-card {
+    @apply flex-1 bg-base1/40 rounded-lg p-5 border border-base3/10;
   }
 
-  /* Share section */
-  .share-section {
-    @apply flex items-center gap-4 relative;
+  .meta-title {
+    @apply text-base14 text-lg font-medium mb-3 pb-2 border-b border-base3/20;
   }
 
-  .share-button {
-    @apply flex items-center gap-2 py-2 px-3;
-    @apply bg-base1/50 hover:bg-base1 text-base6 rounded-md;
-    @apply transition-colors border border-base3/20;
-  }
-
-  .share-options {
-    @apply flex gap-2 items-center;
-  }
-
-  .share-option {
-    @apply h-8 w-8 rounded-full flex items-center justify-center;
-    @apply transition-colors;
-  }
-
-  .twitter {
-    @apply bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2]/20;
-  }
-
-  .facebook {
-    @apply bg-[#4267B2]/10 text-[#4267B2] hover:bg-[#4267B2]/20;
-  }
-
-  .linkedin {
-    @apply bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2]/20;
-  }
-
-  .copy {
-    @apply bg-base14/10 text-base14 hover:bg-base14/20;
-  }
-
-  /* Tags cloud */
-  .tags-cloud {
-    @apply flex flex-wrap gap-2 mt-2;
-  }
-
-  .tag {
-    @apply py-1 px-3 rounded-md bg-base1 text-base5 text-sm;
-    @apply hover:bg-base2 transition-colors no-underline;
-    @apply border border-base3/20;
-  }
-
-  /* Post metadata */
-  .post-meta {
-    @apply flex flex-wrap gap-x-6 gap-y-2 text-sm text-base4;
-    @apply py-3 px-4 rounded-md bg-base1/30 border border-base3/10;
+  .meta-items {
+    @apply flex flex-col gap-2;
   }
 
   .meta-item {
-    @apply flex items-center gap-1.5;
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .meta-icon {
+    @apply text-base4;
   }
 
   .meta-label {
@@ -273,38 +258,117 @@
   }
 
   .meta-value {
-    @apply text-base6;
+    @apply text-base6 ml-1;
   }
 
-  /* Navigation buttons */
-  .navigation-buttons {
-    @apply flex justify-between mt-4;
+  /* Share Card */
+  .share-card {
+    @apply flex-1 bg-base1/40 rounded-lg p-5 border border-base3/10;
   }
 
-  /* Next/Previous post navigation */
+  .share-title {
+    @apply text-base14 text-lg font-medium mb-3 pb-2 border-b border-base3/20;
+  }
+
+  .share-buttons {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .share-button {
+    @apply flex items-center gap-1.5 px-3 py-2 rounded-md;
+    @apply text-sm transition-colors duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-1;
+    @apply bg-base2/50 hover:bg-base2/80 text-base6;
+  }
+
+  .twitter {
+    @apply bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2]/20 focus:ring-[#1DA1F2]/30;
+  }
+
+  .facebook {
+    @apply bg-[#4267B2]/10 text-[#4267B2] hover:bg-[#4267B2]/20 focus:ring-[#4267B2]/30;
+  }
+
+  .linkedin {
+    @apply bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2]/20 focus:ring-[#0A66C2]/30;
+  }
+
+  .copy {
+    @apply bg-base14/10 text-base14 hover:bg-base14/20 focus:ring-base14/30;
+  }
+
+  /* Tags Section */
+  .tags-section {
+    @apply bg-base1/40 rounded-lg p-5 border border-base3/10;
+  }
+
+  .tags-title {
+    @apply text-base14 text-lg font-medium mb-3 pb-2 border-b border-base3/20;
+  }
+
+  .tags-cloud {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .tag {
+    @apply py-1.5 px-3 rounded-md bg-base2/70 text-base5 text-sm;
+    @apply hover:bg-base2 transition-colors no-underline;
+    @apply border border-base3/20;
+  }
+
+  /* Navigation Section */
+  .navigation-section {
+    @apply flex flex-col gap-6;
+  }
+
   .post-navigation {
-    @apply flex justify-between mt-6 gap-4;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
   }
 
   .prev-post,
   .next-post {
     @apply flex flex-col p-4 rounded-md bg-base1/50 border border-base3/20;
-    @apply flex-1 max-w-xs transition-colors no-underline;
-    @apply hover:bg-base1;
+    @apply transition-colors no-underline hover:bg-base1;
+  }
+
+  .prev-post {
+    @apply md:col-start-1;
   }
 
   .next-post {
-    @apply text-right items-end;
+    @apply md:col-start-2 text-right;
   }
 
-  .empty {
-    @apply invisible;
+  .nav-indicator {
+    @apply flex items-center gap-1 text-sm text-base4 mb-2;
   }
 
-  .nav-label {
-    @apply text-sm text-base4 mb-1;
+  .next-post .nav-indicator {
+    @apply justify-end;
   }
 
   .nav-title {
     @apply text-base14 font-medium line-clamp-2;
+    @apply transition-colors;
   }
+
+  .empty {
+    @apply hidden md:block;
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .footer-top {
+      @apply flex-col;
+    }
+
+    .post-navigation {
+      @apply grid-cols-1 gap-4;
+    }
+
+    .prev-post,
+    .next-post {
+      @apply col-span-1;
+    }
+  }
+</style>
