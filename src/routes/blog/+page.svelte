@@ -12,14 +12,13 @@
   // State for active tab and filtered posts
   let activeTab = $state(null);
   let posts = $state(data.posts);
-  let filteredPosts = $derived(posts);
+  let filteredPosts = $state(data.posts);
+  console.log('data', posts);
 
   // Debug information
-  let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
-  let hasTags = $derived(posts.some(post => post.meta?.tags?.length > 0));
-  let samplePostData = $derived(
-    posts.length > 0 ? JSON.stringify(posts[0].meta, null, 2) : 'No posts'
-  );
+  let hasTabs = $derived(posts.some(post => post.tabs?.length > 0));
+  let hasTags = $derived(posts.some(post => post.tags?.length > 0));
+  let samplePostData = $derived(posts.length > 0 ? JSON.stringify(posts[0], null, 2) : 'No posts');
 
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
@@ -62,7 +61,7 @@
     <div class="filter-section">
       <h2 class="filter-title">{data.l10n.t('categories')}</h2>
       {#if hasTabs}
-        <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
+        <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['tabs']} />
       {:else}
         <p class="debug-message">
           No tabs found in blog posts. Check meta.tabs in your markdown frontmatter.
@@ -73,12 +72,7 @@
     <div class="filter-section">
       <h2 class="filter-title">{data.l10n.t('tags')}</h2>
       {#if hasTags}
-        <Tags
-          payload={posts}
-          toggleEvent={handleTagToggle}
-          propPath={['meta', 'tags']}
-          isTagCount={true}
-        />
+        <Tags payload={posts} toggleEvent={handleTagToggle} propPath={['tags']} isTagCount={true} />
       {:else}
         <p class="debug-message">
           No tags found in blog posts. Check meta.tags in your markdown frontmatter.

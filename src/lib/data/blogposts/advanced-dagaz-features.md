@@ -23,7 +23,7 @@ keywords:
   - sveltekit landing page
 ---
 
-# Practical Advanced Features in Dagaz
+# Overview
 
 Dagaz provides several advanced features that help you build better landing pages and content sites. In this article, we'll explore some of these features and how to implement them in your projects.
 
