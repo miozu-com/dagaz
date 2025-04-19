@@ -14,19 +14,20 @@
 
 ## About
 
-Dagaz is a minimal SvelteKit starter for business landing pages and content-focused sites. Built with just 2 runtime dependencies, it provides a solid foundation for developing fast, maintainable web projects without the bloat.
+Dagaz is a streamlined SvelteKit starter for business landing pages and content-focused sites. It combines modern architecture with performance optimization to create a solid foundation for developing fast, maintainable web projects.
 
 ## Key Features
 
-- **Minimal Dependencies**: Only 2 runtime dependencies ([ramda](https://github.com/ramda/ramda) and [@miozu/js-theme](https://github.com/miozu-com/js-theme))
-- **SvelteKit 2 & Svelte 5**: Modern, efficient framework with runes for state management
-- **Fast Load Times**: No dependency overhead means quicker page loads
-- **Cloudflare Pages Ready**: Deploy globally with minimal configuration
-- **Functional Approach**: Clean, testable patterns for business logic
-- **Modular Architecture**: Organized for maintainability and extensibility
-- **Canvas API Support**: Native visualizations without external libraries
-- **Dark/Light Theme**: Built-in theme system with persistence
-- **Multi-language**: Support for multiple languages out of the box
+- **Svelte 5 Runes Architecture** - Modern, efficient state management built-in
+- **Fast Load Times** - Optimized for performance with smart asset loading
+- **Cloudflare Pages Ready** - Deploy globally with minimal configuration
+- **Functional Programming Patterns** - Clean, testable code structure
+- **Modular Architecture** - Organized for maintainability and extensibility
+- **Canvas API Support** - Native visualizations without external libraries
+- **Dark/Light Theme** - Built-in theme system with persistence
+- **Multi-language** - Support for multiple languages with easy configuration
+- **SEO Optimized** - Built-in metadata management and best practices
+- **PWA Support** - Service worker and offline functionality included
 
 ## Getting Started
 
@@ -134,6 +135,14 @@ Deploy to Cloudflare Pages:
 3. Configure build settings:
    - **Build command**: `pnpm build`
    - **Output directory**: `.svelte-kit/cloudflare`
+
+## Why Choose Dagaz?
+
+- **Architecture-First Approach** - Organized for maintainability from day one
+- **Performance-Optimized** - Consistently scores 98+ on Lighthouse
+- **Developer Experience** - Fast HMR with Vite for quick iteration
+- **SEO Ready** - Built-in metadata management, sitemaps, and best practices
+- **Functional Patterns** - Predictable, testable approach for complex applications
 
 ## Available Services
 
