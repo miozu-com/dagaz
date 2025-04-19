@@ -6,149 +6,173 @@
     disabled = false,
     icon = null, // {icon: Component, position: 'left' | 'right'}
     loader = null, // {icon: Component, text: '', style: '', position: 'left' | 'right'}
-    variant = '', // primary, secondary, danger
+    variant = 'primary', // primary, secondary, minimal, accent
+    size = 'md', // sm, md, lg
     fullWidth = false,
     onclick = () => {},
+    href = '',
     ...rest
   } = $props();
+
+  // If href is provided, render as <a> tag instead of button
+  const isLink = $derived(href && href.length > 0);
+
+  // Determine if button has an icon only (no text content)
+  const isIconOnly = $derived(icon && !children);
 </script>
 
-<button
-  {buttonType}
-  type={buttonType}
-  {onclick}
-  {disabled}
-  class={`${className} ${variant} ${fullWidth ? 'full-width' : ''} base-button`}
-  {...rest}
->
-  {#if disabled && loader}
-    {#if loader.position === 'left'}
-      <span class="icon-wrapper {loader?.style} icon-left">
-        {@render loader.icon({...loader.icon})}
-      </span>
-    {/if}
-    <span class="button-text">{loader?.text}</span>
-    {#if loader.position === 'right'}
-      <span class="icon-wrapper {loader?.style} icon-right">
-        {@render loader.icon({...loader.icon})}
-      </span>
-    {/if}
-  {:else}
+{#if isLink}
+  <a
+    {href}
+    class={`btn ${variant} ${size} ${fullWidth ? 'full-width' : ''} ${isIconOnly ? 'icon-only' : ''} ${className}`}
+    {...rest}
+  >
     {#if icon && icon.position === 'left'}
-      <span class="icon-wrapper icon-left">
+      <span class="icon-wrapper">
         {@render icon.icon({...icon})}
       </span>
     {/if}
+
     {#if children !== undefined}
       <span class="button-text">{@render children()}</span>
     {/if}
+
     {#if icon && icon.position === 'right'}
-      <span class="icon-wrapper icon-right">
+      <span class="icon-wrapper">
         {@render icon.icon({...icon})}
       </span>
     {/if}
-  {/if}
-</button>
+  </a>
+{:else}
+  <button
+    {buttonType}
+    type={buttonType}
+    {onclick}
+    {disabled}
+    class={`btn ${variant} ${size} ${fullWidth ? 'full-width' : ''} ${isIconOnly ? 'icon-only' : ''} ${className}`}
+    {...rest}
+  >
+    {#if disabled && loader}
+      {#if loader.position === 'left'}
+        <span class="icon-wrapper {loader?.style}">
+          {@render loader.icon({...loader.icon})}
+        </span>
+      {/if}
+      <span class="button-text">{loader?.text}</span>
+      {#if loader.position === 'right'}
+        <span class="icon-wrapper {loader?.style}">
+          {@render loader.icon({...loader.icon})}
+        </span>
+      {/if}
+    {:else}
+      {#if icon && icon.position === 'left'}
+        <span class="icon-wrapper">
+          {@render icon.icon({...icon})}
+        </span>
+      {/if}
+
+      {#if children !== undefined}
+        <span class="button-text">{@render children()}</span>
+      {/if}
+
+      {#if icon && icon.position === 'right'}
+        <span class="icon-wrapper">
+          {@render icon.icon({...icon})}
+        </span>
+      {/if}
+    {/if}
+  </button>
+{/if}
 
 <style lang="postcss">
   @import '../../../theme.css' theme(reference);
 
-  .base-button {
+  .btn {
     @apply inline-flex items-center justify-center;
-    @apply transition-all duration-200 bg-transparent cursor-pointer
-      disabled:opacity-50 disabled:cursor-not-allowed
-      select-none font-medium;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer select-none;
+    @apply font-medium whitespace-nowrap;
+    @apply focus:outline-none;
+    @apply no-underline; /* For link buttons */
+    background: transparent;
+    border: 1px solid transparent;
+    text-decoration: none;
   }
 
   .button-text {
-    @apply inline-block px-1 whitespace-nowrap; /* Added whitespace-nowrap */
+    @apply inline-flex items-center whitespace-nowrap;
   }
 
   .icon-wrapper {
-    @apply inline-flex items-center justify-center;
+    @apply flex items-center justify-center;
   }
 
-  /* Variants */
+  .icon-wrapper + .button-text {
+    @apply ml-2;
+  }
+
+  .button-text + .icon-wrapper {
+    @apply ml-2;
+  }
+
+  /* Icon-only buttons */
+  .icon-only {
+    @apply p-1;
+    aspect-ratio: 1;
+  }
+
+  /* Size variants */
+  .btn.sm {
+    @apply py-1 px-3 text-xs;
+    height: 28px;
+  }
+
+  .btn.md {
+    @apply py-1.5 px-4 text-sm;
+    height: 32px;
+  }
+
+  .btn.lg {
+    @apply py-2 px-5 text-base;
+    height: 40px;
+  }
+
+  /* Button Variants */
+
+  /* Primary Button - Dark background with light text */
   .primary {
-    @apply hover:bg-base14/20 hover:text-base1
-    py-2 px-4 text-base3;
-    @apply outline outline-1 outline-base4/35 hover:ring-2 hover:ring-base4/35
-    rounded-xs;
+    @apply bg-base1 text-base6;
+    @apply border border-base3/30;
+    @apply hover:bg-base2 hover:border-base3/50 hover:text-base7;
   }
 
+  /* Secondary Button - Transparent with subtle border */
   .secondary {
-    @apply hover:bg-base13/20 hover:text-base1
-     text-base3;
-  }
-  .success {
-    @apply hover:bg-base10/70 hover:text-base7 focus:bg-base10/50 focus:text-base6/80;
-  }
-  .danger {
-    @apply hover:bg-base9/20 hover:text-base1 text-base9;
-  }
-  .simple {
-    @apply h-full;
-    @apply p-3.5;
-  }
-  .simple .icon-left {
-    margin-right: 0 !important;
+    @apply bg-transparent text-base5;
+    @apply border border-base3/20;
+    @apply hover:bg-base1/50 hover:border-base3/30 hover:text-base6;
   }
 
-  .simple .icon-right {
-    margin-left: 0 !important;
+  /* Minimal Button - Like secondary but without borders */
+  .minimal {
+    @apply bg-transparent text-base5 border-none;
+    @apply hover:bg-base1/30 hover:text-base6;
   }
 
-  .icon-left {
-    &:not(.simple) {
-      @apply mr-auto;
-    }
+  /* Accent Button - Uses the brand accent color */
+  .accent {
+    @apply bg-transparent text-base14;
+    @apply border border-base14/30;
+    @apply hover:bg-base14/10 hover:border-base14/50;
   }
 
-  .icon-right {
-    &:not(.simple) {
-      @apply ml-auto;
-    }
+  /* Disabled state */
+  .btn:disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
   }
 
-  /* Sizes */
-  .xs {
-    @apply py-0.5 px-2 text-sm;
-  }
-  .sm {
-    @apply py-1 px-2.5 text-sm;
-  }
-  .md {
-    @apply py-1 px-3.5 text-base;
-  }
-  .lg {
-    @apply py-3 px-5 text-lg;
-  }
-
-  /* Dark mode */
-  :global(.dark) .base-button {
-    &.primary {
-      @apply hover:bg-base0 focus:bg-base1/30 active:bg-base1 hover:text-base7
-         text-base5/90;
-      @apply outline-base3/40;
-    }
-    &.secondary {
-      @apply hover:bg-base3/30 focus:bg-base3 active:bg-base2 hover:text-base7 text-base5/90;
-      @apply outline-base3/40;
-    }
-    &.danger {
-      @apply hover:text-base9 hover:outline-base9/50;
-    }
-    &.success {
-      @apply hover:text-base10 hover:outline-base10/50;
-    }
-    &.simple {
-      @apply border-base4;
-      &:not(.success) {
-        @apply hover:bg-base14 hover:text-base1;
-      }
-      &.success {
-        @apply hover:bg-base10 hover:text-base0;
-      }
-    }
+  /* Full width */
+  .full-width {
+    @apply w-full;
   }
 </style>
