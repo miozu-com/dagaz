@@ -7,6 +7,7 @@
   import Post from '$features/blog/Post.svelte';
   import NoPosts from '$features/blog/NoPosts.svelte';
   import Divider from '$components/Divider.svelte';
+  import {RotateCcw} from '$components/icons';
   import {Button} from '$components/jera';
 
   // Get data from +page.js
@@ -93,7 +94,7 @@
 
           {#if activeTab || filteredPosts.length !== posts.length}
             <Button variant="secondary sm" onclick={resetFilters} class="reset-button">
-              <span class="reset-icon">↺</span>
+              <span class="reset-icon"><RotateCcw size={12} /></span>
               {data.l10n.t('resetFilters')}
             </Button>
           {/if}

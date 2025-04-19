@@ -7,5 +7,7 @@ export {default as Languages} from './Languages.svelte';
 export {default as Moon} from './Moon.svelte';
 export {default as Sun} from './Sun.svelte';
 export {default as ServerOff} from './ServerOff.svelte';
+export {default as RotateCcw} from './RotateCcw.svelte';
+
 export {default as Svelte} from './Svelte.svelte';
 export {default as Tailwind} from './Tailwind.svelte';
