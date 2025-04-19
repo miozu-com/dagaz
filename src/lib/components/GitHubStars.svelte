@@ -13,7 +13,7 @@
     buttonText = 'GitHub'
   } = $props();
 
-  let stars = $state(null);
+  let stars = $state(0);
   let isLoading = $state(true);
   let error = $state(null);
 
