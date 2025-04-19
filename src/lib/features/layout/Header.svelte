@@ -16,8 +16,9 @@
     </div>
 
     <nav class="main-nav">
+      <a href="/manifesto" class="nav-link">Manifesto</a>
       <a href="/blog" class="nav-link">{l10n.t('blog')}</a>
-      <!-- Add more navigation links here if needed -->
+      <a href="/contact" class="nav-link">Contact</a>
     </nav>
 
     <div class="header-right">
@@ -40,11 +41,11 @@
   }
 
   .header-right {
-    @apply w-16 sm:w-24; /* Fixed width to balance logo on left */
+    @apply w-16 sm:w-24;
   }
 
   .header-left {
-    @apply w-16 sm:w-24 flex items-center; /* Fixed width to balance empty space on right */
+    @apply w-16 sm:w-24 flex items-center;
   }
 
   .logo-link {
@@ -55,7 +56,6 @@
     }
   }
 
-  /* Center align logo and text vertically */
   .logo-link {
     @apply flex items-center justify-center;
   }

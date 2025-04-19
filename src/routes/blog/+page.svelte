@@ -1,12 +1,13 @@
 <script>
   import {fade} from 'svelte/transition';
+  import {appName, domain} from '$settings/global';
+  import Metadata from '$features/seo/Metadata.svelte';
   import Tags from '$features/blog/tags/Tags.svelte';
   import Tabs from '$features/blog/tabs/Tabs.svelte';
   import Post from '$features/blog/Post.svelte';
   import NoPosts from '$features/blog/NoPosts.svelte';
+  import Divider from '$components/Divider.svelte';
   import {Button} from '$components/jera';
-  import Metadata from '$features/seo/Metadata.svelte';
-  import {appName, domain} from '$settings/global';
 
   // Get data from +page.js
   let {data} = $props();
@@ -62,27 +63,26 @@
     <div class="header-content">
       <div class="title-and-tabs">
         <h1 class="main-title">{data.l10n.t('articles')}</h1>
-
-        {#if hasTabs}
-          <div class="category-tabs">
-            <Tabs
-              payload={posts}
-              triggerEvent={handleTabClick}
-              propPath={['meta', 'tabs']}
-              customTabs={getAllTabs(posts)}
-            />
-          </div>
-        {/if}
       </div>
       <p class="subtitle">{data.l10n.t('blogDescription')}</p>
       <div class="header-accent"></div>
     </div>
+    {#if hasTabs}
+      <div class="category-tabs">
+        <Tabs
+          payload={posts}
+          triggerEvent={handleTabClick}
+          propPath={['meta', 'tabs']}
+          customTabs={getAllTabs(posts)}
+        />
+      </div>
+    {/if}
   </header>
 
   {#if hasTags}
     <div class="tags-container">
       <div class="filter-section">
-        <h3 class="tags-title">{data.l10n.t('tags')}</h3>
+        <Divider />
         <div class="tags-wrapper">
           <Tags
             payload={posts}
@@ -141,12 +141,12 @@
   }
 
   .blog-header {
-    @apply py-10 mb-6 relative;
+    @apply relative;
     background: linear-gradient(to right, rgba(255, 153, 130, 0.05), transparent);
   }
 
   .header-content {
-    @apply max-w-4xl mx-auto px-4;
+    @apply py-10 max-w-4xl mx-auto px-4;
   }
 
   .title-and-tabs {
@@ -159,7 +159,7 @@
   }
 
   .category-tabs {
-    @apply mt-2 sm:mt-0 overflow-x-auto pb-2;
+    @apply mt-2 sm:mt-0 overflow-x-auto max-w-4xl mx-auto;
   }
 
   .subtitle {
@@ -180,7 +180,7 @@
   }
 
   .tags-wrapper {
-    @apply flex flex-wrap items-center gap-4;
+    @apply flex flex-wrap items-center gap-4 mt-5;
   }
 
   .results-header {
