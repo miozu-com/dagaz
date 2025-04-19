@@ -1,6 +1,6 @@
 export async function load({fetch}) {
   try {
-    const response = await fetch('/api/blog.json');
+    const response = await fetch('/blog/api/posts.json');
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);

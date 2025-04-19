@@ -3,20 +3,14 @@ import {error} from '@sveltejs/kit';
 export async function load({params, fetch}) {
   try {
     const slug = params.slug;
-    const response = await fetch('/api/blog.json');
+    // Updated API path to use the blog-local API endpoint
+    const response = await fetch(`/blog/api/${slug}.json`);
 
     if (!response.ok) {
-      throw error(response.status, 'Failed to load blog data');
+      throw error(response.status, `Failed to load blog post: ${slug}`);
     }
 
-    const posts = await response.json();
-
-    // Find the post with the matching slug
-    const post = posts.find(p => p.slug === slug);
-
-    if (!post) {
-      throw error(404, `Post "${slug}" not found`);
-    }
+    const post = await response.json();
 
     return {
       post
