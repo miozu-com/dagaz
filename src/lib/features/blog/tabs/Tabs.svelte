@@ -1,56 +1,52 @@
 <script>
-  import {any, includes, filter, path, prop, pipe, curry} from 'ramda';
-  import {assoc, keys, reduce, map, fromPairs} from 'ramda';
-  import {toUniqArr} from '$utils';
-
+  import {
+    pipe,
+    defaultTo,
+    keys,
+    forEach,
+    filter,
+    reduce,
+    inc,
+    path,
+    is,
+    complement,
+    both
+  } from 'ramda';
   import Tab from './Tab.svelte';
+  import {toUniqArr, filterArrByString} from '$utils';
 
-  let {payload, children, propPath = [], triggerEvent = () => {}} = $props();
-  let tabsContainer, indicator;
+  let {
+    payload = [],
+    children,
+    propPath = [],
+    triggerEvent = () => {},
+    customTabs = null
+  } = $props();
 
-  // Initialize tabs with all values set to false
+  // Helper function to check if a value is an array and not null/undefined
+  const isValidArray = both(
+    complement(val => val === null || val === undefined),
+    is(Array)
+  );
+
+  // Use either custom tabs or extract tabs from payload
+  const allTabs = customTabs || toUniqArr(propPath, payload);
+
+  // Initialize tabs with all values set to false (except 'All' if present)
   let tabs = $state(
-    pipe(
-      toUniqArr,
-      reduce((acc, tab) => assoc(tab, false, acc), {})
-    )(propPath, payload)
+    reduce(
+      (acc, tab) => ({
+        ...acc,
+        [tab]: tab === 'All' // If 'All' exists, it starts as selected
+      }),
+      {},
+      allTabs
+    )
   );
-
-  // Create new tabs state with selected tab active
-  const createTabsState = curry((selectedTab, currentTabs) =>
-    pipe(
-      keys,
-      map(key => [key, key === selectedTab]),
-      fromPairs
-    )(currentTabs)
-  );
-
-  // Update tabs state and trigger reactivity
-  const updateTabs = selectedTab => {
-    const newState = createTabsState(selectedTab)(tabs);
-    Object.assign(tabs, newState);
-  };
-
-  // Filter payload based on active tab
-  const filterPayload = curry((paths, selectedTab, data) => {
-    // Get the active tab value from tabs state
-    const isTabActive = prop(selectedTab, tabs);
-
-    if (!isTabActive) return data;
-
-    return pipe(
-      // Filter items where propPath (e.g., meta.tabs) includes the selected tab
-      filter(item =>
-        pipe(
-          path(paths),
-          Array.isArray,
-          isArray => isArray && includes(selectedTab, path(paths, item))
-        )(item)
-      )
-    )(data);
-  });
 
   // Update visual indicator position
+  let tabsContainer, indicator;
+
   const updateIndicator = activeTab => {
     if (!indicator || !tabsContainer) return;
     const activeElement = tabsContainer.querySelector(`[data-tab-id="${activeTab}"]`);
@@ -60,12 +56,43 @@
     indicator.style.width = `${offsetWidth}px`;
   };
 
+  // Create new tabs state with selected tab active
+  const updateTabs = selectedTab => {
+    const newState = {};
+    keys(tabs).forEach(key => {
+      newState[key] = key === selectedTab;
+    });
+    Object.assign(tabs, newState);
+  };
+
+  // Filter payload based on active tab
+  const filterPayload = selectedTab => {
+    // Get the active tab value from tabs state
+    const isTabActive = tabs[selectedTab];
+
+    if (!isTabActive || selectedTab === 'All') return payload;
+
+    return filter(item => {
+      const itemTags = path(propPath, item);
+      return isValidArray(itemTags) && itemTags.includes(selectedTab);
+    }, payload);
+  };
+
   const selectTab = tab => {
     updateTabs(tab);
     updateIndicator(tab);
     // Handle tab selection with filtering
-    triggerEvent(filterPayload(propPath, tab)(payload), tab);
+    triggerEvent(filterPayload(tab), tab);
   };
+
+  // Initialize the active tab on mount
+  $effect(() => {
+    // Find the initially selected tab (or the first one)
+    const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
+    if (activeTab) {
+      updateIndicator(activeTab);
+    }
+  });
 </script>
 
 <div class="tabs-w">
@@ -96,9 +123,5 @@
   /* Show indicator when there's an active tab */
   :global(.tab.selected) ~ .sliding-indicator {
     @apply opacity-100;
-  }
-
-  :global(.dark) .sliding-indicator {
-    @apply bg-base14;
   }
 </style>

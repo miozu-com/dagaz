@@ -7,8 +7,6 @@
     class: className = ''
   } = $props();
 
-  // TODO add jsdoc
-  // data-tab-id is required in order for tabs to function properly
   // Handle click events, toggle selection, and call the onClick handler
   function handleClick(e) {
     onclick(e); // Notify parent about the change
@@ -16,7 +14,12 @@
   }
 </script>
 
-<button class="tab {className}" aria-pressed={selected} onclick={handleClick} data-tab-id={label}>
+<button
+  class="tab {selected ? 'selected' : ''} {className}"
+  aria-pressed={selected}
+  onclick={handleClick}
+  data-tab-id={label}
+>
   {#if children}
     {@render children()}
   {/if}
@@ -28,33 +31,18 @@
 <style lang="postcss">
   @import '../../../../theme.css' theme(reference);
 
-  :global(.dark) .tab:hover {
-    @apply bg-base1 text-base14 border-base14/30;
-  }
-  :global(.dark) .tab.selected {
-    @apply text-base14 border-base14/35;
-    &:hover {
-      @apply border-base14/55;
-    }
-  }
   .tab {
     @apply inline-flex items-center relative;
-    @apply pl-4 pr-3 py-0.5;
-    @apply rounded-[2px];
-    @apply text-sm whitespace-nowrap cursor-pointer;
+    @apply px-4 py-2;
+    @apply rounded-md;
+    @apply text-sm font-medium whitespace-nowrap cursor-pointer;
+    @apply text-base4 hover:text-base6;
     @apply transition-colors duration-200 ease-in-out;
     @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
   }
-  .tab:hover {
-    @apply bg-base1 text-base6;
-  }
+
   .tab.selected {
-    @apply border-base5 border-b bg-base1 text-base7;
-  }
-  .tab-count {
-    @apply ml-2 text-xs text-base4 font-semibold;
-  }
-  .tab.selected .count {
-    @apply text-base7 font-bold;
+    @apply text-base14 bg-base1/60;
+    @apply border-b-2 border-base14;
   }
 </style>

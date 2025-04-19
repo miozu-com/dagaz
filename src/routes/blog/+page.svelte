@@ -20,9 +20,21 @@
   let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
   let hasTags = $derived(posts.some(post => post.meta?.tags?.length > 0));
 
+  // Add 'All' option to tabs when rendering
+  function getAllTabs(posts) {
+    if (!posts.length) return [];
+
+    const uniqueTabs = [...new Set(posts.flatMap(post => post.meta?.tabs || []))];
+    return ['All', ...uniqueTabs];
+  }
+
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
-    filteredPosts = filtered;
+    if (tab === 'All') {
+      filteredPosts = [...posts];
+    } else {
+      filteredPosts = filtered;
+    }
     activeTab = tab;
   }
 
@@ -34,7 +46,7 @@
   // Reset all filters
   function resetFilters() {
     filteredPosts = [...posts];
-    activeTab = null;
+    activeTab = 'All';
   }
 </script>
 
@@ -48,43 +60,44 @@
 <div class="blog-container" in:fade={{duration: 300}}>
   <header class="blog-header">
     <div class="header-content">
-      <h1 class="main-title">{data.l10n.t('articles')}</h1>
+      <div class="title-and-tabs">
+        <h1 class="main-title">{data.l10n.t('articles')}</h1>
+
+        {#if hasTabs}
+          <div class="category-tabs">
+            <Tabs
+              payload={posts}
+              triggerEvent={handleTabClick}
+              propPath={['meta', 'tabs']}
+              customTabs={getAllTabs(posts)}
+            />
+          </div>
+        {/if}
+      </div>
       <p class="subtitle">{data.l10n.t('blogDescription')}</p>
       <div class="header-accent"></div>
     </div>
   </header>
 
-  {#if hasTabs || hasTags}
-    <div class="filters-container">
-      <div class="filters-header">
-        <h2 class="filters-title">Browse by</h2>
-        {#if activeTab || filteredPosts.length !== posts.length}
-          <Button variant="secondary sm" onclick={resetFilters} class="reset-button">
-            <span class="reset-icon">↺</span>
-            {data.l10n.t('resetFilters')}
-          </Button>
-        {/if}
-      </div>
+  {#if hasTags}
+    <div class="tags-container">
+      <div class="filter-section">
+        <h3 class="tags-title">{data.l10n.t('tags')}</h3>
+        <div class="tags-wrapper">
+          <Tags
+            payload={posts}
+            toggleEvent={handleTagToggle}
+            propPath={['meta', 'tags']}
+            isTagCount={true}
+          />
 
-      <div class="filters-content">
-        {#if hasTabs}
-          <div class="filter-section">
-            <h3 class="section-title">{data.l10n.t('categories')}</h3>
-            <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
-          </div>
-        {/if}
-
-        {#if hasTags}
-          <div class="filter-section">
-            <h3 class="section-title">{data.l10n.t('tags')}</h3>
-            <Tags
-              payload={posts}
-              toggleEvent={handleTagToggle}
-              propPath={['meta', 'tags']}
-              isTagCount={true}
-            />
-          </div>
-        {/if}
+          {#if activeTab || filteredPosts.length !== posts.length}
+            <Button variant="secondary sm" onclick={resetFilters} class="reset-button">
+              <span class="reset-icon">↺</span>
+              {data.l10n.t('resetFilters')}
+            </Button>
+          {/if}
+        </div>
       </div>
     </div>
   {/if}
@@ -94,7 +107,7 @@
       <p class="results-count">
         {filteredPosts.length}
         {filteredPosts.length === 1 ? 'article' : 'articles'}
-        {activeTab ? `in "${activeTab}"` : ''}
+        {activeTab && activeTab !== 'All' ? `in "${activeTab}"` : ''}
       </p>
     </div>
 
@@ -128,7 +141,7 @@
   }
 
   .blog-header {
-    @apply py-10 mb-10 relative text-center;
+    @apply py-10 mb-6 relative;
     background: linear-gradient(to right, rgba(255, 153, 130, 0.05), transparent);
   }
 
@@ -136,34 +149,46 @@
     @apply max-w-4xl mx-auto px-4;
   }
 
+  .title-and-tabs {
+    @apply flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-3;
+  }
+
   .main-title {
-    @apply text-3xl sm:text-4xl font-bold mb-3 text-base14;
+    @apply text-3xl sm:text-4xl font-bold text-base14 whitespace-nowrap;
     letter-spacing: -0.02em;
   }
 
+  .category-tabs {
+    @apply mt-2 sm:mt-0 overflow-x-auto pb-2;
+  }
+
   .subtitle {
-    @apply text-base5 text-lg max-w-2xl mx-auto;
+    @apply text-base5 text-lg max-w-2xl;
   }
 
   .header-accent {
-    @apply h-1 w-16 bg-base14/50 mx-auto mt-6 rounded-full;
+    @apply h-1 w-16 bg-base14/50 mt-6 rounded-full;
   }
 
-  .filters-container {
-    @apply mb-8 sm:mb-10 rounded-lg;
-    @apply border border-base3/10;
-    @apply bg-gradient-to-r from-base1/50 to-base1/20;
-    @apply overflow-hidden;
+  .tags-container {
+    @apply mb-8 sm:mb-10;
   }
 
-  .filters-header {
-    @apply flex justify-between items-center p-5 border-b border-base3/10;
-    @apply bg-base1/40;
+  .tags-title {
+    @apply text-sm font-medium mb-3 text-base4;
+    @apply uppercase tracking-wide;
   }
 
-  .filters-title {
-    @apply text-lg font-medium text-base7;
-    letter-spacing: 0.01em;
+  .tags-wrapper {
+    @apply flex flex-wrap items-center gap-4;
+  }
+
+  .results-header {
+    @apply mb-6 pb-3 border-b border-base3/10;
+  }
+
+  .results-count {
+    @apply text-sm text-base4;
   }
 
   .reset-button {
@@ -174,31 +199,6 @@
   .reset-icon {
     @apply inline-block;
     font-size: 14px;
-  }
-
-  .filters-content {
-    @apply p-5;
-  }
-
-  .filter-section {
-    @apply mb-6;
-  }
-
-  .filter-section:last-of-type {
-    @apply mb-0;
-  }
-
-  .section-title {
-    @apply text-sm font-medium mb-3 text-base4;
-    @apply uppercase tracking-wide;
-  }
-
-  .results-header {
-    @apply mb-6 pb-3 border-b border-base3/10;
-  }
-
-  .results-count {
-    @apply text-sm text-base4;
   }
 
   .posts-grid {

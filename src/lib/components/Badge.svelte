@@ -33,31 +33,31 @@
 
   .badge {
     @apply inline-flex items-center;
-    @apply pl-4 pr-3 py-0.5;
-    @apply border rounded-[2px];
-    @apply border-base3 text-base4;
-    @apply bg-base1/40;
+    @apply pl-3 pr-2 py-1;
+    @apply rounded-full;
+    @apply border border-base3/20;
+    @apply text-base4 bg-transparent;
     @apply text-sm whitespace-nowrap cursor-pointer;
     @apply transition-colors duration-200 ease-in-out;
     @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
   }
 
   .badge:hover {
-    @apply bg-base1 text-base6;
-    @apply border-base4;
+    @apply bg-base1/60 text-base6;
+    @apply border-base4/30;
   }
 
   .badge.selected {
-    @apply bg-base2 text-base7;
+    @apply bg-base1/70 text-base7;
     @apply border-base14/40;
   }
 
   .badge-count {
-    @apply ml-2 text-xs font-semibold;
+    @apply ml-2 text-xs rounded-full bg-base1/80 px-1.5 py-0.5;
     @apply text-base4;
   }
 
   .badge.selected .badge-count {
-    @apply text-base7 font-bold;
+    @apply text-base14 font-semibold bg-base2/70;
   }
 </style>

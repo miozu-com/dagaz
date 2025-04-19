@@ -103,7 +103,7 @@
   }
 
   .post-card {
-    @apply flex flex-col h-full w-full rounded-lg overflow-hidden;
+    @apply flex flex-col h-full w-full rounded-xs overflow-hidden;
     @apply bg-base1/40 hover:bg-base1/70 transition-all duration-300;
     @apply shadow-sm hover:shadow-md;
     @apply border border-base3/10 hover:border-base3/20;
