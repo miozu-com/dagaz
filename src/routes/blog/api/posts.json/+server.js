@@ -9,7 +9,8 @@ async function getBlogPosts() {
   return pipe(
     toPairs,
     filter(([path, file]) => {
-      return file.metadata.published && is(Object, file) && getSlugFromPath(path);
+      // Make sure we only process files with metadata and valid slugs
+      return file.metadata?.published && is(Object, file) && getSlugFromPath(path);
     }),
     map(([path, file]) => ({
       slug: getSlugFromPath(path),
@@ -24,7 +25,7 @@ async function getBlogPosts() {
         readMin: calculateReadTime(file.metadata.description || '')
       }
     })),
-    sort(descend(post => new Date(post.meta.created_at)))
+    sort(descend(post => new Date(post.meta.created_at || '2000-01-01')))
   )(paths);
 }
 
@@ -36,6 +37,11 @@ function calculateReadTime(content) {
 }
 
 export async function GET() {
-  const blogposts = await getBlogPosts();
-  return json(blogposts);
+  try {
+    const blogposts = await getBlogPosts();
+    return json(blogposts);
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return json([], {status: 500});
+  }
 }

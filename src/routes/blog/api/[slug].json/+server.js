@@ -1,21 +1,37 @@
 import {json} from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
+import * as mdsvexLib from 'mdsvex';
 
 /**
  * Handles GET requests for blog posts by reading and parsing Markdown files
  */
-export function GET({params}) {
+export async function GET({params}) {
   const {slug} = params;
 
   try {
     // Define path to blog posts
     const postsDirectory = path.join(process.cwd(), 'src', 'lib', 'data', 'blogposts');
-    const filePath = path.join(postsDirectory, `${slug}.md`);
+
+    // Try both .md extension and no extension (in case the slug already includes it)
+    let filePath = path.join(postsDirectory, `${slug}.md`);
+
+    // If the file doesn't exist with .md, try checking if slug already includes the extension
+    if (!fs.existsSync(filePath) && !slug.endsWith('.md')) {
+      // Maybe the slug already includes the extension?
+      const altPath = path.join(postsDirectory, slug);
+      if (fs.existsSync(altPath)) {
+        filePath = altPath;
+      }
+    }
+
+    // Log the file path we're trying to access for debugging
+    console.log(`Looking for blog post at: ${filePath}`);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
-      return new Response(JSON.stringify({error: 'Post not found'}), {
+      console.error(`File not found: ${filePath}`);
+      return new Response(JSON.stringify({error: 'Post not found', path: filePath}), {
         status: 404,
         headers: {'Content-Type': 'application/json'}
       });
@@ -23,12 +39,14 @@ export function GET({params}) {
 
     // Read file content
     const fileContent = fs.readFileSync(filePath, 'utf-8');
+    console.log(`File content length: ${fileContent.length} characters`);
 
     // Extract frontmatter and content
     const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
 
     if (!frontmatterMatch) {
-      return new Response(JSON.stringify({error: 'Invalid post format'}), {
+      console.error('No frontmatter found in file');
+      return new Response(JSON.stringify({error: 'Invalid post format - no frontmatter found'}), {
         status: 500,
         headers: {'Content-Type': 'application/json'}
       });
@@ -39,6 +57,7 @@ export function GET({params}) {
 
     // Parse frontmatter
     const meta = parseFrontmatter(frontmatterContent);
+    console.log('Parsed frontmatter:', meta);
 
     // Make sure post is published
     if (!meta.published) {
@@ -63,11 +82,15 @@ export function GET({params}) {
     // Generate table of contents
     const toc = generateTableOfContents(bodyContent);
 
+    // Instead of using mdsvex, let's use a simpler approach for now
+    // This will at least get the content displaying while we troubleshoot
+    const htmlContent = bodyContent;
+
     // Return the complete post data
     return json({
       slug,
       meta: fullMeta,
-      code: bodyContent,
+      code: htmlContent, // Just return the raw markdown for now
       toc
     });
   } catch (err) {
@@ -76,7 +99,8 @@ export function GET({params}) {
     return new Response(
       JSON.stringify({
         error: 'Failed to load blog post',
-        message: err.message
+        message: err.message,
+        stack: err.stack
       }),
       {
         status: 500,

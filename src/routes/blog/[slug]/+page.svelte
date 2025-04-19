@@ -8,7 +8,6 @@
   import {author, domain, appName} from '$lib/settings/global';
 
   let {data} = $props();
-  let isLoading = $state(true);
   let htmlContent = $state('');
   let scrollContainer = $state(null);
   let tableOfContents = $state([]);
@@ -77,8 +76,6 @@
   }
 
   onMount(() => {
-    isLoading = false;
-
     // Calculate formatted values
     formattedDate = formatDate(post.meta?.created_at);
     isoDate = formatISODate(post.meta?.created_at);
@@ -86,18 +83,9 @@
     postUrl = `${domain}/blog/${post.slug}`;
 
     if (post?.code) {
-      // Process the HTML content - properly clean the strange formatted code
-      htmlContent = post.code
-        // Remove all placeholder-related markdown
-        .replace(/<img[^>]*via\.placeholder\.com[^>]*>/g, '')
-        .replace(/!\[.*?\]\([^)]*via\.placeholder\.com[^)]*\)/g, '')
-        // Remove function-like code that might appear
-        .replace(/\$derived\s*\(\s*\(\)\s*=>\s*\{[\s\S]*?\}\s*\);?/g, '')
-        .replace(/\$effect\s*\(\s*\(\)\s*=>\s*\{[\s\S]*?\}\s*\);?/g, '')
-        .replace(/function\s+\w+\s*\([^)]*\)\s*\{[\s\S]*?\}/g, '')
-        .replace(/^\(\)\s*=>\s*\{\s*try\s*\{[\s\S]*?\}\s*\}/g, '')
-        // Remove script tags for security
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '<!-- scripts removed -->');
+      // The updated part - no processing needed for HTML content
+      console.log('post,', post);
+      htmlContent = post.code;
 
       // Extract ToC after content is loaded
       extractToc();
@@ -118,7 +106,7 @@
 </svelte:head>
 
 <!-- Add JSON-LD structured data for blog post -->
-{#if post && !isLoading}
+{#if post}
   <!-- BlogPosting schema -->
   <JsonLd
     type="BlogPosting"
@@ -164,12 +152,7 @@
 {/if}
 
 <main in:fade={{duration: 300}} class="post-container">
-  {#if isLoading}
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>Loading post...</p>
-    </div>
-  {:else if post?.code}
+  {#if post?.code}
     <div class="post-grid">
       {#if showToc}
         <aside class="post-toc">
@@ -364,16 +347,6 @@
 
   .post-actions {
     @apply flex justify-between items-center mt-4 sm:mt-6;
-  }
-
-  .loading-state,
-  .error-state {
-    @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
-  }
-
-  .loading-spinner {
-    @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
-    @apply animate-spin mb-4;
   }
 
   @media (max-width: 640px) {
