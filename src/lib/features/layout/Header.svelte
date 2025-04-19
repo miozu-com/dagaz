@@ -1,5 +1,6 @@
 <script>
   import {githubRepo, codebergRepo, appName} from '$lib/settings/global';
+  import {mainRoutes} from '$lib/settings/routes';
   import DagazLogo from '$components/DagazLogo.svelte';
   import Divider from '$components/Divider.svelte';
 
@@ -10,15 +11,17 @@
   <div class="header-content">
     <div class="header-left">
       <a href="/" class="logo-link">
-        <DagazLogo size={24} class="logo" />
+        <DagazLogo size={32} color={'var(--color-base14)'} />
         <span>{appName}</span>
       </a>
     </div>
 
     <nav class="main-nav">
-      <a href="/manifesto" class="nav-link">Manifesto</a>
-      <a href="/blog" class="nav-link">{l10n.t('blog')}</a>
-      <a href="/contact" class="nav-link">Contact</a>
+      {#each mainRoutes as route}
+        <a href={route.path} class="nav-link">
+          {route.translate ? l10n.t(route.label) : route.label}
+        </a>
+      {/each}
     </nav>
 
     <div class="header-right">
@@ -37,7 +40,9 @@
   }
 
   .header-content {
-    @apply h-12 sm:h-14 w-full px-4 flex items-center;
+    @apply max-w-7xl mx-auto px-4 py-4;
+    @apply h-14 w-full;
+    @apply flex items-center;
   }
 
   .header-right {

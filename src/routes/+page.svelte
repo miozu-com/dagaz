@@ -60,8 +60,7 @@
 
   // Add USP list - why choose Dagaz
   const benefits = [
-    'Minimalist: Only 2 runtime dependencies for fast performance',
-    "Modern: Built with Svelte 5's runes for reactive state management",
+    "Modern frontend: Built with Svelte 5's runes for reactive state management & Tailwind 4",
     'Customizable: Extend with your own components and themes',
     'Performance-focused: Optimized for Core Web Vitals metrics',
     'Developer-friendly: Clean, modular architecture for maintainability'
@@ -105,8 +104,8 @@
 <div class="home-page" in:fade={{duration: 300}}>
   <!-- Hero Section -->
   <section class="hero">
-    <div in:fly={{y: 30, duration: 800, delay: 200}} class="hero-content">
-      <DagazLogo size={70} color="#ff9982" class="hero-logo" />
+    <div in:fly={{y: 30, duration: 500, delay: 140}} class="hero-content">
+      <DagazLogo size={70} color={'var(--color-base14)'} />
 
       <h1 class="hero-title">Dagaz</h1>
 
@@ -255,42 +254,37 @@ pnpm dev</code
   /* Hero Section */
   .hero {
     @apply pt-12 pb-20 md:pt-20 md:pb-32 bg-base0 relative overflow-hidden;
-  }
+    &::before {
+      content: '';
+      @apply absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-base14/5 to-transparent opacity-70;
+    }
 
-  .hero::before {
-    content: '';
-    @apply absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-base14/5 to-transparent opacity-70;
-  }
+    &::after {
+      content: '';
+      @apply absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-base1/40 to-transparent;
+    }
 
-  .hero::after {
-    content: '';
-    @apply absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-base1/40 to-transparent;
-  }
+    .hero-content {
+      @apply flex flex-col items-center max-w-7xl text-center;
+      @apply relative z-10;
+    }
 
-  .hero-content {
-    @apply max-w-4xl mx-auto text-center relative z-10;
-  }
+    .hero-title {
+      @apply text-5xl md:text-6xl font-bold mb-4 text-base14;
+      letter-spacing: -0.02em;
+    }
 
-  .hero-logo {
-    @apply mb-6 inline-block;
-    filter: drop-shadow(0 0 12px rgb(255 153 130 / 0.2));
-  }
+    .hero-tagline {
+      @apply text-xl md:text-2xl text-base7 mb-5 font-medium;
+    }
 
-  .hero-title {
-    @apply text-5xl md:text-6xl font-bold mb-4 text-base14;
-    letter-spacing: -0.02em;
-  }
+    .hero-description {
+      @apply text-base4 mb-10 max-w-2xl mx-auto text-lg leading-relaxed;
+    }
 
-  .hero-tagline {
-    @apply text-xl md:text-2xl text-base7 mb-5 font-medium;
-  }
-
-  .hero-description {
-    @apply text-base4 mb-10 max-w-2xl mx-auto text-lg leading-relaxed;
-  }
-
-  .hero-actions {
-    @apply flex flex-wrap justify-center gap-4;
+    .hero-actions {
+      @apply flex flex-wrap justify-center gap-4;
+    }
   }
 
   .github-stars {

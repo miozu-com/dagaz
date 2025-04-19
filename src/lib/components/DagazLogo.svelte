@@ -6,7 +6,7 @@
   xmlns="http://www.w3.org/2000/svg"
   width={size}
   height={size}
-  viewBox="0 0 45 66"
+  viewBox="0 0 56 56"
   class={className}
   aria-label="Dagaz rune logo"
 >

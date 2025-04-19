@@ -6,10 +6,15 @@
   import {Select} from '$components/jera';
   import ThemeSwitcher from '$features/theme/ThemeSwitcher.svelte';
   import {author, githubRepo, codebergRepo, appName} from '$lib/settings/global';
-  import {locales} from '$lib/data/locales.js'; // Import locales for Select component
+  import {locales} from '$lib/data/locales.js';
+  import {mainRoutes, externalRoutes} from '$lib/settings/routes';
 
   let {footerEl = $bindable(), l10n, theme} = $props();
   const year = new Date().getFullYear();
+
+  // Logo styling
+  const logoSize = 28;
+  const logoColor = 'currentColor';
 
   // Status state
   let statusExpanded = $state(false);
@@ -35,6 +40,18 @@
       label: `${locale.flag} ${locale.label}`
     }))
   );
+
+  // External links handler - based on the configuration in routes.js
+  function getExternalUrl(key) {
+    switch (key) {
+      case 'github':
+        return githubRepo;
+      case 'codeberg':
+        return codebergRepo;
+      default:
+        return null;
+    }
+  }
 
   // Handle locale change
   function handleLocaleChange(option) {
@@ -158,10 +175,18 @@
     <div class="footer-content">
       <div class="footer-branding">
         <a href="/" class="footer-logo">
-          <DagazLogo size={22} />
+          <DagazLogo size={logoSize} color={logoColor} />
           <span class="footer-name">{appName}</span>
         </a>
-        <a href="/blog" class="footer-link">{l10n.t('blog')}</a>
+
+        <!-- Internal navigation links -->
+        <div class="footer-nav">
+          {#each mainRoutes as route}
+            <a href={route.path} class="footer-link">
+              {route.translate ? l10n.t(route.label) : route.label}
+            </a>
+          {/each}
+        </div>
       </div>
 
       <div class="footer-tools">
@@ -185,18 +210,16 @@
         </button>
       </div>
 
+      <!-- External links section -->
       <div class="footer-links">
-        {#if githubRepo}
-          <a href={githubRepo} class="footer-link" target="_blank" rel="noopener noreferrer">
-            {l10n.t('github')}
-          </a>
-        {/if}
-
-        {#if codebergRepo}
-          <a href={codebergRepo} class="footer-link" target="_blank" rel="noopener noreferrer">
-            {l10n.t('codeberg')}
-          </a>
-        {/if}
+        {#each externalRoutes as route}
+          {@const url = getExternalUrl(route.key)}
+          {#if url}
+            <a href={url} class="footer-link" target="_blank" rel="noopener noreferrer">
+              {route.translate ? l10n.t(route.key) : route.key}
+            </a>
+          {/if}
+        {/each}
       </div>
     </div>
 
@@ -247,6 +270,10 @@
 
   .footer-name {
     @apply font-medium;
+  }
+
+  .footer-nav {
+    @apply flex gap-4;
   }
 
   .footer-links {
@@ -328,6 +355,7 @@
       @apply flex-col gap-3 items-start;
     }
 
+    .footer-nav,
     .footer-links {
       @apply mb-2 mr-auto;
     }
