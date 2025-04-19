@@ -47,42 +47,57 @@
 
 <div class="blog-container" in:fade={{duration: 300}}>
   <header class="blog-header">
-    <h1>{data.l10n.t('articles')}</h1>
-    <p>{data.l10n.t('blogDescription')}</p>
+    <div class="header-content">
+      <h1 class="main-title">{data.l10n.t('articles')}</h1>
+      <p class="subtitle">{data.l10n.t('blogDescription')}</p>
+      <div class="header-accent"></div>
+    </div>
   </header>
 
   {#if hasTabs || hasTags}
     <div class="filters-container">
-      {#if hasTabs}
-        <div class="filter-section">
-          <h2 class="filter-title">{data.l10n.t('categories')}</h2>
-          <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
-        </div>
-      {/if}
-
-      {#if hasTags}
-        <div class="filter-section">
-          <h2 class="filter-title">{data.l10n.t('tags')}</h2>
-          <Tags
-            payload={posts}
-            toggleEvent={handleTagToggle}
-            propPath={['meta', 'tags']}
-            isTagCount={true}
-          />
-        </div>
-      {/if}
-
-      {#if activeTab || filteredPosts.length !== posts.length}
-        <div class="filter-actions">
-          <Button variant="secondary sm" onclick={resetFilters}>
+      <div class="filters-header">
+        <h2 class="filters-title">Browse by</h2>
+        {#if activeTab || filteredPosts.length !== posts.length}
+          <Button variant="secondary sm" onclick={resetFilters} class="reset-button">
+            <span class="reset-icon">↺</span>
             {data.l10n.t('resetFilters')}
           </Button>
-        </div>
-      {/if}
+        {/if}
+      </div>
+
+      <div class="filters-content">
+        {#if hasTabs}
+          <div class="filter-section">
+            <h3 class="section-title">{data.l10n.t('categories')}</h3>
+            <Tabs payload={posts} triggerEvent={handleTabClick} propPath={['meta', 'tabs']} />
+          </div>
+        {/if}
+
+        {#if hasTags}
+          <div class="filter-section">
+            <h3 class="section-title">{data.l10n.t('tags')}</h3>
+            <Tags
+              payload={posts}
+              toggleEvent={handleTagToggle}
+              propPath={['meta', 'tags']}
+              isTagCount={true}
+            />
+          </div>
+        {/if}
+      </div>
     </div>
   {/if}
 
   {#if filteredPosts.length > 0}
+    <div class="results-header">
+      <p class="results-count">
+        {filteredPosts.length}
+        {filteredPosts.length === 1 ? 'article' : 'articles'}
+        {activeTab ? `in "${activeTab}"` : ''}
+      </p>
+    </div>
+
     <ul class="posts-grid">
       {#each filteredPosts as post, i (post.slug)}
         <Post {post} index={i} l10n={data.l10n} />
@@ -113,44 +128,85 @@
   }
 
   .blog-header {
-    @apply mb-6 sm:mb-8 text-center;
+    @apply py-10 mb-10 relative text-center;
+    background: linear-gradient(to right, rgba(255, 153, 130, 0.05), transparent);
   }
 
-  .blog-header h1 {
-    @apply text-2xl sm:text-3xl font-bold mb-2 text-base14;
+  .header-content {
+    @apply max-w-4xl mx-auto px-4;
   }
 
-  .blog-header p {
-    @apply text-base5 text-sm sm:text-base;
+  .main-title {
+    @apply text-3xl sm:text-4xl font-bold mb-3 text-base14;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    @apply text-base5 text-lg max-w-2xl mx-auto;
+  }
+
+  .header-accent {
+    @apply h-1 w-16 bg-base14/50 mx-auto mt-6 rounded-full;
   }
 
   .filters-container {
-    @apply mb-6 sm:mb-10 p-4 sm:p-5 rounded-lg bg-base1/30;
+    @apply mb-8 sm:mb-10 rounded-lg;
     @apply border border-base3/10;
+    @apply bg-gradient-to-r from-base1/50 to-base1/20;
+    @apply overflow-hidden;
+  }
+
+  .filters-header {
+    @apply flex justify-between items-center p-5 border-b border-base3/10;
+    @apply bg-base1/40;
+  }
+
+  .filters-title {
+    @apply text-lg font-medium text-base7;
+    letter-spacing: 0.01em;
+  }
+
+  .reset-button {
+    @apply text-sm text-base5 hover:text-base14 transition-colors;
+    @apply flex items-center gap-1.5;
+  }
+
+  .reset-icon {
+    @apply inline-block;
+    font-size: 14px;
+  }
+
+  .filters-content {
+    @apply p-5;
   }
 
   .filter-section {
-    @apply mb-4 sm:mb-6;
+    @apply mb-6;
   }
 
   .filter-section:last-of-type {
     @apply mb-0;
   }
 
-  .filter-title {
-    @apply text-base sm:text-lg font-medium mb-2 sm:mb-3 text-base7;
+  .section-title {
+    @apply text-sm font-medium mb-3 text-base4;
+    @apply uppercase tracking-wide;
   }
 
-  .filter-actions {
-    @apply flex justify-end mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-base3/10;
+  .results-header {
+    @apply mb-6 pb-3 border-b border-base3/10;
+  }
+
+  .results-count {
+    @apply text-sm text-base4;
   }
 
   .posts-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
   }
 
   .no-results {
-    @apply flex flex-col items-center justify-center text-center py-8 sm:py-10 gap-4;
+    @apply flex flex-col items-center justify-center text-center py-10 gap-4;
     @apply text-base4;
     @apply bg-base1/30 rounded-lg border border-base3/10;
   }

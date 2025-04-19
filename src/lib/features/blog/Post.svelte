@@ -1,5 +1,6 @@
+<!-- src/lib/features/blog/Post.svelte -->
 <script>
-  import {fade} from 'svelte/transition';
+  import {fade, fly} from 'svelte/transition';
 
   let {post, index, l10n} = $props();
 
@@ -58,29 +59,19 @@
   const truncatedDescription = truncateDescription(post.meta?.description);
 </script>
 
-<li in:fade={{duration: 300, delay: index * 75}} class="post-item">
+<li in:fly={{y: 20, duration: 300, delay: index * 75}} class="post-item">
   <a href="/blog/{post.slug}" class="post-card">
     <div class="post-image" style="--color: {cardColor}">
-      <div class="post-image-inner">
-        <!-- If the blog had featured images, they would go here -->
-      </div>
-      <div class="post-overlay">
-        <span class="read-more">{l10n.t('readArticle')}</span>
-      </div>
+      <div class="color-accent"></div>
+
+      {#if post.meta?.tags?.length}
+        <div class="featured-tag">
+          {post.meta.tags[0]}
+        </div>
+      {/if}
     </div>
 
     <div class="post-content">
-      {#if post.meta?.tags?.length}
-        <div class="post-tags">
-          {#each post.meta.tags.slice(0, 3) as tag}
-            <span class="tag">{tag}</span>
-          {/each}
-          {#if post.meta?.tags?.length > 3}
-            <span class="tag more-tag">+{post.meta.tags.length - 3}</span>
-          {/if}
-        </div>
-      {/if}
-
       <h2 class="post-title">{post.meta?.title || 'Untitled Post'}</h2>
 
       {#if post.meta?.description}
@@ -94,6 +85,11 @@
           <span class="read-time">{post.meta.readMin} {l10n.t('minRead')}</span>
         {/if}
       </div>
+
+      <div class="post-hover-indicator">
+        <span class="read-more-text">{l10n.t('readArticle')}</span>
+        <span class="arrow">→</span>
+      </div>
     </div>
   </a>
 </li>
@@ -102,61 +98,45 @@
   @import '../../../theme.css' theme(reference);
 
   .post-item {
-    @apply mb-4 sm:mb-8 flex;
+    @apply flex;
+    height: 100%;
   }
 
   .post-card {
     @apply flex flex-col h-full w-full rounded-lg overflow-hidden;
-    @apply bg-base1/40 hover:bg-base1/70 transition-colors;
-    @apply shadow-sm transform hover:-translate-y-1 hover:shadow-md transition-all duration-300;
-    @apply no-underline border border-base3/10;
+    @apply bg-base1/40 hover:bg-base1/70 transition-all duration-300;
+    @apply shadow-sm hover:shadow-md;
+    @apply border border-base3/10 hover:border-base3/20;
+    @apply no-underline relative;
+    @apply transform hover:-translate-y-1;
   }
 
   .post-image {
-    @apply h-36 sm:h-20 relative flex items-center justify-center;
-    @apply bg-gradient-to-br from-[color:var(--color,#ff9982)] to-[color:var(--color,#ff9982)]/70;
+    @apply h-3 relative overflow-hidden;
   }
 
-  .post-image-inner {
-    @apply h-full w-full;
+  .color-accent {
+    @apply absolute inset-0 w-full;
+    background-color: var(--color, #ff9982);
   }
 
-  .post-overlay {
-    @apply absolute inset-0 flex items-center justify-center;
-    @apply bg-base0/0 hover:bg-base0/40 transition-colors;
-    @apply opacity-0 hover:opacity-100;
-  }
-
-  .read-more {
-    @apply px-3 py-1.5 sm:px-4 sm:py-2 bg-base0/90 text-base7 text-xs sm:text-sm font-medium rounded-md;
-    @apply transform scale-95 hover:scale-100 transition-transform;
-    @apply border border-base7/20;
+  .featured-tag {
+    @apply absolute top-3 right-4 z-10;
+    @apply text-xs font-medium px-2.5 py-1 rounded-full;
+    @apply bg-base0/90 text-[var(--color,#ff9982)];
+    @apply border border-[var(--color,#ff9982)]/30;
+    @apply opacity-90 hover:opacity-100 transition-opacity;
   }
 
   .post-content {
-    @apply p-4 sm:p-5 flex-1 flex flex-col;
-  }
-
-  .post-tags {
-    @apply flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4;
-  }
-
-  .tag {
-    @apply text-xs bg-base1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-base5;
-    @apply dark:bg-base2/50 dark:text-base6 font-medium;
-    @apply transition-colors;
-  }
-
-  .more-tag {
-    @apply bg-base1/60 text-base4;
-    @apply dark:bg-base1/60 dark:text-base5;
+    @apply p-5 flex-1 flex flex-col;
   }
 
   .post-title {
-    @apply text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-base7;
+    @apply text-xl font-bold mb-3 text-base7;
     @apply tracking-tight leading-tight;
+    @apply transition-colors duration-300;
     @apply line-clamp-2;
-    @apply transition-colors;
   }
 
   .post-card:hover .post-title {
@@ -164,16 +144,34 @@
   }
 
   .post-description {
-    @apply text-xs sm:text-sm text-base4 mb-3 sm:mb-4 line-clamp-3 flex-1;
+    @apply text-sm text-base4 mb-4 line-clamp-3 flex-1;
     @apply leading-relaxed;
   }
 
   .post-meta {
-    @apply flex items-center gap-2 sm:gap-3 text-xs text-base4 mt-auto;
-    @apply pt-2 sm:pt-3 border-t border-base3/10;
+    @apply flex items-center gap-3 text-xs text-base4;
+    @apply pt-3 border-t border-base3/10;
   }
 
   .read-time {
-    @apply before:content-['•'] before:mr-2 sm:before:mr-3 before:text-base4/50;
+    @apply before:content-['•'] before:mr-3 before:text-base4/50;
+  }
+
+  .post-hover-indicator {
+    @apply absolute right-5 bottom-5 opacity-0;
+    @apply flex items-center gap-1.5 text-sm font-medium text-base14;
+    @apply transition-all duration-300 transform translate-x-2;
+  }
+
+  .post-card:hover .post-hover-indicator {
+    @apply opacity-100 translate-x-0;
+  }
+
+  .arrow {
+    @apply transition-transform duration-300;
+  }
+
+  .post-card:hover .arrow {
+    @apply transform translate-x-1;
   }
 </style>
