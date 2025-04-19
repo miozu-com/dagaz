@@ -4,6 +4,7 @@
   import JsonLd from '$features/seo/JsonLd.svelte';
   import {appName, author, domain} from '$settings/global';
   import DagazLogo from '$components/DagazLogo.svelte';
+  import GitHubStars from '$components/GitHubStars.svelte';
   import InfiniteCarousel from '$components/InfiniteCarousel.svelte';
   import {Button} from '$components/jera';
   import {Markdown, Languages, Moon, ServerOff, Svelte, Tailwind} from '$components/icons';
@@ -121,13 +122,7 @@
           View Blog
         </Button>
 
-        <Button
-          variant="secondary"
-          onclick={() => window.open('https://github.com/miozu-com/dagaz', '_blank')}
-        >
-          <span>GitHub</span>
-          <span class="github-stars">★ Star</span>
-        </Button>
+        <GitHubStars repo="miozu-com/dagaz" />
       </div>
     </div>
   </section>
