@@ -1,7 +1,7 @@
 <script>
   import {onMount} from 'svelte';
-  import Button from './jera/Button.svelte';
-  import {Star} from './icons';
+  import Button from '$components/jera/Button.svelte';
+  import {Star} from '$components/icons';
 
   let {
     repo = 'miozu-com/dagaz', // Default repository path (username/repo)
@@ -17,6 +17,7 @@
   let isLoading = $state(true);
   let error = $state(null);
 
+  // TODO move to utils
   // Format stars count (e.g., 1000 -> 1k)
   function formatStars(count) {
     if (count >= 1000) {
@@ -84,20 +85,14 @@
 <Button {variant} {size} href={`https://github.com/${repo}`} class={className}>
   {buttonText}
   {#if showCount}
-    <span class="star-count">
-      {#if isLoading}
-        <span class="loading-wrapper">
-          <Star size={14} strokeWidth={1.5} class="star-icon pulse" />
-        </span>
-      {:else if error}
-        <Star size={14} strokeWidth={1.5} class="star-icon error" />
-      {:else}
-        <span>
-          <Star size={14} strokeWidth={1.5} class="star-icon" />
-          {stars}
-        </span>
-      {/if}
-    </span>
+    <div class="star-count">
+      <div>
+        <Star size={14} strokeWidth={1.5} class="star-icon" />
+      </div>
+      <div>
+        {stars}
+      </div>
+    </div>
   {/if}
 </Button>
 
@@ -105,7 +100,7 @@
   @import '../../theme.css' theme(reference);
 
   .star-count {
-    @apply inline-flex items-center whitespace-nowrap ml-2;
+    @apply flex items-center whitespace-nowrap ml-2;
     @apply text-base5/90;
   }
 
