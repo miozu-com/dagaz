@@ -118,9 +118,7 @@
       </p>
 
       <div class="hero-actions">
-        <Button variant="primary" onclick={() => (window.location.href = '/blog')}>
-          View Blog
-        </Button>
+        <Button variant="primary" href="/blog">View Blog</Button>
 
         <GitHubStars repo="miozu-com/dagaz" />
       </div>
