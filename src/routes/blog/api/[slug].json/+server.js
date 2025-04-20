@@ -2,6 +2,7 @@ import {json} from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
 import * as mdsvexLib from 'mdsvex';
+import rehypeSlug from 'rehype-slug';
 import {createMdsvexHighlighter} from '$utils/highlighter.js';
 
 /**
@@ -83,7 +84,8 @@ export async function GET({params}) {
       smartypants: true,
       highlight: {
         highlighter: createMdsvexHighlighter()
-      }
+      },
+      rehypePlugins: [rehypeSlug]
     };
 
     // Properly compile the markdown with mdsvex and our custom highlighter

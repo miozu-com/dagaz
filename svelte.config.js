@@ -3,6 +3,7 @@ import {vitePreprocess} from '@sveltejs/vite-plugin-svelte';
 import {mdsvex} from 'mdsvex';
 import fs from 'fs';
 import path from 'path';
+import rehypeSlug from 'rehype-slug';
 import {createMdsvexHighlighter} from './src/lib/utils/highlighter.js';
 
 // Function to dynamically get blog post slugs for prerendering
@@ -16,13 +17,14 @@ function getBlogPosts() {
     .map(file => `/blog/${path.parse(file).name}`);
 }
 
+// MDSvex configuration - consistent throughout the app
 const mdsvexConfig = {
   extensions: ['.md'],
   smartypants: true,
   highlight: {
     highlighter: createMdsvexHighlighter()
   },
-  rehypePlugins: []
+  rehypePlugins: [rehypeSlug] // Adding rehypeSlug for heading IDs
 };
 
 export default {
@@ -64,7 +66,8 @@ export default {
       $data: 'src/lib/data',
       $utils: 'src/lib/utils',
       $stores: 'src/lib/stores',
-      $constants: 'src/lib/constants'
+      $constants: 'src/lib/constants',
+      $settings: 'src/lib/settings'
     }
   },
   preprocess: [vitePreprocess(), mdsvex(mdsvexConfig)]
