@@ -1,15 +1,11 @@
 @import 'tailwindcss';
 @import './lib/styles/theme.css';
-@import './lib/styles/fonts.css';
-
-:root {
-  --font-serif: 'Libre Baskerville', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-}
+/* @import './lib/styles/fonts.css'; */
 
 html {
   @apply overflow-hidden;
   @apply text-base5 bg-base0;
-  /* Base typography improvements */
+  /* Typography improvements */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,28 +18,18 @@ body {
   letter-spacing: -0.011em;
 }
 
-/* Global Layout Classes */
-.rtl {
-  direction: rtl;
-  unicode-bidi: bidi-override;
-}
-
 /* Scrollbar improvements */
 ::-webkit-scrollbar {
-  width: 6px; /* Thin scrollbar width */
-  height: 6px; /* For horizontal scrollbars */
+  @apply w-1.5 h-1.5;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-base3/50; /* Thumb (scrollbar handle) color */
-  border: 1px solid transparent; /* Adds spacing inside the track */
-  border-radius: 4px; /* Rounded edges */
+  @apply bg-base3/50 border-transparent rounded-xs;
   background-clip: padding-box; /* Ensures the thumb respects the border */
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-base1/50; /* Track (background) color */
-  border-radius: 4px;
+  @apply bg-base1/50 rounded-xs; /* Track (background) color */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -55,203 +41,5 @@ body {
   @apply text-base0 bg-base14/80;
 }
 
-/* Enhanced Miozu theme color variables for Shiki syntax highlighting */
-:root {
-  /* Base colors */
-  --shiki-color-text: var(--color-base7); /* Main text in code blocks */
-  --shiki-color-background: var(--color-base1); /* Background of code blocks */
-
-  /* Primary token colors - Enhanced for better readability */
-  --shiki-token-constant: var(--color-base13); /* Purple for constants/objects like "browser" */
-  --shiki-token-string: var(--color-base10); /* Bright green for strings */
-  --shiki-token-comment: var(--color-base4); /* Dimmer gray for comments */
-  --shiki-token-keyword: var(
-    --color-base14
-  ); /* Peachy/orange color for keywords like import/export/const */
-  --shiki-token-parameter: var(--color-base7); /* Light gray/white for parameters */
-  --shiki-token-function: var(--color-base13); /* Purple/magenta for function declarations */
-  --shiki-token-string-expression: var(--color-base10); /* Green for string expressions */
-  --shiki-token-punctuation: var(--color-base6); /* Light gray for punctuation */
-  --shiki-token-link: var(--color-base15); /* Cyan for links */
-
-  /* Additional token types - Adjusted for better readability */
-  --shiki-token-variable: var(--color-base7); /* Light gray/white for most variables */
-  --shiki-token-property: var(--color-base15); /* Cyan for properties like .localStorage */
-  --shiki-token-operator: var(--color-base7); /* White for operators like => */
-  --shiki-token-boolean: var(--color-base9); /* Orange for true/false */
-  --shiki-token-number: var(--color-base9); /* Orange for numbers */
-
-  /* HTML/JSX specific */
-  --shiki-token-tag: var(--color-base14); /* Peachy for HTML tags */
-  --shiki-token-attr-name: var(--color-base10); /* Green for HTML attributes */
-  --shiki-token-attr-value: var(--color-base10); /* Green for attribute values */
-
-  /* Class names in HTML/component context */
-  --shiki-token-class-name: var(--color-base10); /* Green for class names */
-
-  /* Method invocations */
-  --shiki-token-method: var(--color-base15); /* Cyan for method calls like .getItem */
-
-  /* Special tokens */
-  --shiki-token-regex: var(--color-base10); /* Green for regex */
-  --shiki-token-escape: var(--color-base9); /* Orange for escape sequences */
-
-  /* Additional semantic tokens */
-  --shiki-token-inserted: var(--color-base10); /* Green */
-  --shiki-token-deleted: var(--color-base8); /* Red */
-  --shiki-token-changed: var(--color-base11); /* Yellow */
-  --shiki-token-error: var(--color-base8); /* Red */
-
-  /* CSS specific */
-  --shiki-token-selector: var(--color-base14); /* Peachy for CSS selectors */
-  --shiki-token-property-css: var(--color-base10); /* Green for CSS properties */
-  --shiki-token-value-css: var(--color-base7); /* White for CSS values */
-
-  /* JSON specific */
-  --shiki-token-json-property: var(--color-base15); /* Cyan for JSON property names */
-
-  /* Svelte specific tokens - Enhanced colors */
-  --shiki-token-svelte-tag: var(--color-base14); /* Svelte component tags */
-  --shiki-token-svelte-directive: var(--color-base13); /* Svelte directives like bind:, on:, etc. */
-  --shiki-token-svelte-expression: var(--color-base15); /* Expressions in {} */
-  --shiki-token-svelte-control: var(--color-base14); /* Control flow like #if, #each */
-
-  /* Svelte 5 runes - More visible */
-  --shiki-token-svelte-rune: var(--color-base14); /* Svelte 5 runes like $state, $derived */
-  --shiki-token-keyword-rune-svelte: var(--color-base14); /* For the custom grammar rule */
-
-  /* Component element colors */
-  --shiki-token-component-tag: var(--color-base13); /* Svelte component name */
-}
-
-/* Global Blog Post Styles - NOTE These need to be global because they target content from {@html} */
-.post-body h1,
-.post-body h2,
-.post-body h3,
-.post-body h4 {
-  @apply font-sans text-base14 font-bold;
-  @apply scroll-mt-24;
-}
-
-.post-body h1 {
-  @apply text-2xl sm:text-3xl mt-8 sm:mt-12 mb-4 sm:mb-6 pb-1 border-b border-base3/20;
-  @apply tracking-tight leading-tight;
-}
-
-.post-body h2 {
-  @apply text-xl sm:text-2xl mt-8 sm:mt-10 mb-4 sm:mb-5 pb-1 border-b border-base3/10;
-  @apply tracking-tight leading-tight;
-}
-
-.post-body h3 {
-  @apply text-lg sm:text-xl mt-6 sm:mt-8 mb-3 sm:mb-4;
-  @apply tracking-tight leading-tight;
-}
-
-.post-body h4 {
-  @apply text-base sm:text-lg mt-4 sm:mt-6 mb-2 sm:mb-3 text-base13;
-}
-
-.post-body a {
-  @apply text-base14 hover:text-base13 transition-colors;
-  @apply border-b border-base14/30 hover:border-base13 no-underline;
-}
-
-.post-body blockquote {
-  @apply border-l-4 border-base14/30 bg-base1/50 px-4 sm:px-6 py-3 sm:py-4 my-4 sm:my-6 italic;
-  @apply text-base sm:text-lg text-base5;
-}
-
-.post-body blockquote p {
-  @apply text-base5;
-}
-
-.post-body p {
-  @apply my-4 sm:my-6 text-base6;
-  @apply text-base sm:text-lg leading-relaxed;
-}
-
-.post-body ul,
-.post-body ol {
-  @apply my-4 sm:my-6 ml-6 sm:ml-8;
-}
-
-.post-body li {
-  @apply my-2 text-base6;
-  @apply text-base sm:text-lg leading-relaxed;
-}
-
-.post-body li::marker {
-  @apply text-base14;
-}
-
-.post-body table {
-  @apply w-full border-collapse my-6;
-  @apply shadow-sm rounded-xs overflow-hidden;
-}
-
-.post-body th,
-.post-body td {
-  @apply border border-base3/10 py-2 sm:py-3 px-2 sm:px-4;
-  @apply text-sm sm:text-base;
-}
-
-.post-body th {
-  @apply bg-base1 text-base14 text-left font-semibold;
-}
-
-.post-body td {
-  @apply bg-base1/50;
-}
-
-.post-body tr:nth-child(even) td {
-  @apply bg-base1/80;
-}
-
-.post-body img {
-  @apply max-w-full rounded-xs shadow-md my-6 sm:my-8 mx-auto;
-}
-
-.post-body pre {
-  @apply rounded-xs my-6 p-2.5;
-  @apply bg-base1/80;
-  @apply border border-base2/50;
-  @apply relative;
-  @apply overflow-x-auto;
-}
-
-.post-body pre code {
-  @apply font-mono text-base6 bg-base2/20;
-}
-
-/* Add language label to code blocks with fixed selector */
-.post-body pre::before,
-.post-body .shiki::before {
-  content: attr(data-language);
-  @apply absolute top-0 right-0 px-2.5 pt-1.5 pb-0.5 text-xs font-mono;
-  @apply bg-base1 text-base10 rounded-bl-xs rounded-tr-xs;
-  @apply uppercase tracking-wider font-thin z-10;
-}
-
-/* Special handling for Shiki theme colors */
-.post-body .shiki,
-.post-body pre.shiki {
-  @apply bg-base1/20;
-  @apply text-base7 text-sm;
-  @apply border border-base2/30;
-  @apply w-full h-auto;
-  @apply rounded-xs shadow-md;
-}
-
-/* Fix for the {@html `...` } issue that appears in rendered code */
-.post-body .shiki code {
-  @apply text-base7;
-  white-space: pre;
-}
-
-/* Inline code style */
-.post-body :not(pre) > code {
-  @apply bg-base1 text-base12 rounded-xs px-1.5 py-0.5;
-  @apply text-sm font-mono border border-base3/10;
-  @apply whitespace-nowrap;
-}
+/* Import blog related css  */
+@import './lib/styles/blog.css';

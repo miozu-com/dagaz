@@ -1,20 +1,9 @@
 // Service Worker for Dagaz Blog PWA
-const CACHE_NAME = 'dagaz-cache-v1.4';
+const CACHE_NAME = 'dagaz-cache-v1.2';
 const OFFLINE_URL = '/offline.html';
 
-// Expanded assets to pre-cache - updated with Noto Sans variable fonts
-const PRECACHE_ASSETS = [
-  '/',
-  '/offline.html',
-  '/manifest.json',
-  '/favicon.png',
-  // Font files - critical for offline use
-  '/fonts/NotoSans-VariableFont_wdth,wght.ttf',
-  '/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf'
-];
-
-// Separate cache for fonts that can have a longer expiration time
-const FONT_CACHE_NAME = 'dagaz-fonts-v1';
+// Simplified assets to pre-cache - make sure all these files exist
+const PRECACHE_ASSETS = ['/', '/offline.html', '/manifest.json', '/favicon.png'];
 
 // Logging helper - disable in production
 const DEBUG = false;
@@ -66,7 +55,7 @@ self.addEventListener('activate', event => {
       .then(cacheNames => {
         return Promise.all(
           cacheNames
-            .filter(cacheName => cacheName !== CACHE_NAME && cacheName !== FONT_CACHE_NAME)
+            .filter(cacheName => cacheName !== CACHE_NAME)
             .map(cacheName => {
               log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
@@ -84,7 +73,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Improved fetch event handler with special handling for font files
+// Simplified fetch event handler to prevent infinite loops
 self.addEventListener('fetch', event => {
   // Skip non-GET requests or requests to external domains
   if (
@@ -97,37 +86,7 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(event.request.url);
 
-  // Special handling for font files - cache-first strategy
-  if (url.pathname.match(/\.(ttf|woff|woff2)$/)) {
-    event.respondWith(
-      caches.open(FONT_CACHE_NAME).then(cache => {
-        return cache.match(event.request).then(response => {
-          // Return cached font if available
-          if (response) {
-            return response;
-          }
-
-          // Otherwise fetch from network and cache
-          return fetch(event.request)
-            .then(networkResponse => {
-              if (networkResponse.ok) {
-                // Clone the response to store in cache
-                const cachableResponse = networkResponse.clone();
-                cache.put(event.request, cachableResponse);
-              }
-              return networkResponse;
-            })
-            .catch(error => {
-              log('Font fetch error:', error);
-              throw error;
-            });
-        });
-      })
-    );
-    return;
-  }
-
-  // Default strategy for other resources: Try network first, then cache
+  // Simple strategy: Try network first, then cache
   event.respondWith(
     fetch(event.request)
       .then(response => {
