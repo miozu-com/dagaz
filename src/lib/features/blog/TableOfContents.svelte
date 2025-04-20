@@ -283,7 +283,7 @@
   }
 
   .toc-content {
-    @apply p-6 bg-base1/80 backdrop-blur-sm rounded-lg;
+    @apply p-6 bg-base1/80 backdrop-blur-sm rounded-xs;
     @apply border border-base3/15;
     @apply shadow-sm hover:shadow-md transition-shadow duration-300;
     @apply overflow-y-auto max-h-[calc(100vh-240px)];
@@ -393,7 +393,7 @@
   /* Back to top button in TOC */
   .toc-top-button {
     @apply w-full flex items-center justify-center gap-2 mt-2 py-2 px-3;
-    @apply bg-base1/70 hover:bg-base1 text-base5 hover:text-base14 rounded-md;
+    @apply bg-base1/70 hover:bg-base1 text-base5 hover:text-base14 rounded-xs;
     @apply border border-base3/20 transition-all duration-200;
     @apply text-sm font-medium;
   }

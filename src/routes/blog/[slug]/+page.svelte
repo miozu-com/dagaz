@@ -2,13 +2,13 @@
   import {onMount} from 'svelte';
   import {fade} from 'svelte/transition';
   import Divider from '$components/Divider.svelte';
-  import {Button} from '$components/jera';
-  import SkeletonLoader from '$components/SkeletonLoader.svelte';
   import JsonLd from '$features/seo/JsonLd.svelte';
   import BreadcrumbsSchema from '$features/seo/BreadcrumbsSchema.svelte';
   import BlogPostFooter from '$features/blog/BlogPostFooter.svelte';
   import TableOfContents from '$features/blog/TableOfContents.svelte';
-  import {author, domain, appName} from '$lib/settings/global';
+  import SkeletonLoader from '$components/SkeletonLoader.svelte';
+  import {ChevronLeft} from '$components/icons';
+  import {author, domain, appName} from '$settings/global';
 
   let {data} = $props();
   let htmlContent = $state('');
@@ -19,16 +19,9 @@
   // Get the post from the data
   const post = $derived(data.post || {});
 
-  // Pre-calculated values outside of reactive dependencies
-  let formattedDate = '';
-  let isoDate = '';
-  let modifiedIsoDate = '';
-  let postUrl = '';
-
-  // Format date for display
+  // TODO move to utils
   function formatDate(dateStr) {
     if (!dateStr) return '';
-
     try {
       const dateParts = dateStr.split('/');
       if (dateParts.length >= 3) {
@@ -47,10 +40,9 @@
     }
   }
 
-  // Format date for ISO format
+  // TODO move to utils
   function formatISODate(dateStr) {
     if (!dateStr) return '';
-
     try {
       const dateParts = dateStr.split('/');
       if (dateParts.length >= 3) {
@@ -64,33 +56,26 @@
     }
   }
 
-  function extractToc() {
-    if (post?.toc?.data && Array.isArray(post.toc.data)) {
-      tableOfContents = post.toc.data.filter(item => item.level <= 3);
-    }
-  }
-
   onMount(() => {
-    // Calculate formatted values
-    formattedDate = formatDate(post.meta?.created_at);
-    isoDate = formatISODate(post.meta?.created_at);
-    modifiedIsoDate = post.meta?.modified_at ? formatISODate(post.meta.modified_at) : isoDate;
-    postUrl = `${domain}/blog/${post.slug}`;
+    // Extract metadata from post
+    const formattedDate = formatDate(post.meta?.created_at);
+    const isoDate = formatISODate(post.meta?.created_at);
+    const modifiedIsoDate = post.meta?.modified_at ? formatISODate(post.meta.modified_at) : isoDate;
+    const postUrl = `${domain}/blog/${post.slug}`;
 
     if (post?.code) {
-      // Set HTML content with no processing
+      // Set HTML content
       htmlContent = post.code;
 
-      // Extract ToC after content is loaded
-      extractToc();
+      // Extract TOC if available
+      if (post?.toc?.data && Array.isArray(post.toc.data)) {
+        tableOfContents = post.toc.data.filter(item => item.level <= 3);
+      }
 
-      // Use a short delay to simulate content loading
-      // This ensures proper rendering of skeleton loaders
+      // Short delay to simulate content loading and ensure proper rendering
       setTimeout(() => {
         isLoading = false;
-      }, 300);
-
-      console.log('Post content loaded:', post.slug);
+      }, 200);
     } else {
       console.error('Post content not available:', post);
       isLoading = false;
@@ -99,24 +84,26 @@
 </script>
 
 <svelte:head>
-  <title>{post.meta?.title || 'Blog Post'} | Dagaz</title>
+  <title>{post.meta?.title || 'Blog Post'} | {appName}</title>
   <meta name="description" content={post.meta?.description || ''} />
   {#if post.meta?.canonical_url}
     <link rel="canonical" href={post.meta.canonical_url} />
   {/if}
 </svelte:head>
 
-<!-- Add JSON-LD structured data for blog post -->
+<!-- Structured data -->
 {#if post}
-  <!-- BlogPosting schema -->
   <JsonLd
     type="BlogPosting"
     data={{
       headline: post.meta?.title || 'Untitled Post',
       description: post.meta?.description || '',
       image: post.meta?.ogImage || `${domain}/images/default-blog-image.jpg`,
-      datePublished: isoDate,
-      dateModified: modifiedIsoDate,
+      datePublished: formatISODate(post.meta?.created_at),
+      dateModified:
+        post.meta?.modified_at ?
+          formatISODate(post.meta.modified_at)
+        : formatISODate(post.meta?.created_at),
       author: {
         '@type': 'Person',
         name: author
@@ -131,7 +118,7 @@
       },
       mainEntityOfPage: {
         '@type': 'WebPage',
-        '@id': postUrl
+        '@id': `${domain}/blog/${post.slug}`
       },
       keywords:
         Array.isArray(post.meta?.keywords) ?
@@ -142,28 +129,32 @@
     }}
   />
 
-  <!-- Breadcrumb schema -->
   <BreadcrumbsSchema
     items={[
       {name: 'Home', url: domain},
       {name: 'Blog', url: `${domain}/blog`},
-      {name: post.meta?.title || 'Untitled Post', url: postUrl}
+      {name: post.meta?.title || 'Untitled Post', url: `${domain}/blog/${post.slug}`}
     ]}
   />
 {/if}
 
 <main in:fade={{duration: 300}} class="post-container">
-  <!-- Table of Contents Component - now floating on right side -->
+  <!-- Table of Contents Component -->
   <TableOfContents headings={tableOfContents} {isLoading} />
 
   {#if isLoading || post?.code}
     <div class="post-grid">
       <article class="post-content">
         <header class="post-header">
+          <!-- Back button -->
+          <a href="/blog" class="back-button">
+            <ChevronLeft size={16} />
+            <span>Back to blog</span>
+          </a>
+
           <div class="post-meta">
             <span class="author">{author}</span>
-            <time datetime={post.meta?.created_at || ''}>{formattedDate}</time>
-
+            <time datetime={post.meta?.created_at || ''}>{formatDate(post.meta?.created_at)}</time>
             {#if post.meta?.readMin}
               <span class="read-time">{post.meta.readMin} min read</span>
             {/if}
@@ -188,22 +179,19 @@
 
         <div class="post-body" bind:this={scrollContainer}>
           {#if isLoading}
-            <!-- Post content skeleton -->
             <SkeletonLoader type="content" lines={20} class="content-skeleton" />
           {:else}
-            <!-- This is where the compiled markdown content is rendered -->
             {@html htmlContent}
           {/if}
         </div>
 
         <footer class="post-footer">
           <Divider />
-          <!-- Enhanced blog post footer -->
           <BlogPostFooter
             title={post.meta?.title || ''}
             slug={post.slug}
             tags={post.meta?.tags || []}
-            url={postUrl}
+            url={`${domain}/blog/${post.slug}`}
             publishDate={post.meta?.created_at}
             readTime={post.meta?.readMin}
             nextPost={post.nextPost}
@@ -216,9 +204,7 @@
     <div class="error-state">
       <h2>Post Not Found</h2>
       <p>Sorry, the post you're looking for couldn't be loaded.</p>
-      <Button variant="primary" onclick={() => (window.location.href = '/blog')}>
-        Return to blog
-      </Button>
+      <a href="/blog" class="error-button">Return to blog</a>
     </div>
   {/if}
 </main>
@@ -235,12 +221,19 @@
   }
 
   .post-content {
-    @apply flex-1 bg-base0/50 rounded-lg overflow-hidden;
+    @apply flex-1 bg-base0/50 rounded-xs overflow-hidden;
     @apply shadow-sm max-w-3xl mx-auto;
   }
 
   .post-header {
-    @apply px-0.5 md:px-5 lg:px-8 pt-8 sm:pt-12 pb-4 sm:pb-6;
+    @apply px-0.5 md:px-5 lg:px-8 pt-2 sm:pt-5 pb-4 sm:pb-6;
+  }
+
+  .back-button {
+    @apply inline-flex items-center gap-1.5 mb-10 py-1.5 px-3 rounded-xs;
+    @apply text-sm font-medium text-base4 bg-base1/50 hover:bg-base1;
+    @apply hover:text-base14 border border-base3/10;
+    @apply transition-colors no-underline;
   }
 
   .post-meta {
@@ -271,16 +264,14 @@
   }
 
   .tag {
-    @apply text-xs font-medium bg-base1/70 px-3 py-1.5 rounded-md text-base6;
+    @apply text-xs font-medium bg-base1/70 px-3 py-1.5 rounded-xs text-base6;
     @apply hover:bg-base1 transition-colors;
   }
 
   .post-body {
     @apply px-0.5 md:px-5 lg:px-8 py-6 sm:py-8;
     @apply font-serif;
-    min-height: 400px; /* Prevent layout shift while loading */
-
-    /* Better scrolling */
+    min-height: 400px;
     scrollbar-gutter: stable;
     scrollbar-width: thin;
 
@@ -301,11 +292,17 @@
 
   .error-state {
     @apply flex flex-col items-center justify-center py-16 text-center;
-    @apply bg-base1/30 rounded-lg max-w-md mx-auto;
+    @apply bg-base1/30 rounded-xs max-w-md mx-auto;
     @apply border border-base3/10 p-8;
   }
 
-  /* Skeleton loader styles */
+  .error-button {
+    @apply mt-4 inline-flex items-center justify-center py-2 px-4;
+    @apply bg-base1/70 hover:bg-base1 text-base6 hover:text-base14;
+    @apply rounded-xs border border-base3/20 transition-colors;
+    @apply font-medium no-underline;
+  }
+
   .content-skeleton {
     @apply min-h-[400px];
   }
