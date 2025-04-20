@@ -6,7 +6,7 @@
 
   /**
    * Table of Contents component - Provides a fixed TOC with smooth scrolling and
-   * automatic section highlighting
+   * automatic section highlighting using IntersectionObserver
    *
    * @prop {Array} headings - Array of heading objects with {id, text, level} properties
    * @prop {boolean} isLoading - Whether content is still loading
@@ -14,10 +14,13 @@
    */
   let {headings = [], isLoading = false, className = ''} = $props();
 
-  let isTocCollapsed = $state(false); // TODO Default collapsed on mobile
+  let isTocCollapsed = $state(false);
   let showBackToTop = $state(false);
   let activeHeadingId = $state('');
+  let visibleHeadingIds = $state([]);
   let tocRef = $state(null);
+  let observers = [];
+  let manuallySelected = $state(false);
 
   // Computed value for whether to show TOC at all
   const showToc = $derived(headings.length > 2);
@@ -37,11 +40,17 @@
     if (element) {
       element.scrollIntoView({behavior: 'smooth', block: 'start'});
       activeHeadingId = id;
+      manuallySelected = true;
 
       // Auto-collapse TOC on mobile after clicking
       if (window.innerWidth < 768) {
         isTocCollapsed = true;
       }
+
+      // Reset manual selection after 2 seconds
+      setTimeout(() => {
+        manuallySelected = false;
+      }, 2000);
     }
   }
 
@@ -49,47 +58,97 @@
   function scrollToTop() {
     window.scrollTo({top: 0, behavior: 'smooth'});
     activeHeadingId = '';
+    visibleHeadingIds = [];
   }
 
-  // Update active heading based on scroll position
-  function updateActiveHeading() {
-    // Find all headings in the document
-    const headingElements = Array.from(document.querySelectorAll('h1[id], h2[id], h3[id]'));
+  // Check if we should show the back to top button
+  function handleScroll() {
+    showBackToTop = window.scrollY > 300;
+  }
+
+  // Set up intersection observers for each heading
+  function setupObservers() {
+    // Clean up any existing observers
+    observers.forEach(observer => observer.disconnect());
+    observers = [];
+
+    // Query all headings in the document - including h1-h6 elements
+    const headingElements = document.querySelectorAll(
+      'h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]'
+    );
     if (!headingElements.length) return;
 
-    // Get current scroll position with a small offset to highlight item a bit earlier
-    const scrollPos = window.scrollY + 100;
+    // Map of element IDs to their corresponding TOC items
+    const headingMap = {};
+    headings.forEach(heading => {
+      headingMap[heading.id] = heading;
+    });
 
-    // Find the current heading by checking which one is closest to the top of viewport
-    for (let i = headingElements.length - 1; i >= 0; i--) {
-      const heading = headingElements[i];
+    // Create the main visibility observer with a generous margin
+    // This will mark headings as visible even if only partially in viewport
+    const visibilityObserver = new IntersectionObserver(
+      entries => {
+        // Process all intersection entries
+        entries.forEach(entry => {
+          const id = entry.target.id;
 
-      if (heading.offsetTop <= scrollPos) {
-        // If we found a heading in view, update active heading
-        if (activeHeadingId !== heading.id) {
-          activeHeadingId = heading.id;
+          if (entry.isIntersecting) {
+            // If it's entering the viewport and not already marked visible
+            if (!visibleHeadingIds.includes(id)) {
+              visibleHeadingIds = [...visibleHeadingIds, id];
+            }
+          } else {
+            // If it's leaving the viewport and is marked visible
+            visibleHeadingIds = visibleHeadingIds.filter(visibleId => visibleId !== id);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '-5% 0px -5% 0px', // Very generous margins to catch partially visible headings
+        threshold: 0.01 // Even tiny visibility counts
+      }
+    );
+
+    observers.push(visibilityObserver);
+
+    // Active heading observer - more strict about what's considered "active"
+    const activeObserver = new IntersectionObserver(
+      entries => {
+        // Don't update active if manually selected (clicked) recently
+        if (manuallySelected) return;
+
+        // Find entries in viewport, sorted by their vertical position
+        const visibleEntries = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => {
+            // Get the absolute position from viewport top
+            const posA = a.boundingClientRect.top;
+            const posB = b.boundingClientRect.top;
+            return posA - posB; // Sort by closest to viewport top
+          });
+
+        // Set the topmost visible heading as active
+        if (visibleEntries.length > 0) {
+          activeHeadingId = visibleEntries[0].target.id;
         }
-        break;
+      },
+      {
+        root: null,
+        rootMargin: '0px 0px -75% 0px', // Focus on top 25% of viewport
+        threshold: [0.1, 0.5] // Need reasonable visibility to become active
       }
-    }
-  }
+    );
 
-  // Handle scroll events
-  function handleScroll() {
-    // Show back to top button when scrolled down
-    showBackToTop = window.scrollY > 300;
+    observers.push(activeObserver);
 
-    // Update active heading based on scroll position
-    if (headings.length > 0 && !isLoading) {
-      // Throttle execution to avoid performance impact
-      if (!window.tocScrollThrottled) {
-        window.tocScrollThrottled = true;
-        setTimeout(() => {
-          updateActiveHeading();
-          window.tocScrollThrottled = false;
-        }, 100);
+    // Observe all heading elements with both observers
+    headingElements.forEach(element => {
+      if (element.id) {
+        visibilityObserver.observe(element);
+        activeObserver.observe(element);
       }
-    }
+    });
   }
 
   // Handle window resize events
@@ -98,19 +157,43 @@
   }
 
   onMount(() => {
-    // Listen for scroll and resize events
+    // Setup observers once DOM is ready
+    if (!isLoading && headings.length > 0) {
+      setTimeout(setupObservers, 200); // Small delay to ensure DOM is ready
+    }
+
+    // Listen for scroll for back-to-top button
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
 
-    // Initial check for scroll position
+    // Initial check
     handleScroll();
+    handleResize();
 
     return () => {
-      // Clean up event listeners
+      // Clean up event listeners and observers
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
-      window.tocScrollThrottled = false;
+      observers.forEach(observer => observer.disconnect());
     };
+  });
+
+  $effect(() => {
+    if (!isLoading && headings.length > 0 && typeof window !== 'undefined') {
+      // Small delay to ensure DOM is ready
+      setTimeout(setupObservers, 300);
+
+      // Also periodically refresh observers to catch any dynamic content changes
+      const refreshInterval = setInterval(() => {
+        setupObservers();
+      }, 2000);
+
+      // Clean up
+      return () => {
+        clearInterval(refreshInterval);
+        observers.forEach(observer => observer.disconnect());
+      };
+    }
   });
 </script>
 
@@ -131,12 +214,12 @@
             <ul class="toc-list">
               {#each headings as heading}
                 <li
-                  class="toc-item level-{heading.level} {activeHeadingId === heading.id ?
-                    'active'
-                  : ''}"
+                  class="toc-item level-{heading.level}
+                         {activeHeadingId === heading.id ? 'active' : ''}
+                         {visibleHeadingIds.includes(heading.id) ? 'visible' : ''}"
                 >
                   <a href="#{heading.id}" on:click={e => scrollToHeading(heading.id, e)}>
-                    {heading.text}
+                    <span class="toc-text">{heading.text}</span>
                   </a>
                 </li>
               {/each}
@@ -174,6 +257,7 @@
     @apply p-6 bg-base1/80 backdrop-blur-sm rounded-lg;
     @apply border border-base3/15;
     @apply shadow-sm hover:shadow-md transition-shadow duration-300;
+    @apply overflow-y-auto max-h-[calc(100vh-240px)];
   }
 
   .toc-title {
@@ -204,16 +288,88 @@
     @apply text-base14 border-base14 font-medium;
   }
 
+  /* Common styles for all links */
+  .toc-item a {
+    @apply block py-1 no-underline;
+    @apply border-l-0 pl-2; /* No left border by default */
+    @apply transition-all duration-200;
+  }
+
+  /* Link hover - show the left border */
+  .toc-item a:hover {
+    @apply text-base14 border-l-2 border-base14/50;
+  }
+
+  /* Active item has base14 color but no border unless hovered */
+  .toc-item.active a {
+    @apply text-base14 font-medium;
+  }
+
+  /* Visible but not active items styling */
+  .toc-item.visible:not(.active) a {
+    @apply text-base14/80;
+  }
+
+  /* Hover on active item shows a stronger border */
+  .toc-item.active a:hover {
+    @apply border-base14/80;
+  }
+
+  /* Heading level styles with better hierarchy */
   .toc-item.level-1 {
-    @apply font-semibold;
+    @apply mb-1.5;
+  }
+
+  .toc-item.level-1 a {
+    @apply font-medium text-base6;
+  }
+
+  .toc-item.level-1.active a {
+    @apply text-base14 font-bold;
+  }
+
+  .toc-item.level-1.visible:not(.active) a {
+    @apply text-base14/80;
   }
 
   .toc-item.level-2 {
-    @apply pl-3;
+    @apply pl-3 mb-1;
+  }
+
+  .toc-item.level-2 a {
+    @apply text-base5;
   }
 
   .toc-item.level-3 {
-    @apply pl-6 text-base4;
+    @apply pl-6 mb-1;
+  }
+
+  .toc-item.level-3 a {
+    @apply text-base5/90 text-xs;
+  }
+
+  .toc-item.level-4 {
+    @apply pl-9 mb-0.5;
+  }
+
+  .toc-item.level-4 a {
+    @apply text-base5/80 text-xs;
+  }
+
+  .toc-item.level-5,
+  .toc-item.level-6 {
+    @apply pl-12 mb-0.5;
+  }
+
+  .toc-item.level-5 a,
+  .toc-item.level-6 a {
+    @apply text-base5/70 text-xs;
+  }
+
+  /* Text formatting inside TOC items */
+  .toc-text {
+    @apply block leading-tight;
+    @apply overflow-ellipsis overflow-hidden;
   }
 
   /* Back to top button in TOC */
@@ -226,23 +382,6 @@
 
   .toc-top-button:hover {
     @apply transform -translate-y-0.5;
-  }
-
-  /* Mobile TOC toggle button */
-  .toc-toggle {
-    @apply flex items-center justify-between gap-2 px-4 py-2 mb-2;
-    @apply bg-base1/90 backdrop-blur-sm rounded-md;
-    @apply text-base5 text-sm font-medium;
-    @apply border border-base3/20 shadow-md;
-    @apply transition-all duration-300;
-  }
-
-  .toc-toggle.toc-open {
-    @apply bg-base14/20 text-base14;
-  }
-
-  .toggle-icon {
-    @apply text-lg font-bold;
   }
 
   /* Skeleton loader styles */
