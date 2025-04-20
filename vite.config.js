@@ -13,7 +13,7 @@ export default defineConfig({
       $data: path.resolve('./src/lib/data/'),
       $utils: path.resolve('./src/lib/utils'),
       $settings: path.resolve('./src/lib/settings'),
-      $styles: path.resolve('./src/styles')
+      $styles: path.resolve('./src/lib/styles')
     }
   },
   plugins: [

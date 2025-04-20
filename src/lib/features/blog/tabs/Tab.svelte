@@ -29,7 +29,7 @@
 </button>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .tab {
     @apply inline-flex items-center relative;

@@ -210,7 +210,7 @@
 </main>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .post-container {
     @apply w-full max-w-6xl mx-auto my-8 sm:my-12;

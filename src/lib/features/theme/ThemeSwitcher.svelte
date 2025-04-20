@@ -23,7 +23,7 @@
 </button>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .theme-toggle {
     @apply flex items-center justify-center h-8 w-8 rounded-full;

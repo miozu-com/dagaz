@@ -107,7 +107,7 @@
 </div>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .select-container {
     @apply relative w-full;

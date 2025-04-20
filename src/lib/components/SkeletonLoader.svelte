@@ -45,7 +45,7 @@
 {/if}
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   /* Base skeleton styles */
   .pulse {

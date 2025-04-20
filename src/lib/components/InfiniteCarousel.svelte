@@ -194,7 +194,7 @@
 </div>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .carousel-container {
     @apply w-full overflow-hidden relative;

@@ -95,7 +95,7 @@
 </li>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .post-item {
     @apply flex;

@@ -82,7 +82,7 @@
 </div>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .tags {
     @apply flex flex-wrap gap-2;

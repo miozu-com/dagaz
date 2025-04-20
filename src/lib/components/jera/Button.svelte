@@ -85,7 +85,7 @@
 {/if}
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .btn {
     @apply inline-flex items-center justify-center;

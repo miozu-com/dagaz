@@ -63,7 +63,7 @@
 </label>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .switcher-wrapper {
     @apply inline-flex items-center cursor-pointer;

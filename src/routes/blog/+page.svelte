@@ -155,7 +155,7 @@
 </div>
 
 <style lang="postcss">
-  @import '$theme/theme.css' theme(reference);
+  @import '$styles/theme.css' theme(reference);
 
   .blog-container {
     @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;
