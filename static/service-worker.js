@@ -1,17 +1,16 @@
 // Service Worker for Dagaz Blog PWA
-const CACHE_NAME = 'dagaz-cache-v1.3';
+const CACHE_NAME = 'dagaz-cache-v1.4';
 const OFFLINE_URL = '/offline.html';
 
-// Expanded assets to pre-cache - including font files
+// Expanded assets to pre-cache - updated with Noto Sans variable fonts
 const PRECACHE_ASSETS = [
   '/',
   '/offline.html',
   '/manifest.json',
   '/favicon.png',
-  // Font files - important to pre-cache
-  '/fonts/LibreBaskerville-Regular.ttf',
-  '/fonts/LibreBaskerville-Bold.ttf',
-  '/fonts/LibreBaskerville-Italic.ttf'
+  // Font files - critical for offline use
+  '/fonts/NotoSans-VariableFont_wdth,wght.ttf',
+  '/fonts/NotoSans-Italic-VariableFont_wdth,wght.ttf'
 ];
 
 // Separate cache for fonts that can have a longer expiration time

@@ -3,10 +3,10 @@
   --color-border-light: #d0d2db; /* Miozu02 | borders */
 
   --font-sans:
-    'Noto Sans', 'ibm plex sans', Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif:
-    'Noto Serif', 'ibm plex serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    'Noto Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: 'IBM Plex Serif', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  /* TODO  monospace font*/
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;

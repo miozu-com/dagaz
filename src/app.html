@@ -17,47 +17,11 @@
     <!-- Preload critical fonts for better performance -->
     <link
       rel="preload"
-      href="%sveltekit.assets%/fonts/LibreBaskerville-Regular.ttf"
+      href="%sveltekit.assets%/fonts/NotoSans-VariableFont_wdth,wght.ttf"
       as="font"
       type="font/ttf"
       crossorigin
     />
-
-    <!-- Optionally preload the bold variant if it's used in above-the-fold content -->
-    <link
-      rel="preload"
-      href="%sveltekit.assets%/fonts/LibreBaskerville-Bold.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-
-    <!-- IBM Plex Sans preconnect and preload -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Preload IBM Plex Sans with high priority but non-blocking -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
-    />
-
-    <!-- Load the stylesheet with non-blocking approach -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-
-    <!-- Fallback for browsers that don't support JS -->
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap"
-      />
-    </noscript>
 
     %sveltekit.head%
   </head>
