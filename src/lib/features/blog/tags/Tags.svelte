@@ -1,3 +1,4 @@
+<!-- src/lib/features/blog/tags/Tags.svelte -->
 <script>
   import {
     pipe,
@@ -117,14 +118,18 @@
     }, 300);
   }
 
-  // Public method to reset tag state
+  // Public method to reset tag state - IMPROVED
   function resetState() {
-    // Reset all tags to false
+    // Reset all tags to false with a brand new object to ensure reactivity
+    const newTags = {};
     keys(tags).forEach(tag => {
-      tags[tag] = false;
+      newTags[tag] = false;
     });
+    tags = newTags; // Replace the entire object for better reactivity
+
     // Notify parent that all filters are cleared
     toggleEvent(payload);
+
     // Scroll back to start
     if (tagsContainer) {
       tagsContainer.scrollTo({

@@ -1,3 +1,4 @@
+<!-- src/lib/features/blog/tabs/Tabs.svelte -->
 <script>
   import {
     pipe,
@@ -100,12 +101,23 @@
     }
   };
 
-  // Public method to reset tab state
+  // Public method to reset tab state - IMPROVED
   function resetState(defaultTab = 'All') {
     const tabToSelect = keys(tabs).includes(defaultTab) ? defaultTab : keys(tabs)[0];
-    updateTabs(tabToSelect);
-    updateIndicator(tabToSelect);
+
+    // Create a completely new tabs object to ensure reactivity
+    const newTabs = {};
+    keys(tabs).forEach(key => {
+      newTabs[key] = key === tabToSelect;
+    });
+    tabs = newTabs;
+
+    // Update the visual indicator
+    setTimeout(() => updateIndicator(tabToSelect), 50);
+
+    // Trigger the event to update the parent component
     triggerEvent(payload, tabToSelect);
+
     // Scroll back to start when resetting
     if (tabsWrapper) {
       tabsWrapper.scrollTo({

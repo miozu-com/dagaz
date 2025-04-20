@@ -17,6 +17,7 @@
   let activeTab = $state('All'); // Default to 'All' tab
   let posts = $state(data.posts);
   let filteredPosts = $state(data.posts);
+  let isResetting = $state(false); // Flag to track reset action
 
   // References to child components for resetting their state
   let tabsComponent;
@@ -49,8 +50,11 @@
     filteredPosts = filtered;
   }
 
-  // Reset all filters - fixed to properly reset visual state
+  // Reset all filters - IMPROVED with proper visual feedback
   function resetFilters() {
+    // Set resetting flag to true
+    isResetting = true;
+
     // Reset filtered posts to original state
     filteredPosts = [...posts];
 
@@ -58,13 +62,19 @@
     activeTab = 'All';
 
     // Use component methods to reset internal state
-    if (tabsComponent && typeof tabsComponent.resetState === 'function') {
-      tabsComponent.resetState('All');
-    }
+    // Add a small delay to make sure DOM is updated first
+    setTimeout(() => {
+      if (tabsComponent && typeof tabsComponent.resetState === 'function') {
+        tabsComponent.resetState('All');
+      }
 
-    if (tagsComponent && typeof tagsComponent.resetState === 'function') {
-      tagsComponent.resetState();
-    }
+      if (tagsComponent && typeof tagsComponent.resetState === 'function') {
+        tagsComponent.resetState();
+      }
+
+      // Reset the flag
+      isResetting = false;
+    }, 50);
   }
 </script>
 
@@ -86,7 +96,7 @@
     </div>
 
     <!-- Updated tabs section with improved mobile experience -->
-    {#if hasTabs}
+    {#if hasTabs && !isResetting}
       <div class="category-tabs">
         <Tabs
           bind:this={tabsComponent}
@@ -99,7 +109,7 @@
     {/if}
   </header>
 
-  {#if hasTags}
+  {#if hasTags && !isResetting}
     <div class="filter-section">
       <Divider />
       <div class="tags-wrapper">

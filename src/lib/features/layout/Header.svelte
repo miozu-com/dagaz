@@ -1,8 +1,10 @@
+<!-- src/lib/features/layout/Header.svelte -->
 <script>
   import {githubRepo, codebergRepo, appName} from '$lib/settings/global';
   import {mainRoutes} from '$lib/settings/routes';
   import DagazLogo from '$components/DagazLogo.svelte';
   import Divider from '$components/Divider.svelte';
+  import MobileMenu from './MobileMenu.svelte';
 
   let {headerEl = $bindable(), l10n, theme} = $props();
 </script>
@@ -16,6 +18,7 @@
       </a>
     </div>
 
+    <!-- Desktop navigation - hidden on small screens -->
     <nav class="main-nav">
       {#each mainRoutes as route}
         <a href={route.path} class="nav-link">
@@ -27,6 +30,9 @@
     <div class="header-right">
       <!-- Empty space to balance the layout -->
     </div>
+
+    <!-- Mobile menu component -->
+    <MobileMenu routes={mainRoutes} {l10n} {theme} />
   </div>
   <Divider />
 </header>
@@ -71,6 +77,8 @@
 
   .main-nav {
     @apply flex-1 flex items-center justify-center;
+    /* Hide on small screens */
+    @apply hidden md:flex;
   }
 
   .nav-link {
