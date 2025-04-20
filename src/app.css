@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 @import './theme.css';
+@import './lib/styles/fonts.css';
+
+:root {
+  --font-serif: 'Libre Baskerville', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+}
 
 html {
   @apply overflow-hidden;
@@ -249,13 +254,4 @@ body {
   @apply bg-base1 text-base12 rounded-xs px-1.5 py-0.5;
   @apply text-sm font-mono border border-base3/10;
   @apply whitespace-nowrap;
-}
-
-/* Global Layout Utility Classes */
-.container {
-  @apply max-w-7xl mx-auto px-4 py-8;
-}
-
-.section {
-  @apply py-8 sm:py-12;
 }

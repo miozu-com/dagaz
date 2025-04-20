@@ -231,7 +231,7 @@
 </div>
 
 <style>
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
   .toast-container {
     @apply flex fixed bottom-4 z-50;
     flex-direction: column-reverse; /* Newest goes on top */

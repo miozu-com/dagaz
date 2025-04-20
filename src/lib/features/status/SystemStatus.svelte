@@ -323,7 +323,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .system-status {
     @apply fixed bottom-0 left-0 right-0 z-40;

@@ -30,7 +30,7 @@
 {/if}
 
 <style lang="postcss">
- @import '../../theme.css' theme(reference);
+ @import '$theme/theme.css' theme(reference);
  .divider-wrapper {
   @apply flex flex-col;
   .divider-content {

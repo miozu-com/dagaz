@@ -272,7 +272,7 @@
 </footer>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .blog-post-footer {
     @apply mt-12 mb-16 flex flex-col gap-10;

@@ -29,7 +29,7 @@
 </button>
 
 <style lang="postcss">
-  @import '../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .badge {
     @apply inline-flex items-center;

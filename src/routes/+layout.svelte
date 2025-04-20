@@ -113,7 +113,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .app-container {
     @apply bg-base0 text-base6;

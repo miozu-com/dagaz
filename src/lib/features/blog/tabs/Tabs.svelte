@@ -108,7 +108,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
   .tabs-w {
     @apply relative;
   }

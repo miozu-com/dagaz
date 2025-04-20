@@ -32,7 +32,7 @@
 </header>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .header {
     @apply z-10 bg-base0;

@@ -121,7 +121,7 @@
 </Button>
 
 <style lang="postcss">
-  @import '../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .star-count {
     @apply flex items-center gap-0.5 ml-2.5;

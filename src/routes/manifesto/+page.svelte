@@ -126,7 +126,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .manifesto-container {
     @apply w-full max-w-4xl mx-auto pb-16;

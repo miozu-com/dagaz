@@ -26,7 +26,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .empty-container {
     @apply flex flex-col items-center justify-center;

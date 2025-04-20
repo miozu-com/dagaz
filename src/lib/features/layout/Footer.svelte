@@ -246,7 +246,7 @@
 </footer>
 
 <style lang="postcss">
-  @import '../../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .footer {
     @apply w-full mt-auto bg-base0;

@@ -14,9 +14,13 @@
   let {data} = $props();
 
   // State for active tab and filtered posts
-  let activeTab = $state(null);
+  let activeTab = $state('All'); // Default to 'All' tab
   let posts = $state(data.posts);
   let filteredPosts = $state(data.posts);
+
+  // References to child components for resetting their state
+  let tabsComponent = $state(null);
+  let tagsComponent = $state(null);
 
   // Check if we have posts with tabs or tags
   let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
@@ -45,10 +49,22 @@
     filteredPosts = filtered;
   }
 
-  // Reset all filters
+  // Reset all filters - simplified and improved
   function resetFilters() {
+    // Reset filtered posts to original state
     filteredPosts = [...posts];
+
+    // Reset active tab state
     activeTab = 'All';
+
+    // Signal child components to reset their internal state
+    if (tabsComponent) {
+      tabsComponent.resetState('All');
+    }
+
+    if (tagsComponent) {
+      tagsComponent.resetState();
+    }
   }
 </script>
 
@@ -71,6 +87,7 @@
     {#if hasTabs}
       <div class="category-tabs">
         <Tabs
+          bind:this={tabsComponent}
           payload={posts}
           triggerEvent={handleTabClick}
           propPath={['meta', 'tabs']}
@@ -86,13 +103,14 @@
         <Divider />
         <div class="tags-wrapper">
           <Tags
+            bind:this={tagsComponent}
             payload={posts}
             toggleEvent={handleTagToggle}
             propPath={['meta', 'tags']}
             isTagCount={true}
           />
           <Button
-            disabled={filteredPosts.length === posts.length}
+            disabled={filteredPosts.length === posts.length && activeTab === 'All'}
             variant="secondary sm"
             onclick={resetFilters}
             class="reset-button"
@@ -137,7 +155,7 @@
 </div>
 
 <style lang="postcss">
-  @import '../../theme.css' theme(reference);
+  @import '$theme/theme.css' theme(reference);
 
   .blog-container {
     @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;

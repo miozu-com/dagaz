@@ -58,16 +58,6 @@ export default {
     prerender: {
       handleHttpError: 'warn',
       handleMissingId: 'warn'
-    },
-    alias: {
-      $lib: 'src/lib',
-      $components: 'src/lib/components',
-      $features: 'src/lib/features',
-      $data: 'src/lib/data',
-      $utils: 'src/lib/utils',
-      $stores: 'src/lib/stores',
-      $constants: 'src/lib/constants',
-      $settings: 'src/lib/settings'
     }
   },
   preprocess: [vitePreprocess(), mdsvex(mdsvexConfig)]

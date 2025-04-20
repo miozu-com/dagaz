@@ -19,7 +19,7 @@
 </button>
 
 <style lang="postcss">
- @import '../../theme.css' theme(reference);
+ @import '$theme/theme.css' theme(reference);
  .switch-container {
   @apply relative w-10 h-5 rounded-full cursor-pointer transition-colors duration-300;
   @apply border border-base1;
