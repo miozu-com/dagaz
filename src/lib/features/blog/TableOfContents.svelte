@@ -36,7 +36,29 @@
       event.preventDefault();
     }
 
-    const element = document.getElementById(id);
+    // First try exact ID match
+    let element = document.getElementById(id);
+
+    // If no exact match, try to find by text content
+    if (!element) {
+      const headingData = headings.find(h => h.id === id);
+      if (headingData) {
+        const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        for (const heading of allHeadings) {
+          if (heading.textContent.trim() === headingData.text) {
+            element = heading;
+
+            // Dynamically add ID if missing to help with future navigation
+            if (!heading.id) {
+              heading.id = id;
+            }
+            break;
+          }
+        }
+      }
+    }
+
     if (element) {
       element.scrollIntoView({behavior: 'smooth', block: 'start'});
       activeHeadingId = id;
@@ -72,81 +94,95 @@
     observers.forEach(observer => observer.disconnect());
     observers = [];
 
-    // Query all headings in the document - including h1-h6 elements
-    const headingElements = document.querySelectorAll(
-      'h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]'
-    );
-    if (!headingElements.length) return;
-
-    // Map of element IDs to their corresponding TOC items
-    const headingMap = {};
-    headings.forEach(heading => {
-      headingMap[heading.id] = heading;
+    // Map of heading text to TOC ids
+    const headingTextToId = {};
+    headings.forEach(h => {
+      headingTextToId[h.text] = h.id;
     });
 
-    // Create the main visibility observer with a generous margin
-    // This will mark headings as visible even if only partially in viewport
+    // Query all headings in the document
+    const headingElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    if (!headingElements.length) return;
+
+    // Create the main visibility observer
     const visibilityObserver = new IntersectionObserver(
       entries => {
-        // Process all intersection entries
         entries.forEach(entry => {
-          const id = entry.target.id;
+          const element = entry.target;
+          // Find TOC ID either directly from element ID or by matching text content
+          let id = element.id;
+
+          if (!id || !headings.some(h => h.id === id)) {
+            id = headingTextToId[element.textContent.trim()];
+          }
+
+          if (!id) return; // Skip if we can't find a matching TOC entry
 
           if (entry.isIntersecting) {
-            // If it's entering the viewport and not already marked visible
             if (!visibleHeadingIds.includes(id)) {
               visibleHeadingIds = [...visibleHeadingIds, id];
             }
           } else {
-            // If it's leaving the viewport and is marked visible
             visibleHeadingIds = visibleHeadingIds.filter(visibleId => visibleId !== id);
           }
         });
       },
       {
         root: null,
-        rootMargin: '-5% 0px -5% 0px', // Very generous margins to catch partially visible headings
-        threshold: 0.01 // Even tiny visibility counts
+        rootMargin: '-5% 0px -5% 0px',
+        threshold: 0.01
       }
     );
 
-    observers.push(visibilityObserver);
-
-    // Active heading observer - more strict about what's considered "active"
+    // Active heading observer
     const activeObserver = new IntersectionObserver(
       entries => {
-        // Don't update active if manually selected (clicked) recently
         if (manuallySelected) return;
 
-        // Find entries in viewport, sorted by their vertical position
         const visibleEntries = entries
           .filter(entry => entry.isIntersecting)
-          .sort((a, b) => {
-            // Get the absolute position from viewport top
-            const posA = a.boundingClientRect.top;
-            const posB = b.boundingClientRect.top;
-            return posA - posB; // Sort by closest to viewport top
-          });
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
-        // Set the topmost visible heading as active
         if (visibleEntries.length > 0) {
-          activeHeadingId = visibleEntries[0].target.id;
+          const element = visibleEntries[0].target;
+          let id = element.id;
+
+          // If no ID or ID not in our TOC, try matching by text
+          if (!id || !headings.some(h => h.id === id)) {
+            id = headingTextToId[element.textContent.trim()];
+          }
+
+          if (id) {
+            activeHeadingId = id;
+          }
         }
       },
       {
         root: null,
-        rootMargin: '0px 0px -75% 0px', // Focus on top 25% of viewport
-        threshold: [0.1, 0.5] // Need reasonable visibility to become active
+        rootMargin: '0px 0px -75% 0px',
+        threshold: [0.1, 0.5]
       }
     );
 
-    observers.push(activeObserver);
+    observers.push(visibilityObserver, activeObserver);
 
-    // Observe all heading elements with both observers
+    // Observe all heading elements
     headingElements.forEach(element => {
-      if (element.id) {
+      // Only observe headings that match our TOC entries
+      if (element.id && headings.some(h => h.id === element.id)) {
         visibilityObserver.observe(element);
         activeObserver.observe(element);
+      } else {
+        // Try to match by text content
+        const text = element.textContent.trim();
+        if (headingTextToId[text]) {
+          // Add ID to element if it's missing
+          if (!element.id) {
+            element.id = headingTextToId[text];
+          }
+          visibilityObserver.observe(element);
+          activeObserver.observe(element);
+        }
       }
     });
   }
@@ -159,7 +195,7 @@
   onMount(() => {
     // Setup observers once DOM is ready
     if (!isLoading && headings.length > 0) {
-      setTimeout(setupObservers, 200); // Small delay to ensure DOM is ready
+      setTimeout(setupObservers, 200);
     }
 
     // Listen for scroll for back-to-top button
@@ -170,30 +206,23 @@
     handleScroll();
     handleResize();
 
+    // Refresh observers periodically to catch dynamic content changes
+    const refreshInterval = setInterval(() => {
+      if (!isLoading && headings.length > 0) {
+        setupObservers();
+      }
+    }, 2000);
+
     return () => {
-      // Clean up event listeners and observers
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
+      clearInterval(refreshInterval);
       observers.forEach(observer => observer.disconnect());
     };
   });
 
-  $effect(() => {
-    if (!isLoading && headings.length > 0 && typeof window !== 'undefined') {
-      // Small delay to ensure DOM is ready
-      setTimeout(setupObservers, 300);
-
-      // Also periodically refresh observers to catch any dynamic content changes
-      const refreshInterval = setInterval(() => {
-        setupObservers();
-      }, 2000);
-
-      // Clean up
-      return () => {
-        clearInterval(refreshInterval);
-        observers.forEach(observer => observer.disconnect());
-      };
-    }
+  onDestroy(() => {
+    observers.forEach(observer => observer.disconnect());
   });
 </script>
 
@@ -266,7 +295,7 @@
   }
 
   .toc-list {
-    @apply space-y-2 mb-4; /* Add margin to make room for back-to-top button */
+    @apply space-y-2 mb-4;
   }
 
   .toc-item {
@@ -276,7 +305,7 @@
 
   .toc-item a {
     @apply block py-1 no-underline;
-    @apply border-l-2 border-transparent pl-2; /* Add left border for hover effect */
+    @apply border-l-2 border-transparent pl-2;
     @apply transition-all duration-200;
   }
 
@@ -288,31 +317,8 @@
     @apply text-base14 border-base14 font-medium;
   }
 
-  /* Common styles for all links */
-  .toc-item a {
-    @apply block py-1 no-underline;
-    @apply border-l-0 pl-2; /* No left border by default */
-    @apply transition-all duration-200;
-  }
-
-  /* Link hover - show the left border */
-  .toc-item a:hover {
-    @apply text-base14 border-l-2 border-base14/50;
-  }
-
-  /* Active item has base14 color but no border unless hovered */
-  .toc-item.active a {
-    @apply text-base14 font-medium;
-  }
-
-  /* Visible but not active items styling */
   .toc-item.visible:not(.active) a {
     @apply text-base14/80;
-  }
-
-  /* Hover on active item shows a stronger border */
-  .toc-item.active a:hover {
-    @apply border-base14/80;
   }
 
   /* Heading level styles with better hierarchy */
@@ -325,7 +331,7 @@
   }
 
   .toc-item.level-1.active a {
-    @apply text-base14 font-bold;
+    @apply text-base14 font-bold border-base14;
   }
 
   .toc-item.level-1.visible:not(.active) a {
@@ -340,6 +346,10 @@
     @apply text-base5;
   }
 
+  .toc-item.level-2.active a {
+    @apply text-base14 border-base14;
+  }
+
   .toc-item.level-3 {
     @apply pl-6 mb-1;
   }
@@ -348,12 +358,20 @@
     @apply text-base5/90 text-xs;
   }
 
+  .toc-item.level-3.active a {
+    @apply text-base14 border-base14;
+  }
+
   .toc-item.level-4 {
     @apply pl-9 mb-0.5;
   }
 
   .toc-item.level-4 a {
     @apply text-base5/80 text-xs;
+  }
+
+  .toc-item.level-4.active a {
+    @apply text-base14 border-base14;
   }
 
   .toc-item.level-5,
