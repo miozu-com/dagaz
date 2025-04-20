@@ -330,7 +330,7 @@ pnpm dev</code
   }
 
   .feature-card {
-    @apply flex gap-5 p-6 rounded-md;
+    @apply flex gap-5 p-6 rounded-xs;
     @apply transition-all;
     @apply bg-gradient-to-br from-base1/60 to-base1/20;
     @apply border border-base3/5;
@@ -358,7 +358,7 @@ pnpm dev</code
   }
 
   .code-sample {
-    @apply max-w-2xl mx-auto mb-6 bg-base0 rounded-md p-6 border border-base3/10;
+    @apply max-w-2xl mx-auto mb-6 bg-base0 rounded-xs p-6 border border-base3/10;
     @apply text-left overflow-auto;
   }
 

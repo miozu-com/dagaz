@@ -266,7 +266,7 @@
   }
 
   .toast-action {
-    @apply px-3 py-1.5 text-sm font-medium rounded-sm transition-colors duration-200;
+    @apply px-3 py-1.5 text-sm font-medium rounded-xs transition-colors duration-200;
   }
 
   .primary-action {

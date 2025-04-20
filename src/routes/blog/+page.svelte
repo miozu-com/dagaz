@@ -224,6 +224,6 @@
   .no-results {
     @apply flex flex-col items-center justify-center text-center py-10 gap-4;
     @apply text-base4;
-    @apply bg-base1/30 rounded-lg border border-base3/10;
+    @apply bg-base1/30 rounded-xs border border-base3/10;
   }
 </style>

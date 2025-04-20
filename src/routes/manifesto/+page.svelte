@@ -163,7 +163,7 @@
   }
 
   .principle {
-    @apply bg-base1/30 p-6 rounded-md;
+    @apply bg-base1/30 p-6 rounded-xs;
     @apply border border-base3/10;
   }
 

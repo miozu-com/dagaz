@@ -30,7 +30,7 @@
 
   .empty-container {
     @apply flex flex-col items-center justify-center;
-    @apply py-10 sm:py-16 px-4 rounded-md bg-base1/30;
+    @apply py-10 sm:py-16 px-4 rounded-xs bg-base1/30;
     @apply text-center max-w-sm sm:max-w-lg mx-auto my-6 sm:my-8;
   }
 

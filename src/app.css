@@ -187,7 +187,7 @@ body {
 
 .post-body table {
   @apply w-full border-collapse my-6;
-  @apply shadow-sm rounded-lg overflow-hidden;
+  @apply shadow-sm rounded-xs overflow-hidden;
 }
 
 .post-body th,
@@ -209,7 +209,7 @@ body {
 }
 
 .post-body img {
-  @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
+  @apply max-w-full rounded-xs shadow-md my-6 sm:my-8 mx-auto;
 }
 
 .post-body pre {

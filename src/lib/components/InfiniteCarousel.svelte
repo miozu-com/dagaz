@@ -212,7 +212,7 @@
   }
 
   .carousel-item {
-    @apply flex flex-col items-center bg-base1/30 p-4 rounded-lg;
+    @apply flex flex-col items-center bg-base1/30 p-4 rounded-xs;
     @apply min-w-32 transition-all hover:bg-base1/60;
     @apply flex-shrink-0;
     /* Allow custom color through CSS variable */

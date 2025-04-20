@@ -118,7 +118,7 @@
   }
 
   .select-content {
-    @apply absolute z-50 w-full mt-1 rounded-sm border bg-base1 dark:bg-base2;
+    @apply absolute z-50 w-full mt-1 rounded-xs border bg-base1 dark:bg-base2;
     @apply border-base3/40 dark:border-base3/60;
     @apply shadow-lg;
     @apply flex flex-col;

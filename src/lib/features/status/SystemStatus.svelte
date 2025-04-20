@@ -368,7 +368,7 @@
 
   .status-item {
     @apply flex flex-col items-center;
-    @apply px-3 py-1 rounded-sm;
+    @apply px-3 py-1 rounded-xs;
     @apply bg-base2/30 dark:bg-base2/30;
     @apply border-l-2 border-[var(--status-color)];
   }

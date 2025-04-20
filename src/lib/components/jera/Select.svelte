@@ -117,7 +117,7 @@
 
   /* @apply animate-in fade-in-0 zoom-in-95; */
   .select-content {
-    @apply absolute z-50 w-full mt-1 rounded-sm border border-base4 bg-base0 shadow-lg;
+    @apply absolute z-50 w-full mt-1 rounded-xs border border-base4 bg-base0 shadow-lg;
     @apply flex flex-col;
     @apply overflow-y-auto max-h-[200px];
     scrollbar-gutter: stable;
