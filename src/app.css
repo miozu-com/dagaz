@@ -119,7 +119,7 @@ body {
   --shiki-token-component-tag: var(--color-base13); /* Svelte component name */
 }
 
-/* Global Blog Post Styles - These need to be global because they target content from {@html} */
+/* Global Blog Post Styles - NOTE These need to be global because they target content from {@html} */
 .post-body h1,
 .post-body h2,
 .post-body h3,
@@ -233,71 +233,25 @@ body {
 /* Add language label to code blocks */
 .post-body pre::before {
   content: attr(data-language);
-  @apply absolute top-0 right-0 px-3 py-1 text-xs font-mono;
+  @apply absolute top-0 right-0 px-2.5 py-0.5 text-xs font-mono;
   @apply bg-base2/70 text-base5 rounded-bl-md rounded-tr-md;
   @apply uppercase tracking-wider;
 }
 
-/* Svelte code block improvements */
-.post-body .language-svelte .tag {
-  color: var(--color-base14);
-  font-weight: 600;
+/* Global Layout Utility Classes */
+.container {
+  @apply max-w-7xl mx-auto px-4 py-8;
 }
 
-.post-body .language-svelte .attr-name {
-  color: var(--color-base10);
+.section {
+  @apply py-8 sm:py-12;
 }
 
-.post-body .language-svelte .attr-value {
-  color: var(--color-base10);
-}
-
-.post-body .language-svelte .punctuation {
-  color: var(--color-base6);
-}
-
-/* Svelte 5 runes */
-.post-body .language-svelte .keyword:has(+ .punctuation:contains('$')) {
-  color: var(--color-base14);
-  font-weight: 600;
-}
-
-.post-body .language-svelte .script-tag {
-  color: var(--color-base14);
-  font-weight: 600;
-}
-
-.post-body .language-svelte .style-tag {
-  color: var(--color-base14);
-  font-weight: 600;
-}
-
-/* JavaScript improvements */
-.post-body .language-javascript .keyword,
-.post-body .language-js .keyword {
-  color: var(--color-base14);
-  font-weight: 600;
-}
-
-.post-body .language-javascript .function,
-.post-body .language-js .function {
-  color: var(--color-base13);
-}
-
-.post-body .language-javascript .string,
-.post-body .language-js .string {
-  color: var(--color-base10);
-}
-
-.post-body .language-javascript .number,
-.post-body .language-js .number {
-  color: var(--color-base9);
-}
-
-.post-body .language-javascript .comment,
-.post-body .language-js .comment {
-  color: var(--color-base4);
-  font-style: italic;
+/* Global UI element styles */
+.badge {
+  @apply inline-flex items-center;
+  @apply px-2 py-0.5 rounded-sm;
+  @apply text-xs font-medium;
 }
 
 /* TAB Component Styles */
@@ -342,70 +296,4 @@ body {
 
 .tab-count {
   @apply text-sm self-center;
-}
-
-/* Add custom utility classes for typography */
-.typography-article {
-  @apply font-serif text-lg text-base6 leading-relaxed;
-  @apply tracking-normal;
-}
-
-.typography-heading {
-  @apply font-sans font-bold tracking-tight text-base14;
-}
-
-.typography-heading-1 {
-  @apply text-4xl leading-tight;
-  @apply tracking-tight;
-}
-
-.typography-heading-2 {
-  @apply text-3xl leading-tight;
-  @apply tracking-tight;
-}
-
-.typography-heading-3 {
-  @apply text-2xl leading-tight;
-  @apply tracking-tight;
-}
-
-.typography-heading-4 {
-  @apply text-xl leading-tight;
-  @apply tracking-tight;
-}
-
-.typography-subheading {
-  @apply font-sans font-medium text-base3 text-sm uppercase;
-  @apply tracking-wider;
-}
-
-.typography-caption {
-  @apply font-sans text-sm text-base4;
-}
-
-/* Loading and Error States */
-.loading-spinner {
-  @apply h-8 w-8 sm:h-10 sm:w-10 rounded-full border-4 border-base3/20 border-t-base14;
-  @apply animate-spin mb-4;
-}
-
-.loading-state,
-.error-state {
-  @apply flex flex-col items-center justify-center py-12 sm:py-16 text-base3;
-}
-
-/* Global Layout Utility Classes */
-.container {
-  @apply max-w-7xl mx-auto px-4 py-8;
-}
-
-.section {
-  @apply py-8 sm:py-12;
-}
-
-/* Global UI element styles */
-.badge {
-  @apply inline-flex items-center;
-  @apply px-2 py-0.5 rounded-sm;
-  @apply text-xs font-medium;
 }
