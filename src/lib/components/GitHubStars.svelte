@@ -17,7 +17,6 @@
   let isLoading = $state(true);
   let error = $state(null);
 
-  // TODO move to utils
   // Format stars count (e.g., 1000 -> 1k)
   function formatStars(count) {
     if (count >= 1000) {
@@ -26,31 +25,41 @@
     return count.toString();
   }
 
-  // Try to get stars from cache first, then fetch if needed
-  async function fetchStars() {
-    isLoading = true;
-    error = null;
+  // Cache management functions
+  function getFromCache(repo) {
+    const cacheKey = `github-stars-${repo}`;
+    const cached = localStorage.getItem(cacheKey);
 
+    if (!cached) return null;
+
+    const {value, timestamp} = JSON.parse(cached);
+    const now = Date.now();
+
+    return now - timestamp < cacheTime * 1000 ? value : null;
+  }
+
+  function saveToCache(repo, value) {
+    const cacheKey = `github-stars-${repo}`;
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        value,
+        timestamp: Date.now()
+      })
+    );
+  }
+
+  // Fetch GitHub stars data
+  async function fetchGitHubStars(repo) {
     try {
-      // Check if we have cached data
-      const cacheKey = `github-stars-${repo}`;
-      const cached = localStorage.getItem(cacheKey);
-
-      if (cached) {
-        const {value, timestamp} = JSON.parse(cached);
-        const now = Date.now();
-
-        // Use cache if it's still valid
-        if (now - timestamp < cacheTime * 1000) {
-          stars = formatStars(value);
-          isLoading = false;
-          return;
-        }
+      // Check cache first
+      const cachedStars = getFromCache(repo);
+      if (cachedStars !== null) {
+        return cachedStars;
       }
 
-      // Fetch from GitHub API if cache is invalid or missing
+      // Fetch from GitHub API
       const response = await fetch(`https://api.github.com/repos/${repo}`);
-
       if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status}`);
       }
@@ -59,26 +68,39 @@
       const starCount = data.stargazers_count;
 
       // Save to cache
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify({
-          value: starCount,
-          timestamp: Date.now()
-        })
-      );
+      saveToCache(repo, starCount);
 
-      stars = formatStars(starCount);
+      return starCount;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  // Simple digit animation using Svelte's reactive state
+  let animationFrame = $state(0);
+  let animationActive = $state(false);
+
+  function runLoadingAnimation() {
+    if (!animationActive) return;
+
+    animationFrame = (animationFrame + 1) % 10;
+    setTimeout(runLoadingAnimation, 100);
+  }
+
+  onMount(async () => {
+    try {
+      animationActive = true;
+      runLoadingAnimation();
+
+      stars = await fetchGitHubStars(repo);
     } catch (err) {
       console.error('Error fetching GitHub stars:', err);
       error = err.message;
       stars = null;
     } finally {
       isLoading = false;
+      animationActive = false;
     }
-  }
-
-  onMount(() => {
-    fetchStars();
   });
 </script>
 
@@ -86,12 +108,14 @@
   {buttonText}
   {#if showCount}
     <div class="star-count">
-      <div>
-        <Star size={14} strokeWidth={1.5} class="star-icon" />
-      </div>
-      <div>
-        {stars}
-      </div>
+      <Star size={14} strokeWidth={1.5} />
+      <span class="count-container">
+        {#if isLoading}
+          <span class="slot-digit">{animationFrame}</span>
+        {:else}
+          <span>{formatStars(stars)}</span>
+        {/if}
+      </span>
     </div>
   {/if}
 </Button>
@@ -100,34 +124,25 @@
   @import '../../theme.css' theme(reference);
 
   .star-count {
-    @apply flex items-center whitespace-nowrap ml-2;
-    @apply text-base5/90;
+    @apply flex items-center gap-0.5 ml-2.5;
+    @apply text-base5/90 whitespace-nowrap;
   }
 
-  .star-icon {
-    @apply inline-block mr-1 translate-y-[-1px];
+  .count-container {
+    @apply inline-flex items-center min-w-[1ch];
   }
 
-  .loading-wrapper {
-    @apply flex items-center;
-  }
-
-  .pulse {
-    @apply opacity-60;
-    animation: pulse 1.5s infinite;
-  }
-
-  .error {
-    @apply text-base8/80;
+  .slot-digit {
+    @apply inline-block text-center min-w-[1ch] opacity-70;
+    animation: pulse 0.5s infinite alternate;
   }
 
   @keyframes pulse {
-    0%,
-    100% {
+    from {
       opacity: 0.5;
     }
-    50% {
-      opacity: 1;
+    to {
+      opacity: 0.9;
     }
   }
 </style>
