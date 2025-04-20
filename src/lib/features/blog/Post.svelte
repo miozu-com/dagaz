@@ -98,8 +98,7 @@
   @import '$styles/theme.css' theme(reference);
 
   .post-item {
-    @apply flex;
-    height: 100%;
+    @apply flex h-full;
   }
 
   .post-card {
@@ -116,7 +115,7 @@
   }
 
   .color-accent {
-    @apply absolute inset-0 w-full;
+    @apply absolute inset-0 w-full opacity-80;
     background-color: var(--color, #ff9982);
   }
 
