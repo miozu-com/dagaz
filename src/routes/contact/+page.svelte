@@ -35,7 +35,7 @@
   // Validation functions
   function validateName(name) {
     if (!name || name.trim().length < 2) {
-      return 'Please enter your name (at least 2 characters)';
+      return l10n.t('contactNameError');
     }
     return null;
   }
@@ -43,14 +43,14 @@
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      return 'Please enter a valid email address';
+      return l10n.t('contactEmailError');
     }
     return null;
   }
 
   function validateMessage(message) {
     if (!message || message.trim().length < 10) {
-      return 'Please enter a message (at least 10 characters)';
+      return l10n.t('contactMessageError');
     }
     return null;
   }
@@ -130,30 +130,32 @@
 
 <div class="contact-container">
   <header class="contact-header">
-    <h1 class="page-title">Contact</h1>
-    <p class="page-subtitle">Let's start a conversation about your project</p>
+    <h1 class="page-title">{l10n.t('contact')}</h1>
+    <p class="page-subtitle">{l10n.t('contactSubtitle')}</p>
     <Divider />
   </header>
 
   <div class="contact-content">
     {#if formState.success}
       <div class="success-message">
-        <h2>Message Sent</h2>
+        <h2>{l10n.t('contactSuccess')}</h2>
         <p>{formState.message}</p>
-        <Button variant="primary" onclick={resetForm} class="mt-6">Send Another Message</Button>
+        <Button variant="primary" onclick={resetForm} class="mt-6"
+          >{l10n.t('contactSendAnother')}</Button
+        >
       </div>
     {:else}
       <div class="form-wrapper">
         <form onsubmit={handleSubmit} class="contact-form">
           <div class="form-group">
-            <label for="name">Name</label>
+            <label for="name">{l10n.t('contactName')}</label>
             <div class="input-wrapper">
               <input
                 id="name"
                 type="text"
                 bind:value={formData.name}
                 onblur={() => (validationErrors.name = validateName(formData.name))}
-                placeholder="Your name"
+                placeholder={l10n.t('contactNamePlaceholder')}
                 disabled={formState.submitting}
                 class={validationErrors.name ? 'input-error' : ''}
               />
@@ -170,14 +172,14 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email</label>
+            <label for="email">{l10n.t('contactEmail')}</label>
             <div class="input-wrapper">
               <input
                 id="email"
                 type="email"
                 bind:value={formData.email}
                 onblur={() => (validationErrors.email = validateEmail(formData.email))}
-                placeholder="your.email@example.com"
+                placeholder={l10n.t('contactEmailPlaceholder')}
                 disabled={formState.submitting}
                 class={validationErrors.email ? 'input-error' : ''}
               />
@@ -194,13 +196,13 @@
           </div>
 
           <div class="form-group">
-            <label for="message">Message</label>
+            <label for="message">{l10n.t('contactMessage')}</label>
             <textarea
               id="message"
               bind:value={formData.message}
               onblur={() => (validationErrors.message = validateMessage(formData.message))}
               rows="6"
-              placeholder="Tell me about your project..."
+              placeholder={l10n.t('contactMessagePlaceholder')}
               disabled={formState.submitting}
               class={validationErrors.message ? 'input-error' : ''}
             ></textarea>
@@ -222,15 +224,15 @@
           {/if}
 
           <Button type="submit" variant="primary" disabled={formState.submitting} class="w-full">
-            {formState.submitting ? 'Sending...' : 'Send Message'}
+            {formState.submitting ? l10n.t('contactSending') : l10n.t('contactSend')}
           </Button>
         </form>
 
         <div class="contact-info">
-          <h2>Other Ways to Connect</h2>
+          <h2>{l10n.t('contactOtherWays')}</h2>
 
           <div class="info-item">
-            <h3>Email</h3>
+            <h3>{l10n.t('contactEmail')}</h3>
             <p><a href={`mailto:${contact}`}>{contact}</a></p>
           </div>
 

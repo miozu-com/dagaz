@@ -12,7 +12,7 @@
    * @prop {boolean} isLoading - Whether content is still loading
    * @prop {string} className - Optional CSS class
    */
-  let {headings = [], isLoading = false, className = ''} = $props();
+  let {headings = [], isLoading = false, className = '', l10n} = $props();
 
   let isTocCollapsed = $state(false);
   let showBackToTop = $state(false);
@@ -234,7 +234,7 @@
       class="toc-sidebar {isTocCollapsed && window?.innerWidth < 768 ? 'collapsed' : ''}"
     >
       <div class="toc-content">
-        <h2 class="toc-title">Table of Contents</h2>
+        <h2 class="toc-title">{l10n.t('tableOfContents')}</h2>
 
         {#if isLoading}
           <SkeletonLoader type="toc" lines={8} class="toc-skeleton" />
@@ -259,7 +259,7 @@
           {#if showBackToTop}
             <button class="toc-top-button" on:click={scrollToTop} transition:fade={{duration: 200}}>
               <ChevronUp size={16} />
-              <span>Back to top</span>
+              <span>{l10n.t('backToTop')}</span>
             </button>
           {/if}
         {/if}

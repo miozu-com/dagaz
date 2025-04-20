@@ -10,7 +10,7 @@
 </script>
 
 <Metadata
-  title="Manifesto | {appName}"
+  title="{l10n.t('manifesto')} | {appName}"
   description="The philosophy and motivation behind the Dagaz SvelteKit starter project"
   canonicalUrl={`${domain}/manifesto`}
 />
@@ -18,13 +18,13 @@
 <div class="manifesto-container" in:fade={{duration: 300}}>
   <header class="manifesto-header">
     <DagazLogo size={56} color="#ff9982" class="manifesto-logo" />
-    <h1 class="manifesto-title">The Dagaz Manifesto</h1>
+    <h1 class="manifesto-title">{l10n.t('manifestoTitle')}</h1>
     <Divider />
   </header>
 
   <div class="manifesto-content">
     <section class="manifesto-section">
-      <h2 class="section-title">Why I Created Dagaz</h2>
+      <h2 class="section-title">{l10n.t('whyCreated')}</h2>
 
       <p>
         After years of developing projects with various frameworks, I created Dagaz for the projects
@@ -40,11 +40,11 @@
     </section>
 
     <section class="manifesto-section">
-      <h2 class="section-title">Core Principles</h2>
+      <h2 class="section-title">{l10n.t('corePrinciples')}</h2>
 
       <div class="principles">
         <div class="principle">
-          <h3>Minimal Dependencies</h3>
+          <h3>{l10n.t('minimalDependencies')}</h3>
           <p>
             Every dependency adds complexity, potential security risks, and maintenance burden.
             Dagaz uses just what's needed, nothing more. We can do remarkable things with modern
@@ -53,7 +53,7 @@
         </div>
 
         <div class="principle">
-          <h3>Functional Approach</h3>
+          <h3>{l10n.t('functionalApproach')}</h3>
           <p>
             Clean, predictable patterns make for maintainable code. Functional programming
             principles create systems that are easier to test, debug, and extend. Svelte 5's runes
@@ -62,7 +62,7 @@
         </div>
 
         <div class="principle">
-          <h3>Modular Architecture</h3>
+          <h3>{l10n.t('modularArchitecture')}</h3>
           <p>
             Each component, feature, and module should have a clear, single responsibility. This
             approach makes your project scale gracefully and avoids the technical debt of
@@ -71,7 +71,7 @@
         </div>
 
         <div class="principle">
-          <h3>Native First</h3>
+          <h3>{l10n.t('nativeFirst')}</h3>
           <p>
             The browser provides powerful APIs like Canvas instead of adding heavy third-party
             libraries. This leads to faster load times, better performance, and more control over
@@ -82,7 +82,7 @@
     </section>
 
     <section class="manifesto-section">
-      <h2 class="section-title">The Miozu Bundle</h2>
+      <h2 class="section-title">{l10n.t('miozuBundle')}</h2>
 
       <p>
         Dagaz is just the beginning. It's part of a larger collection I'm building called the Miozu
@@ -107,7 +107,7 @@
     </section>
 
     <section class="manifesto-section">
-      <h2 class="section-title">Looking Forward</h2>
+      <h2 class="section-title">{l10n.t('lookingForward')}</h2>
 
       <p>
         Web development doesn't need to be complicated. The tools we build should enable creativity

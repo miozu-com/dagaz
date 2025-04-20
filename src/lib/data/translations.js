@@ -54,7 +54,53 @@ export default {
 
     // Theme
     switchToLightMode: 'Switch to light mode',
-    switchToDarkMode: 'Switch to dark mode'
+    switchToDarkMode: 'Switch to dark mode',
+
+    // New translations for Contact page
+    contact: 'Contact',
+    contactSubtitle: "Let's start a conversation about your project",
+    contactName: 'Name',
+    contactEmail: 'Email',
+    contactMessage: 'Message',
+    contactNamePlaceholder: 'Your name',
+    contactEmailPlaceholder: 'your.email@example.com',
+    contactMessagePlaceholder: 'Tell me about your project...',
+    contactSending: 'Sending...',
+    contactSend: 'Send Message',
+    contactSendAnother: 'Send Another Message',
+    contactSuccess: 'Message Sent',
+    contactOtherWays: 'Other Ways to Connect',
+    contactNameError: 'Please enter your name (at least 2 characters)',
+    contactEmailError: 'Please enter a valid email address',
+    contactMessageError: 'Please enter a message (at least 10 characters)',
+
+    // New translations for Manifesto page
+    manifesto: 'Manifesto',
+    manifestoTitle: 'The Dagaz Manifesto',
+    whyCreated: 'Why I Created Dagaz',
+    corePrinciples: 'Core Principles',
+    miozuBundle: 'The Miozu Bundle',
+    lookingForward: 'Looking Forward',
+    minimalDependencies: 'Minimal Dependencies',
+    functionalApproach: 'Functional Approach',
+    modularArchitecture: 'Modular Architecture',
+    nativeFirst: 'Native First',
+
+    // Blog related translations
+    tableOfContents: 'Table of Contents',
+    share: 'Share',
+    copied: 'Copied!',
+    copyLink: 'Copy Link',
+    previous: 'Previous',
+    next: 'Next',
+    continueReading: 'Continue Reading',
+    topics: 'Topics',
+    subscribeNewsletter: 'Subscribe to our newsletter',
+    newsletterDesc: 'Get the latest posts delivered right to your inbox',
+    newsletterPlaceholder: 'Your email address',
+    subscribe: 'Subscribe',
+    newsletterDisclaimer: 'We respect your privacy. Unsubscribe at any time.',
+    backToTop: 'Back to top'
   },
   fr: {
     close: 'Fermer',
@@ -111,7 +157,53 @@ export default {
 
     // Theme
     switchToLightMode: 'Passer au mode clair',
-    switchToDarkMode: 'Passer au mode sombre'
+    switchToDarkMode: 'Passer au mode sombre',
+
+    // New translations for Contact page
+    contact: 'Contact',
+    contactSubtitle: 'Commençons une conversation sur votre projet',
+    contactName: 'Nom',
+    contactEmail: 'Email',
+    contactMessage: 'Message',
+    contactNamePlaceholder: 'Votre nom',
+    contactEmailPlaceholder: 'votre.email@exemple.com',
+    contactMessagePlaceholder: 'Parlez-moi de votre projet...',
+    contactSending: 'Envoi en cours...',
+    contactSend: 'Envoyer le Message',
+    contactSendAnother: 'Envoyer un Autre Message',
+    contactSuccess: 'Message Envoyé',
+    contactOtherWays: 'Autres Façons de se Connecter',
+    contactNameError: 'Veuillez entrer votre nom (au moins 2 caractères)',
+    contactEmailError: 'Veuillez entrer une adresse email valide',
+    contactMessageError: 'Veuillez entrer un message (au moins 10 caractères)',
+
+    // New translations for Manifesto page
+    manifesto: 'Manifeste',
+    manifestoTitle: 'Le Manifeste Dagaz',
+    whyCreated: "Pourquoi J'ai Créé Dagaz",
+    corePrinciples: 'Principes Fondamentaux',
+    miozuBundle: 'Le Bundle Miozu',
+    lookingForward: "Perspectives d'Avenir",
+    minimalDependencies: 'Dépendances Minimales',
+    functionalApproach: 'Approche Fonctionnelle',
+    modularArchitecture: 'Architecture Modulaire',
+    nativeFirst: 'Natif en Premier',
+
+    // Blog related translations
+    tableOfContents: 'Table des Matières',
+    share: 'Partager',
+    copied: 'Copié !',
+    copyLink: 'Copier le Lien',
+    previous: 'Précédent',
+    next: 'Suivant',
+    continueReading: 'Continuer la Lecture',
+    topics: 'Sujets',
+    subscribeNewsletter: 'Abonnez-vous à notre newsletter',
+    newsletterDesc: 'Recevez les derniers articles directement dans votre boîte mail',
+    newsletterPlaceholder: 'Votre adresse email',
+    subscribe: "S'abonner",
+    newsletterDisclaimer: 'Nous respectons votre vie privée. Désabonnez-vous à tout moment.',
+    backToTop: 'Retour en haut'
   },
   ua: {
     close: 'Закрити',
@@ -168,7 +260,53 @@ export default {
 
     // Theme
     switchToLightMode: 'Перейти на світлу тему',
-    switchToDarkMode: 'Перейти на темну тему'
+    switchToDarkMode: 'Перейти на темну тему',
+
+    // New translations for Contact page
+    contact: 'Контакт',
+    contactSubtitle: 'Давайте почнемо розмову про ваш проект',
+    contactName: "Ім'я",
+    contactEmail: 'Email',
+    contactMessage: 'Повідомлення',
+    contactNamePlaceholder: "Ваше ім'я",
+    contactEmailPlaceholder: 'ваш.email@приклад.com',
+    contactMessagePlaceholder: 'Розкажіть мені про ваш проект...',
+    contactSending: 'Відправлення...',
+    contactSend: 'Надіслати повідомлення',
+    contactSendAnother: 'Надіслати інше повідомлення',
+    contactSuccess: 'Повідомлення надіслано',
+    contactOtherWays: "Інші способи зв'язку",
+    contactNameError: "Будь ласка, введіть ваше ім'я (щонайменше 2 символи)",
+    contactEmailError: 'Будь ласка, введіть дійсну адресу електронної пошти',
+    contactMessageError: 'Будь ласка, введіть повідомлення (щонайменше 10 символів)',
+
+    // New translations for Manifesto page
+    manifesto: 'Маніфест',
+    manifestoTitle: 'Маніфест Dagaz',
+    whyCreated: 'Чому я створив Dagaz',
+    corePrinciples: 'Основні принципи',
+    miozuBundle: 'Набір Miozu',
+    lookingForward: 'Погляд у майбутнє',
+    minimalDependencies: 'Мінімальні залежності',
+    functionalApproach: 'Функціональний підхід',
+    modularArchitecture: 'Модульна архітектура',
+    nativeFirst: 'Нативність перш за все',
+
+    // Blog related translations
+    tableOfContents: 'Зміст',
+    share: 'Поділитися',
+    copied: 'Скопійовано!',
+    copyLink: 'Копіювати посилання',
+    previous: 'Попередня',
+    next: 'Наступна',
+    continueReading: 'Продовжити читання',
+    topics: 'Теми',
+    subscribeNewsletter: 'Підпишіться на нашу розсилку',
+    newsletterDesc: 'Отримуйте останні публікації прямо у вашій поштовій скриньці',
+    newsletterPlaceholder: 'Ваша електронна адреса',
+    subscribe: 'Підписатися',
+    newsletterDisclaimer: 'Ми поважаємо вашу приватність. Відписатися можна в будь-який час.',
+    backToTop: 'Нагору'
   },
   zh: {
     close: '关闭',
@@ -225,6 +363,52 @@ export default {
 
     // Theme
     switchToLightMode: '切换到浅色模式',
-    switchToDarkMode: '切换到深色模式'
+    switchToDarkMode: '切换到深色模式',
+
+    // New translations for Contact page
+    contact: '联系我们',
+    contactSubtitle: '让我们谈谈您的项目',
+    contactName: '姓名',
+    contactEmail: '邮箱',
+    contactMessage: '留言',
+    contactNamePlaceholder: '您的姓名',
+    contactEmailPlaceholder: '您的邮箱@示例.com',
+    contactMessagePlaceholder: '告诉我关于您的项目...',
+    contactSending: '发送中...',
+    contactSend: '发送消息',
+    contactSendAnother: '发送另一条消息',
+    contactSuccess: '消息已发送',
+    contactOtherWays: '其他联系方式',
+    contactNameError: '请输入您的姓名（至少2个字符）',
+    contactEmailError: '请输入有效的电子邮件地址',
+    contactMessageError: '请输入消息（至少10个字符）',
+
+    // New translations for Manifesto page
+    manifesto: '宣言',
+    manifestoTitle: 'Dagaz宣言',
+    whyCreated: '为什么我创建了Dagaz',
+    corePrinciples: '核心原则',
+    miozuBundle: 'Miozu套件',
+    lookingForward: '展望未来',
+    minimalDependencies: '最小依赖',
+    functionalApproach: '函数式方法',
+    modularArchitecture: '模块化架构',
+    nativeFirst: '原生优先',
+
+    // Blog related translations
+    tableOfContents: '目录',
+    share: '分享',
+    copied: '已复制！',
+    copyLink: '复制链接',
+    previous: '上一篇',
+    next: '下一篇',
+    continueReading: '继续阅读',
+    topics: '主题',
+    subscribeNewsletter: '订阅我们的通讯',
+    newsletterDesc: '获取直接发送到您收件箱的最新文章',
+    newsletterPlaceholder: '您的电子邮件地址',
+    subscribe: '订阅',
+    newsletterDisclaimer: '我们尊重您的隐私。随时可以取消订阅。',
+    backToTop: '返回顶部'
   }
 };

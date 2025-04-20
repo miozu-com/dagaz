@@ -34,5 +34,5 @@
 </script>
 
 {#if jsonLdContent}
-  {@html `<script type="application/ld+json">${jsonLdContent}</script>`}
+  {@html `<script type="application/ld+json">${jsonLdContent}<\/script>`}
 {/if}

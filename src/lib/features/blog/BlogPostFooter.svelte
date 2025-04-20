@@ -24,7 +24,8 @@
     publishDate = '',
     readTime = '',
     nextPost = null,
-    previousPost = null
+    previousPost = null,
+    l10n
   } = $props();
 
   let shareUrl = $state('');
@@ -126,7 +127,7 @@
           {#if readTime}
             <span class="meta-item">
               <ClockFading size={14} />
-              <span>{readTime} min read</span>
+              <span>{readTime} {l10n.t('minRead')}</span>
             </span>
           {/if}
         </div>
@@ -136,7 +137,7 @@
     <div class="article-engagement">
       <button class="share-button" onclick={toggleShare} aria-label="Share article">
         <Share2 size={18} />
-        <span>Share</span>
+        <span>{l10n.t('share')}</span>
       </button>
     </div>
   </div>
@@ -182,10 +183,10 @@
         <button class="share-option copy" onclick={copyToClipboard} aria-label="Copy article link">
           {#if copied}
             <Check size={14} />
-            <span>Copied!</span>
+            <span>{l10n.t('copied')}</span>
           {:else}
             <Link size={14} />
-            <span>Copy Link</span>
+            <span>{l10n.t('copyLink')}</span>
           {/if}
         </button>
       </div>
@@ -195,7 +196,7 @@
   <!-- Tags Section -->
   {#if tags && tags.length > 0}
     <div class="tags-section">
-      <h3 class="section-title">Topics</h3>
+      <h3 class="section-title">{l10n.t('topics')}</h3>
       <div class="tags-cloud">
         {#each tags as tag}
           <a href="/blog?tag={tag}" class="tag">#{tag}</a>
@@ -208,18 +209,18 @@
   {#if hasNewsletter}
     <div class="newsletter-section">
       <div class="newsletter-content">
-        <h3 class="newsletter-title">Subscribe to our newsletter</h3>
-        <p class="newsletter-description">Get the latest posts delivered right to your inbox</p>
+        <h3 class="newsletter-title">{l10n.t('subscribeNewsletter')}</h3>
+        <p class="newsletter-description">{l10n.t('newsletterDesc')}</p>
         <form class="newsletter-form">
           <input
             type="email"
-            placeholder="Your email address"
+            placeholder={l10n.t('newsletterPlaceholder')}
             aria-label="Email for newsletter"
             class="newsletter-input"
           />
-          <button type="button" class="newsletter-button">Subscribe</button>
+          <button type="button" class="newsletter-button">{l10n.t('subscribe')}</button>
         </form>
-        <p class="newsletter-disclaimer">We respect your privacy. Unsubscribe at any time.</p>
+        <p class="newsletter-disclaimer">{l10n.t('newsletterDisclaimer')}</p>
       </div>
     </div>
   {/if}
@@ -227,13 +228,13 @@
   <!-- Related Posts Component -->
   {#if nextPost || previousPost}
     <div class="related-posts">
-      <h3 class="section-title">Continue Reading</h3>
+      <h3 class="section-title">{l10n.t('continueReading')}</h3>
       <div class="post-navigation">
         {#if previousPost}
           <a href="/blog/{previousPost.slug}" class="related-post prev-post">
             <div class="related-post-direction">
               <ChevronLeft size={16} />
-              <span>Previous</span>
+              <span>{l10n.t('previous')}</span>
             </div>
             <h4 class="related-post-title">{previousPost.title}</h4>
           </a>
@@ -244,7 +245,7 @@
         {#if nextPost}
           <a href="/blog/{nextPost.slug}" class="related-post next-post">
             <div class="related-post-direction">
-              <span>Next</span>
+              <span>{l10n.t('next')}</span>
               <ChevronRight size={16} />
             </div>
             <h4 class="related-post-title">{nextPost.title}</h4>
@@ -266,7 +267,7 @@
         position: 'left'
       }}
     >
-      Back to blog
+      {l10n.t('backToPosts')}
     </Button>
   </div>
 </footer>

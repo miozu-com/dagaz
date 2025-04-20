@@ -18,6 +18,7 @@
 
   // Get the post from the data
   const post = $derived(data.post || {});
+  const l10n = data.l10n;
 
   // TODO move to utils
   function formatDate(dateStr) {
@@ -140,7 +141,7 @@
 
 <main in:fade={{duration: 300}} class="post-container">
   <!-- Table of Contents Component -->
-  <TableOfContents headings={tableOfContents} {isLoading} />
+  <TableOfContents headings={tableOfContents} {isLoading} {l10n} />
 
   {#if isLoading || post?.code}
     <div class="post-grid">
@@ -149,14 +150,14 @@
           <!-- Back button -->
           <a href="/blog" class="back-button">
             <ChevronLeft size={16} />
-            <span>Back to blog</span>
+            <span>{l10n.t('backToPosts')}</span>
           </a>
 
           <div class="post-meta">
             <span class="author">{author}</span>
             <time datetime={post.meta?.created_at || ''}>{formatDate(post.meta?.created_at)}</time>
             {#if post.meta?.readMin}
-              <span class="read-time">{post.meta.readMin} min read</span>
+              <span class="read-time">{post.meta.readMin} {l10n.t('minRead')}</span>
             {/if}
           </div>
 
@@ -196,15 +197,16 @@
             readTime={post.meta?.readMin}
             nextPost={post.nextPost}
             previousPost={post.previousPost}
+            {l10n}
           />
         </footer>
       </article>
     </div>
   {:else}
     <div class="error-state">
-      <h2>Post Not Found</h2>
-      <p>Sorry, the post you're looking for couldn't be loaded.</p>
-      <a href="/blog" class="error-button">Return to blog</a>
+      <h2>{l10n.t('postNotFound')}</h2>
+      <p>{l10n.t('postNotFoundDesc')}</p>
+      <a href="/blog" class="error-button">{l10n.t('returnToBlog')}</a>
     </div>
   {/if}
 </main>
