@@ -64,9 +64,19 @@
       return x;
     };
   }
+
+  // Public method to reset tag state
+  function resetState() {
+    // Reset all tags to false
+    keys(tags).forEach(tag => {
+      tags[tag] = false;
+    });
+    // Notify parent that all filters are cleared
+    toggleEvent(payload);
+  }
 </script>
 
-<div class="tags">
+<div class="tags-container">
   {#each keys(tags) as tag (tag)}
     <Badge
       onclick={() => toggleTag(tag)}
@@ -84,7 +94,32 @@
 <style lang="postcss">
   @import '$styles/theme.css' theme(reference);
 
-  .tags {
+  .tags-container {
     @apply flex flex-wrap gap-2;
+    /* Improved mobile layout */
+    @apply max-w-full overflow-x-auto pb-2;
+
+    /* Hide scrollbar but keep functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  /* Hide scrollbar for Chrome/Safari/Opera */
+  .tags-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile-specific styling */
+  @media (max-width: 640px) {
+    .tags-container {
+      @apply flex-nowrap pb-3;
+      scroll-snap-type: x mandatory;
+    }
+
+    /* Make tags snap when scrolling */
+    :global(.tags-container .badge) {
+      @apply flex-shrink-0;
+      scroll-snap-align: start;
+    }
   }
 </style>

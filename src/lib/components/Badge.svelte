@@ -10,7 +10,7 @@
 
   // Handle click events, toggle selection, and call the onClick handler
   function handleClick() {
-    onclick(selected); // Notify parent about the change
+    onclick(label); // Pass the label to the parent for identification
   }
 </script>
 
@@ -18,6 +18,7 @@
   class="badge {selected ? 'selected' : ''} {className}"
   aria-pressed={selected}
   onclick={handleClick}
+  data-tag-id={label}
 >
   {#if children}
     {@render children()}
@@ -59,5 +60,20 @@
 
   .badge.selected .badge-count {
     @apply text-base14 font-semibold bg-base2/70;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .badge {
+      @apply py-1 px-3;
+      /* Make sure we have a minimum touch target size */
+      min-height: 32px;
+      /* Ensure we don't get badges that are too small to tap properly */
+      min-width: max-content;
+    }
+
+    .badge-count {
+      @apply ml-1.5 min-w-5 text-center;
+    }
   }
 </style>

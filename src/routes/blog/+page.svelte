@@ -49,7 +49,7 @@
     filteredPosts = filtered;
   }
 
-  // Reset all filters - simplified and improved
+  // Reset all filters - fixed to properly reset visual state
   function resetFilters() {
     // Reset filtered posts to original state
     filteredPosts = [...posts];
@@ -57,12 +57,12 @@
     // Reset active tab state
     activeTab = 'All';
 
-    // Signal child components to reset their internal state
-    if (tabsComponent) {
+    // Use component methods to reset internal state
+    if (tabsComponent && typeof tabsComponent.resetState === 'function') {
       tabsComponent.resetState('All');
     }
 
-    if (tagsComponent) {
+    if (tagsComponent && typeof tagsComponent.resetState === 'function') {
       tagsComponent.resetState();
     }
   }
@@ -84,6 +84,8 @@
       <p class="subtitle">{data.l10n.t('blogDescription')}</p>
       <div class="header-accent"></div>
     </div>
+
+    <!-- Updated tabs section with improved mobile experience -->
     {#if hasTabs}
       <div class="category-tabs">
         <Tabs
@@ -180,7 +182,9 @@
   }
 
   .category-tabs {
-    @apply mt-2 sm:mt-0 overflow-x-auto max-w-4xl mx-auto;
+    @apply mt-2 sm:mt-0 max-w-4xl mx-auto px-4;
+    /* Make tabs take full width on mobile */
+    @apply w-full overflow-hidden;
   }
 
   .subtitle {
@@ -195,17 +199,16 @@
     @apply mb-8 sm:mb-10;
   }
 
-  .tags-title {
-    @apply text-sm font-medium mb-3 text-base4;
-    @apply uppercase tracking-wide;
+  .filter-section {
+    @apply px-4;
   }
 
   .tags-wrapper {
-    @apply flex flex-wrap items-center gap-4 mt-5;
+    @apply flex flex-col sm:flex-row items-center justify-between gap-4 mt-5;
   }
 
   .results-header {
-    @apply mb-6 pb-3 border-b border-base3/10;
+    @apply mb-6 pb-3 border-b border-base3/10 px-4;
   }
 
   .results-count {
@@ -215,15 +218,32 @@
   .reset-button {
     @apply text-sm text-base5 hover:text-base14 transition-colors;
     @apply flex items-center gap-1.5;
+    @apply sm:ml-auto mt-2 sm:mt-0; /* Position button right on desktop, bottom on mobile */
+    @apply self-center sm:self-end;
   }
 
   .posts-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4;
   }
 
   .no-results {
-    @apply flex flex-col items-center justify-center text-center py-10 gap-4;
+    @apply flex flex-col items-center justify-center text-center py-10 gap-4 mx-4;
     @apply text-base4;
     @apply bg-base1/30 rounded-xs border border-base3/10;
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 640px) {
+    .category-tabs {
+      @apply px-1;
+    }
+
+    .tags-container {
+      @apply px-1;
+    }
+
+    .filter-section {
+      @apply px-1;
+    }
   }
 </style>
