@@ -7,16 +7,14 @@
   import JsonLd from '$features/seo/JsonLd.svelte';
   import BreadcrumbsSchema from '$features/seo/BreadcrumbsSchema.svelte';
   import BlogPostFooter from '$features/blog/BlogPostFooter.svelte';
-  import {ChevronUp} from '$components/icons';
+  import TableOfContents from '$features/blog/TableOfContents.svelte';
   import {author, domain, appName} from '$lib/settings/global';
 
   let {data} = $props();
   let htmlContent = $state('');
   let scrollContainer = $state(null);
   let tableOfContents = $state([]);
-  let showToc = $state(false);
   let isLoading = $state(true);
-  let showBackToTop = $state(false);
 
   // Get the post from the data
   const post = $derived(data.post || {});
@@ -69,24 +67,7 @@
   function extractToc() {
     if (post?.toc?.data && Array.isArray(post.toc.data)) {
       tableOfContents = post.toc.data.filter(item => item.level <= 3);
-      showToc = tableOfContents.length > 2;
     }
-  }
-
-  function scrollToHeading(id) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({behavior: 'smooth', block: 'start'});
-    }
-  }
-
-  function scrollToTop() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  }
-
-  // Handle scroll events to show/hide back to top button
-  function handleScroll() {
-    showBackToTop = window.scrollY > 300;
   }
 
   onMount(() => {
@@ -96,11 +77,8 @@
     modifiedIsoDate = post.meta?.modified_at ? formatISODate(post.meta.modified_at) : isoDate;
     postUrl = `${domain}/blog/${post.slug}`;
 
-    // Add scroll event listener
-    window.addEventListener('scroll', handleScroll);
-
     if (post?.code) {
-      // The updated part - no processing needed for HTML content
+      // Set HTML content with no processing
       htmlContent = post.code;
 
       // Extract ToC after content is loaded
@@ -117,10 +95,6 @@
       console.error('Post content not available:', post);
       isLoading = false;
     }
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
   });
 </script>
 
@@ -178,45 +152,12 @@
   />
 {/if}
 
-<!-- Back to top button -->
-{#if showBackToTop}
-  <button
-    transition:fade={{duration: 200}}
-    class="back-to-top"
-    onclick={scrollToTop}
-    aria-label="Back to top"
-  >
-    <ChevronUp size={20} />
-  </button>
-{/if}
-
 <main in:fade={{duration: 300}} class="post-container">
+  <!-- Table of Contents Component - now floating on right side -->
+  <TableOfContents headings={tableOfContents} {isLoading} />
+
   {#if isLoading || post?.code}
     <div class="post-grid">
-      <!-- Table of Contents -->
-      {#if showToc || isLoading}
-        <aside class="post-toc">
-          <div class="toc-container">
-            <h2 class="toc-title">Table of Contents</h2>
-            {#if isLoading}
-              <SkeletonLoader type="toc" lines={8} class="toc-skeleton" />
-            {:else}
-              <nav class="toc-nav">
-                <ul class="toc-list">
-                  {#each tableOfContents as heading}
-                    <li class="toc-item level-{heading.level}">
-                      <a href="#{heading.id}" onclick={() => scrollToHeading(heading.id)}>
-                        {heading.text}
-                      </a>
-                    </li>
-                  {/each}
-                </ul>
-              </nav>
-            {/if}
-          </div>
-        </aside>
-      {/if}
-
       <article class="post-content">
         <header class="post-header">
           <div class="post-meta">
@@ -228,7 +169,7 @@
             {/if}
           </div>
 
-          <h1 class="post-title">{post.meta?.title || 'Untitled Post'}</h1>
+          <h1 class="post-title" id="post-title">{post.meta?.title || 'Untitled Post'}</h1>
 
           {#if post.meta?.description}
             <p class="post-description">{post.meta.description}</p>
@@ -296,50 +237,6 @@
   .post-content {
     @apply flex-1 bg-base0/50 rounded-lg overflow-hidden;
     @apply shadow-sm max-w-3xl mx-auto;
-  }
-
-  .post-toc {
-    @apply hidden lg:block w-64 flex-shrink-0;
-    align-self: start;
-    position: sticky;
-    top: 100px;
-    max-height: calc(100vh - 150px);
-    overflow-y: auto;
-  }
-
-  .toc-container {
-    @apply p-6 bg-base1/30 rounded-lg;
-    @apply border border-base3/10;
-  }
-
-  .toc-title {
-    @apply text-base14 text-lg font-semibold mb-4;
-    @apply border-b border-base3/20 pb-2;
-  }
-
-  .toc-list {
-    @apply space-y-2;
-  }
-
-  .toc-item {
-    @apply text-base5 hover:text-base14 transition-colors;
-    @apply text-sm;
-  }
-
-  .toc-item a {
-    @apply block py-1 no-underline;
-  }
-
-  .toc-item.level-1 {
-    @apply font-semibold;
-  }
-
-  .toc-item.level-2 {
-    @apply pl-3;
-  }
-
-  .toc-item.level-3 {
-    @apply pl-6 text-base4;
   }
 
   .post-header {
@@ -413,30 +310,9 @@
     @apply min-h-[400px];
   }
 
-  .toc-skeleton {
-    @apply min-h-[200px];
-  }
-
-  /* Back to top button styles */
-  .back-to-top {
-    @apply fixed bottom-6 right-6 z-50 bg-base1/70 hover:bg-base1 text-base14 rounded-full p-3;
-    @apply shadow-md border border-base3/20 backdrop-blur-sm;
-    @apply transition-all duration-300 ease-out;
-    @apply flex items-center justify-center;
-    @apply focus:outline-none focus:ring-2 focus:ring-base14/30;
-  }
-
-  .back-to-top:hover {
-    @apply transform -translate-y-1 shadow-lg;
-  }
-
   @media (max-width: 640px) {
     .post-title {
       @apply text-2xl;
-    }
-
-    .back-to-top {
-      @apply bottom-4 right-4 p-2;
     }
   }
 </style>
