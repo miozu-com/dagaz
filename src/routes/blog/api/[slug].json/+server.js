@@ -2,6 +2,7 @@ import {json} from '@sveltejs/kit';
 import fs from 'fs';
 import path from 'path';
 import * as mdsvexLib from 'mdsvex';
+import {createMdsvexHighlighter} from '$utils/highlighter.js';
 
 /**
  * Handles GET requests for blog posts by reading and parsing Markdown files
@@ -25,9 +26,6 @@ export async function GET({params}) {
       }
     }
 
-    // Log the file path we're trying to access for debugging
-    console.log(`Looking for blog post at: ${filePath}`);
-
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       console.error(`File not found: ${filePath}`);
@@ -39,7 +37,6 @@ export async function GET({params}) {
 
     // Read file content
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    console.log(`File content length: ${fileContent.length} characters`);
 
     // Extract frontmatter and content
     const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
@@ -57,7 +54,6 @@ export async function GET({params}) {
 
     // Parse frontmatter
     const meta = parseFrontmatter(frontmatterContent);
-    console.log('Parsed frontmatter:', meta);
 
     // Make sure post is published
     if (!meta.published) {
@@ -82,12 +78,16 @@ export async function GET({params}) {
     // Generate table of contents
     const toc = generateTableOfContents(bodyContent);
 
-    // Properly compile the markdown with mdsvex instead of just returning raw markdown
-    const compiled = await mdsvexLib.compile(bodyContent, {
+    // Set up mdsvex options with our custom highlighter
+    const mdsvexOptions = {
       smartypants: true,
-      remarkPlugins: [],
-      rehypePlugins: []
-    });
+      highlight: {
+        highlighter: createMdsvexHighlighter()
+      }
+    };
+
+    // Properly compile the markdown with mdsvex and our custom highlighter
+    const compiled = await mdsvexLib.compile(bodyContent, mdsvexOptions);
 
     // Return the complete post data
     return json({

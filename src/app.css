@@ -207,35 +207,48 @@ body {
   @apply max-w-full rounded-lg shadow-md my-6 sm:my-8 mx-auto;
 }
 
-/* Inline code */
-.post-body :not(pre) > code {
-  @apply bg-base1 text-base12 rounded-md px-1.5 py-0.5;
-  @apply text-sm font-mono border border-base3/10;
-  @apply whitespace-nowrap;
-}
-
-/* Code highlighting specifics for blog posts */
 .post-body pre {
-  @apply rounded-lg my-6;
-  @apply bg-base1;
-  @apply border border-base3/10;
-  @apply shadow-sm;
+  @apply rounded-xs my-6 p-2.5;
+  @apply bg-base1/80;
+  @apply border border-base2/50;
   @apply relative;
+  @apply overflow-x-auto;
 }
 
 .post-body pre code {
-  @apply font-mono text-base6;
-  font-size: 0.94rem;
-  line-height: 1.6;
-  padding: 1.25rem !important;
+  @apply font-mono text-base6 bg-base2/20;
 }
 
-/* Add language label to code blocks */
-.post-body pre::before {
+/* Add language label to code blocks with fixed selector */
+.post-body pre::before,
+.post-body .shiki::before {
   content: attr(data-language);
-  @apply absolute top-0 right-0 px-2.5 py-0.5 text-xs font-mono;
-  @apply bg-base2/70 text-base5 rounded-bl-md rounded-tr-md;
-  @apply uppercase tracking-wider;
+  @apply absolute top-0 right-0 px-2.5 pt-1.5 pb-0.5 text-xs font-mono;
+  @apply bg-base1 text-base10 rounded-bl-xs rounded-tr-xs;
+  @apply uppercase tracking-wider font-thin z-10;
+}
+
+/* Special handling for Shiki theme colors */
+.post-body .shiki,
+.post-body pre.shiki {
+  @apply bg-base1/20;
+  @apply text-base7 text-sm;
+  @apply border border-base2/30;
+  @apply w-full h-auto;
+  @apply rounded-xs shadow-md;
+}
+
+/* Fix for the {@html `...` } issue that appears in rendered code */
+.post-body .shiki code {
+  @apply text-base7;
+  white-space: pre;
+}
+
+/* Inline code style */
+.post-body :not(pre) > code {
+  @apply bg-base1 text-base12 rounded-xs px-1.5 py-0.5;
+  @apply text-sm font-mono border border-base3/10;
+  @apply whitespace-nowrap;
 }
 
 /* Global Layout Utility Classes */
