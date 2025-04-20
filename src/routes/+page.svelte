@@ -20,26 +20,22 @@
     {
       name: 'trulyServerless',
       icon: ServerOff,
-      description:
-        'Deploy globally with zero server management. Enjoy automatic scaling, high availability, and lightning-fast CDN delivery.'
+      description: 'featureDescServerless'
     },
     {
       name: 'markdownBlog',
       icon: Markdown,
-      description:
-        'Author content in intuitive Markdown with full Svelte component support. Create interactive posts that stand out from standard blogs.'
+      description: 'featureDescMarkdown'
     },
     {
       name: 'darkLightTheme',
       icon: Moon,
-      description:
-        'Polished theme system with automatic OS preference detection. Customize colors to match your brand with minimal effort.'
+      description: 'featureDescTheme'
     },
     {
       name: 'localization',
       icon: Languages,
-      description:
-        'Reach global audiences with built-in multi-language support. Add new languages without changing your codebase structure.'
+      description: 'featureDescLocalization'
     }
   ];
 
@@ -70,8 +66,8 @@
 
 <!-- SEO Metadata -->
 <Metadata
-  title="Dagaz - Minimal SvelteKit Starter for Landing Pages"
-  description="A modern, minimal SvelteKit starter with just 2 dependencies. Perfect for business landing pages and content-focused sites."
+  title={l10n.t('homePageTitle')}
+  description={l10n.t('homePageDescription')}
   canonicalUrl={domainName}
   ogType="website"
   ogImage={`${domainName}/images/home-banner.jpg`}
@@ -84,7 +80,7 @@
   type="WebSite"
   data={{
     name: appName,
-    description: 'A modern, minimal SvelteKit starter with just 2 dependencies',
+    description: l10n.t('homePageDescription'),
     url: domainName
   }}
 />
@@ -110,7 +106,7 @@
 
       <h1 class="hero-title">Dagaz</h1>
 
-      <p class="hero-tagline">A minimal SvelteKit starter for business landing pages</p>
+      <p class="hero-tagline">{l10n.t('mainSubtitle')}</p>
 
       <p class="hero-description">
         Built with just two runtime dependencies, Dagaz provides a solid foundation for developing
@@ -118,7 +114,7 @@
       </p>
 
       <div class="hero-actions">
-        <Button variant="primary" href="/blog">View Blog</Button>
+        <Button variant="primary" href="/blog">{l10n.t('viewBlog')}</Button>
 
         <GitHubStars repo="miozu-com/dagaz" />
       </div>
@@ -129,7 +125,7 @@
   <section class="usp-section">
     <div class="container">
       <div class="usp-content">
-        <h2 class="section-title">Why Choose Dagaz?</h2>
+        <h2 class="section-title">{l10n.t('whyChooseDagaz')}</h2>
 
         <ul class="benefits-list">
           {#each benefits as benefit}
@@ -147,7 +143,7 @@
   <!-- Features Section -->
   <section class="features-section">
     <div class="container">
-      <h2 class="section-title">Key Features</h2>
+      <h2 class="section-title">{l10n.t('keyFeatures')}</h2>
 
       <div class="features-grid">
         {#each features as feature, i}
@@ -158,7 +154,7 @@
 
             <div class="feature-content">
               <h3 class="feature-name">{l10n.t(feature.name)}</h3>
-              <p class="feature-description">{feature.description}</p>
+              <p class="feature-description">{l10n.t(feature.description)}</p>
             </div>
           </div>
         {/each}
@@ -169,7 +165,7 @@
   <!-- Getting Started Section -->
   <section class="getting-started">
     <div class="container">
-      <h2 class="section-title">Getting Started is Simple</h2>
+      <h2 class="section-title">{l10n.t('gettingStartedSimple')}</h2>
 
       <div class="code-sample">
         <pre><code
@@ -180,13 +176,13 @@ pnpm dev</code
           ></pre>
       </div>
 
-      <p class="code-description">Ready to go in under a minute. No configuration needed.</p>
+      <p class="code-description">{l10n.t('readyToGoMinute')}</p>
 
       <Button
         variant="primary"
         onclick={() => window.open('https://github.com/miozu-com/dagaz', '_blank')}
       >
-        Clone Repository
+        {l10n.t('cloneRepository')}
       </Button>
     </div>
   </section>
@@ -194,7 +190,7 @@ pnpm dev</code
   <!-- Tech Stack Section -->
   <section class="tech-section">
     <div class="container">
-      <h2 class="section-title">Built With Modern Tech</h2>
+      <h2 class="section-title">{l10n.t('builtWithModernTech')}</h2>
 
       <InfiniteCarousel
         items={techStack}
@@ -209,9 +205,9 @@ pnpm dev</code
   <!-- Footer CTA -->
   <section class="footer-cta">
     <div class="container">
-      <h2 class="cta-title">Start Building Your Project Today</h2>
+      <h2 class="cta-title">{l10n.t('startBuildingToday')}</h2>
       <p class="cta-description">
-        Join the growing community of developers using Dagaz for their projects.
+        {l10n.t('joinCommunity')}
       </p>
 
       <div class="cta-buttons">
@@ -219,14 +215,14 @@ pnpm dev</code
           variant="primary"
           onclick={() => window.open('https://github.com/miozu-com/dagaz', '_blank')}
         >
-          View on GitHub
+          {l10n.t('viewOnGitHub')}
         </Button>
 
         <Button
           variant="secondary"
           onclick={() => (window.location.href = '/blog/getting-started-with-dagaz')}
         >
-          Read Documentation
+          {l10n.t('readDocumentation')}
         </Button>
       </div>
     </div>

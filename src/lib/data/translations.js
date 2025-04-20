@@ -46,6 +46,16 @@ export default {
     darkLightThemeDesc: 'Built-in theme switching with system detection',
     localizationDesc: 'Easy multi-language support built in',
 
+    // Detailed feature descriptions (added)
+    featureDescServerless:
+      'Deploy globally with zero server management. Enjoy automatic scaling, high availability, and lightning-fast CDN delivery.',
+    featureDescMarkdown:
+      'Author content in intuitive Markdown with full Svelte component support. Create interactive posts that stand out from standard blogs.',
+    featureDescTheme:
+      'Polished theme system with automatic OS preference detection. Customize colors to match your brand with minimal effort.',
+    featureDescLocalization:
+      'Reach global audiences with built-in multi-language support. Add new languages without changing your codebase structure.',
+
     // Tech stack
     svelteKit: 'SvelteKit 2.x',
     tailwind: 'Tailwind 4',
@@ -56,7 +66,7 @@ export default {
     switchToLightMode: 'Switch to light mode',
     switchToDarkMode: 'Switch to dark mode',
 
-    // New translations for Contact page
+    // Contact page
     contact: 'Contact',
     contactSubtitle: "Let's start a conversation about your project",
     contactName: 'Name',
@@ -73,10 +83,15 @@ export default {
     contactNameError: 'Please enter your name (at least 2 characters)',
     contactEmailError: 'Please enter a valid email address',
     contactMessageError: 'Please enter a message (at least 10 characters)',
+    contactFormSubmitting: 'Submitting...',
+    contactFormSuccess: "Your message has been sent successfully. We'll get back to you soon!",
+    contactFormError: 'There was an error sending your message. Please try again later.',
 
-    // New translations for Manifesto page
+    // Manifesto page
     manifesto: 'Manifesto',
     manifestoTitle: 'The Dagaz Manifesto',
+    manifestoDescription:
+      'The philosophy and motivation behind the Dagaz SvelteKit starter project',
     whyCreated: 'Why I Created Dagaz',
     corePrinciples: 'Core Principles',
     miozuBundle: 'The Miozu Bundle',
@@ -85,6 +100,19 @@ export default {
     functionalApproach: 'Functional Approach',
     modularArchitecture: 'Modular Architecture',
     nativeFirst: 'Native First',
+
+    // Home page
+    whyChooseDagaz: 'Why Choose Dagaz?',
+    gettingStartedSimple: 'Getting Started is Simple',
+    readyToGoMinute: 'Ready to go in under a minute. No configuration needed.',
+    cloneRepository: 'Clone Repository',
+    startBuildingToday: 'Start Building Your Project Today',
+    joinCommunity: 'Join the growing community of developers using Dagaz for their projects.',
+    viewOnGitHub: 'View on GitHub',
+    readDocumentation: 'Read Documentation',
+    homePageTitle: 'Dagaz - Minimal SvelteKit Starter for Landing Pages',
+    homePageDescription:
+      'A modern, minimal SvelteKit starter with just 2 dependencies. Perfect for business landing pages and content-focused sites.',
 
     // Blog related translations
     tableOfContents: 'Table of Contents',
@@ -102,6 +130,8 @@ export default {
     newsletterDisclaimer: 'We respect your privacy. Unsubscribe at any time.',
     backToTop: 'Back to top'
   },
+
+  // French translations
   fr: {
     close: 'Fermer',
     blog: 'Blog',
@@ -149,6 +179,16 @@ export default {
     darkLightThemeDesc: 'Changement de thème intégré avec détection du système',
     localizationDesc: 'Support multilingue facile intégré',
 
+    // Detailed feature descriptions (added)
+    featureDescServerless:
+      "Déployez globalement sans gestion de serveur. Profitez de la mise à l'échelle automatique, de la haute disponibilité et de la livraison CDN ultra-rapide.",
+    featureDescMarkdown:
+      'Créez du contenu en Markdown intuitif avec prise en charge complète des composants Svelte. Créez des articles interactifs qui se démarquent des blogs standard.',
+    featureDescTheme:
+      "Système de thème raffiné avec détection automatique des préférences du système. Personnalisez les couleurs pour correspondre à votre marque avec un minimum d'effort.",
+    featureDescLocalization:
+      'Atteignez des audiences mondiales grâce à la prise en charge multilingue intégrée. Ajoutez de nouvelles langues sans modifier la structure de votre code.',
+
     // Tech stack
     svelteKit: 'SvelteKit 2.x',
     tailwind: 'Tailwind 4',
@@ -159,7 +199,7 @@ export default {
     switchToLightMode: 'Passer au mode clair',
     switchToDarkMode: 'Passer au mode sombre',
 
-    // New translations for Contact page
+    // Contact page
     contact: 'Contact',
     contactSubtitle: 'Commençons une conversation sur votre projet',
     contactName: 'Nom',
@@ -176,10 +216,15 @@ export default {
     contactNameError: 'Veuillez entrer votre nom (au moins 2 caractères)',
     contactEmailError: 'Veuillez entrer une adresse email valide',
     contactMessageError: 'Veuillez entrer un message (au moins 10 caractères)',
+    contactFormSubmitting: 'Envoi en cours...',
+    contactFormSuccess: 'Votre message a été envoyé avec succès. Nous vous répondrons bientôt !',
+    contactFormError:
+      "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard.",
 
-    // New translations for Manifesto page
+    // Manifesto page
     manifesto: 'Manifeste',
     manifestoTitle: 'Le Manifeste Dagaz',
+    manifestoDescription: 'La philosophie et la motivation derrière le projet Dagaz SvelteKit',
     whyCreated: "Pourquoi J'ai Créé Dagaz",
     corePrinciples: 'Principes Fondamentaux',
     miozuBundle: 'Le Bundle Miozu',
@@ -188,6 +233,20 @@ export default {
     functionalApproach: 'Approche Fonctionnelle',
     modularArchitecture: 'Architecture Modulaire',
     nativeFirst: 'Natif en Premier',
+
+    // Home page
+    whyChooseDagaz: 'Pourquoi Choisir Dagaz ?',
+    gettingStartedSimple: 'Commencer est Simple',
+    readyToGoMinute: "Prêt à fonctionner en moins d'une minute. Aucune configuration nécessaire.",
+    cloneRepository: 'Cloner le Dépôt',
+    startBuildingToday: "Commencez à Construire Votre Projet Aujourd'hui",
+    joinCommunity:
+      'Rejoignez la communauté croissante de développeurs utilisant Dagaz pour leurs projets.',
+    viewOnGitHub: 'Voir sur GitHub',
+    readDocumentation: 'Lire la Documentation',
+    homePageTitle: 'Dagaz - Starter SvelteKit Minimal pour Landing Pages',
+    homePageDescription:
+      "Un starter SvelteKit moderne et minimal avec seulement 2 dépendances. Parfait pour les landing pages d'entreprise et les sites axés sur le contenu.",
 
     // Blog related translations
     tableOfContents: 'Table des Matières',

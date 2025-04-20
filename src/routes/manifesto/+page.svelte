@@ -11,7 +11,7 @@
 
 <Metadata
   title="{l10n.t('manifesto')} | {appName}"
-  description="The philosophy and motivation behind the Dagaz SvelteKit starter project"
+  description={l10n.t('manifestoDescription')}
   canonicalUrl={`${domain}/manifesto`}
 />
 

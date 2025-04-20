@@ -1,8 +1,7 @@
-/* Noto Sans Variable Font - contains all weights in a single file */
 @font-face {
   font-family: 'Noto Sans';
   font-style: normal;
-  font-weight: 100 900; /* Full range of weights */
+  font-weight: 100 900; /* Full range of weights in one file */
   font-display: swap; /* Show text with fallback until font loads */
   src: url('/fonts/NotoSans-VariableFont_wdth,wght.ttf') format('truetype-variations');
   unicode-range:
