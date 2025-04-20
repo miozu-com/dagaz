@@ -33,11 +33,11 @@
 
   .badge {
     @apply inline-flex items-center;
-    @apply pl-3 pr-2 py-1;
-    @apply rounded-full;
+    @apply px-2.5 py-0.5;
+    @apply rounded-xs;
     @apply border border-base3/20;
     @apply text-base4 bg-transparent;
-    @apply text-sm whitespace-nowrap cursor-pointer;
+    @apply text-xs whitespace-nowrap cursor-pointer;
     @apply transition-colors duration-200 ease-in-out;
     @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
   }

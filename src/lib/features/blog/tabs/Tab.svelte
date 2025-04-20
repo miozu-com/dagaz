@@ -34,7 +34,6 @@
   .tab {
     @apply inline-flex items-center relative;
     @apply px-4 py-2;
-    @apply rounded-md;
     @apply text-sm font-medium whitespace-nowrap cursor-pointer;
     @apply text-base4 hover:text-base6;
     @apply transition-colors duration-200 ease-in-out;

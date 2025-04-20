@@ -91,13 +91,15 @@
             propPath={['meta', 'tags']}
             isTagCount={true}
           />
-
-          {#if activeTab || filteredPosts.length !== posts.length}
-            <Button variant="secondary sm" onclick={resetFilters} class="reset-button">
-              <span class="reset-icon"><RotateCcw size={12} /></span>
-              {data.l10n.t('resetFilters')}
-            </Button>
-          {/if}
+          <Button
+            disabled={filteredPosts.length === posts.length}
+            variant="secondary sm"
+            onclick={resetFilters}
+            class="reset-button"
+          >
+            <RotateCcw size={12} class="mr-2" />
+            {data.l10n.t('resetFilters')}
+          </Button>
         </div>
       </div>
     </div>
@@ -195,11 +197,6 @@
   .reset-button {
     @apply text-sm text-base5 hover:text-base14 transition-colors;
     @apply flex items-center gap-1.5;
-  }
-
-  .reset-icon {
-    @apply inline-block;
-    font-size: 14px;
   }
 
   .posts-grid {
