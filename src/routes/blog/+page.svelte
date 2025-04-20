@@ -19,8 +19,8 @@
   let filteredPosts = $state(data.posts);
 
   // References to child components for resetting their state
-  let tabsComponent = $state(null);
-  let tagsComponent = $state(null);
+  let tabsComponent;
+  let tagsComponent;
 
   // Check if we have posts with tabs or tags
   let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
@@ -100,27 +100,25 @@
   </header>
 
   {#if hasTags}
-    <div class="tags-container">
-      <div class="filter-section">
-        <Divider />
-        <div class="tags-wrapper">
-          <Tags
-            bind:this={tagsComponent}
-            payload={posts}
-            toggleEvent={handleTagToggle}
-            propPath={['meta', 'tags']}
-            isTagCount={true}
-          />
-          <Button
-            disabled={filteredPosts.length === posts.length && activeTab === 'All'}
-            variant="secondary sm"
-            onclick={resetFilters}
-            class="reset-button"
-          >
-            <RotateCcw size={12} class="mr-2" />
-            {data.l10n.t('resetFilters')}
-          </Button>
-        </div>
+    <div class="filter-section">
+      <Divider />
+      <div class="tags-wrapper">
+        <Tags
+          bind:this={tagsComponent}
+          payload={posts}
+          toggleEvent={handleTagToggle}
+          propPath={['meta', 'tags']}
+          isTagCount={true}
+        />
+        <Button
+          disabled={filteredPosts.length === posts.length && activeTab === 'All'}
+          variant="secondary sm"
+          onclick={resetFilters}
+          class="reset-button"
+        >
+          <RotateCcw size={12} class="mr-2" />
+          {data.l10n.t('resetFilters')}
+        </Button>
       </div>
     </div>
   {/if}
@@ -195,16 +193,12 @@
     @apply h-1 w-16 bg-base14/50 mt-6 rounded-full;
   }
 
-  .tags-container {
-    @apply mb-8 sm:mb-10;
-  }
-
   .filter-section {
-    @apply px-4;
+    @apply px-4 mb-10;
   }
 
   .tags-wrapper {
-    @apply flex flex-col sm:flex-row items-center justify-between gap-4 mt-5;
+    @apply flex flex-col sm:flex-row items-start justify-between gap-4 mt-5;
   }
 
   .results-header {
@@ -230,20 +224,5 @@
     @apply flex flex-col items-center justify-center text-center py-10 gap-4 mx-4;
     @apply text-base4;
     @apply bg-base1/30 rounded-xs border border-base3/10;
-  }
-
-  /* Mobile optimizations */
-  @media (max-width: 640px) {
-    .category-tabs {
-      @apply px-1;
-    }
-
-    .tags-container {
-      @apply px-1;
-    }
-
-    .filter-section {
-      @apply px-1;
-    }
   }
 </style>

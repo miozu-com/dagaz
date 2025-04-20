@@ -14,6 +14,7 @@
   } from 'ramda';
   import Badge from '$components/Badge.svelte';
   import {toUniqArr, filterArrByString} from '$utils';
+  import {ChevronLeft, ChevronRight} from '$components/icons';
 
   let {payload = [], children, propPath = [], toggleEvent = () => {}, isTagCount = true} = $props();
 
@@ -30,6 +31,12 @@
   let tags = $state(
     reduce((acc, tag) => ({...acc, [tag]: false}), {}, toUniqArr(propPath, payload))
   );
+
+  // DOM refs and state for carousel
+  let tagsContainer;
+  let showLeftArrow = $state(false);
+  let showRightArrow = $state(true);
+  let isScrolling = $state(false);
 
   // Return selected tags only
   const activeTagNames = $derived(filter(tag => tags[tag], keys(tags)));
@@ -65,6 +72,51 @@
     };
   }
 
+  // Handle scroll arrows visibility
+  function checkScrollPosition() {
+    if (!tagsContainer) return;
+
+    const {scrollLeft, scrollWidth, clientWidth} = tagsContainer;
+    showLeftArrow = scrollLeft > 5; // Small threshold to account for browsers
+    showRightArrow = scrollLeft < scrollWidth - clientWidth - 5; // Small threshold for right edge
+  }
+
+  // Scroll to previous tags
+  function scrollLeft() {
+    if (!tagsContainer) return;
+    isScrolling = true;
+
+    const scrollAmount = tagsContainer.clientWidth * 0.8;
+    tagsContainer.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+
+    // Wait for scroll to complete
+    setTimeout(() => {
+      isScrolling = false;
+      checkScrollPosition();
+    }, 300);
+  }
+
+  // Scroll to next tags
+  function scrollRight() {
+    if (!tagsContainer) return;
+    isScrolling = true;
+
+    const scrollAmount = tagsContainer.clientWidth * 0.8;
+    tagsContainer.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+
+    // Wait for scroll to complete
+    setTimeout(() => {
+      isScrolling = false;
+      checkScrollPosition();
+    }, 300);
+  }
+
   // Public method to reset tag state
   function resetState() {
     // Reset all tags to false
@@ -73,35 +125,102 @@
     });
     // Notify parent that all filters are cleared
     toggleEvent(payload);
+    // Scroll back to start
+    if (tagsContainer) {
+      tagsContainer.scrollTo({
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
   }
+
+  $effect(() => {
+    if (tagsContainer) {
+      // Check initial scroll status
+      setTimeout(checkScrollPosition, 100);
+
+      // Add scroll event listener
+      tagsContainer.addEventListener('scroll', checkScrollPosition);
+
+      // Set up resize observer
+      if (typeof ResizeObserver !== 'undefined') {
+        const resizeObserver = new ResizeObserver(() => {
+          checkScrollPosition();
+        });
+
+        resizeObserver.observe(tagsContainer);
+
+        return () => {
+          resizeObserver.disconnect();
+          tagsContainer.removeEventListener('scroll', checkScrollPosition);
+        };
+      }
+    }
+  });
 </script>
 
-<div class="tags-container">
-  {#each keys(tags) as tag (tag)}
-    <Badge
-      onclick={() => toggleTag(tag)}
-      label={tag}
-      selected={tags[tag]}
-      count={isTagCount ? tagCounts[tag] : undefined}
-    />
-  {/each}
+<div class="tags-container-wrapper">
+  {#if showLeftArrow}
+    <button
+      class="scroll-arrow left-arrow"
+      onclick={scrollLeft}
+      aria-label="Scroll tags left"
+      disabled={isScrolling}
+    >
+      <ChevronLeft size={16} />
+    </button>
+  {/if}
 
-  {#if children}
-    {@render children()}
+  <div class="tags-container" bind:this={tagsContainer}>
+    {#each keys(tags) as tag (tag)}
+      <Badge
+        onclick={() => toggleTag(tag)}
+        label={tag}
+        selected={tags[tag]}
+        count={isTagCount ? tagCounts[tag] : undefined}
+      />
+    {/each}
+
+    {#if children}
+      {@render children()}
+    {/if}
+  </div>
+
+  {#if showRightArrow}
+    <button
+      class="scroll-arrow right-arrow"
+      onclick={scrollRight}
+      aria-label="Scroll tags right"
+      disabled={isScrolling}
+    >
+      <ChevronRight size={16} />
+    </button>
   {/if}
 </div>
 
 <style lang="postcss">
   @import '$styles/theme.css' theme(reference);
 
+  .tags-container-wrapper {
+    @apply relative flex items-center w-full;
+  }
+
   .tags-container {
-    @apply flex flex-wrap gap-2;
+    @apply flex-1 flex flex-wrap gap-2 overflow-x-auto;
     /* Improved mobile layout */
-    @apply max-w-full overflow-x-auto pb-2;
+    @apply max-w-full overflow-y-hidden;
+    scroll-behavior: smooth;
 
     /* Hide scrollbar but keep functionality */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
+  }
+  /* Mobile-specific styling */
+  @media (max-width: 640px) {
+    .tags-container {
+      @apply flex-nowrap;
+      scroll-snap-type: x mandatory;
+    }
   }
 
   /* Hide scrollbar for Chrome/Safari/Opera */
@@ -109,17 +228,25 @@
     display: none;
   }
 
-  /* Mobile-specific styling */
-  @media (max-width: 640px) {
-    .tags-container {
-      @apply flex-nowrap pb-3;
-      scroll-snap-type: x mandatory;
-    }
+  .scroll-arrow {
+    @apply flex items-center justify-center;
+    @apply w-6 h-6 bg-base1/80 rounded-full flex-shrink-0;
+    @apply text-base6 border border-base3/20;
+    @apply hover:bg-base1 hover:text-base14 transition-colors;
+    @apply z-10 opacity-90;
+    @apply shadow-sm;
+  }
 
-    /* Make tags snap when scrolling */
-    :global(.tags-container .badge) {
-      @apply flex-shrink-0;
-      scroll-snap-align: start;
-    }
+  .left-arrow {
+    @apply mr-1;
+  }
+
+  .right-arrow {
+    @apply ml-1;
+  }
+
+  /* Disabled state for arrows during animation */
+  .scroll-arrow:disabled {
+    @apply opacity-50 cursor-not-allowed;
   }
 </style>

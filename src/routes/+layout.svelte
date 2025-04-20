@@ -131,6 +131,6 @@
 
   .content {
     @apply flex-grow flex justify-center w-full max-w-7xl mx-auto;
-    @apply px-4 py-4;
+    @apply min-md:px-4 min-md:py-4;
   }
 </style>

@@ -15,7 +15,6 @@
   import Tab from './Tab.svelte';
   import {toUniqArr, filterArrByString} from '$utils';
   import {ChevronLeft, ChevronRight} from '$components/icons';
-  import {onMount} from 'svelte';
 
   let {
     payload = [],
@@ -70,7 +69,7 @@
     keys(tabs).forEach(key => {
       newState[key] = key === selectedTab;
     });
-    Object.assign(tabs, newState);
+    tabs = newState;
   };
 
   // Filter payload based on active tab
@@ -103,9 +102,10 @@
 
   // Public method to reset tab state
   function resetState(defaultTab = 'All') {
-    updateTabs(defaultTab);
-    updateIndicator(defaultTab);
-    triggerEvent(payload, defaultTab);
+    const tabToSelect = keys(tabs).includes(defaultTab) ? defaultTab : keys(tabs)[0];
+    updateTabs(tabToSelect);
+    updateIndicator(tabToSelect);
+    triggerEvent(payload, tabToSelect);
     // Scroll back to start when resetting
     if (tabsWrapper) {
       tabsWrapper.scrollTo({
@@ -179,17 +179,16 @@
     setTimeout(checkScrollPosition, 300);
   }
 
-  onMount(() => {
-    // Find the initially selected tab (or the first one)
-    const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
-    if (activeTab) {
-      updateIndicator(activeTab);
-    }
-    if (tabsWrapper) {
+  $effect(() => {
+    if (tabsContainer && tabsWrapper) {
+      // Find the initially selected tab (or the first one)
+      const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
+      if (activeTab) {
+        updateIndicator(activeTab);
+      }
+
       // Check initial scroll status
-      setTimeout(() => {
-        checkScrollPosition();
-      }, 100);
+      setTimeout(checkScrollPosition, 100);
 
       // Add scroll event listener
       tabsWrapper.addEventListener('scroll', checkScrollPosition);
@@ -220,11 +219,11 @@
   {#if showLeftArrow}
     <button
       class="scroll-arrow left-arrow"
-      on:click={scrollLeft}
+      onclick={scrollLeft}
       aria-label="Scroll tabs left"
       disabled={isScrolling}
     >
-      <ChevronLeft size={18} />
+      <ChevronLeft size={16} />
     </button>
   {/if}
 
@@ -245,11 +244,11 @@
   {#if showRightArrow}
     <button
       class="scroll-arrow right-arrow"
-      on:click={scrollRight}
+      onclick={scrollRight}
       aria-label="Scroll tabs right"
       disabled={isScrolling}
     >
-      <ChevronRight size={18} />
+      <ChevronRight size={16} />
     </button>
   {/if}
 </div>
@@ -264,7 +263,6 @@
 
   .tabs-wrapper {
     @apply flex-1 overflow-x-auto overflow-y-hidden relative;
-    @apply scrollbar-none; /* Hide scrollbar but keep functionality */
     scroll-behavior: smooth;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -323,12 +321,17 @@
       @apply gap-1;
     }
 
-    :global(.tabs-container .tab) {
-      @apply flex-shrink-0 min-w-fit;
-    }
-
     .scroll-arrow {
       @apply w-6 h-6;
+    }
+
+    :global(.tabs-container .tab) {
+      @apply flex-shrink-0 min-w-fit;
+      scroll-snap-align: start;
+    }
+
+    .tabs-wrapper {
+      scroll-snap-type: x mandatory;
     }
   }
 </style>
