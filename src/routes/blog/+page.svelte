@@ -1,5 +1,6 @@
 <script>
   import {fade} from 'svelte/transition';
+  import {onMount} from 'svelte';
   import {appName, domain} from '$settings/global';
   import Metadata from '$features/seo/Metadata.svelte';
   import Tags from '$features/blog/tags/Tags.svelte';
@@ -16,7 +17,8 @@
   // State for active tab and filtered posts
   let activeTab = $state('All'); // Default to 'All' tab
   let posts = $state(data.posts);
-  let filteredPosts = $state(data.posts);
+  let tabFilteredPosts = $state(data.posts); // Posts filtered by tab
+  let filteredPosts = $state(data.posts); // Final filtered posts (tab + tags)
 
   // References to child components for resetting their state
   let tabsComponent;
@@ -36,28 +38,65 @@
 
   // Handle tab filtering - triggered by the Tabs component
   function handleTabClick(filtered, tab) {
-    if (tab === 'All') {
-      filteredPosts = [...posts];
-    } else {
-      filteredPosts = filtered;
-    }
     activeTab = tab;
+
+    // Update posts filtered by tab
+    if (tab === 'All') {
+      tabFilteredPosts = [...posts];
+    } else {
+      tabFilteredPosts = filtered;
+    }
+
+    // Apply any active tag filters to the tab-filtered posts
+    // tagsComponent will be called if needed via $effect below
+    filteredPosts = tabFilteredPosts;
   }
 
-  $inspect('he', filteredPosts);
   // Handle tag filtering - triggered by the Tags component
-  function handleTagToggle(filtered) {
-    filteredPosts = filtered;
+  function handleTagToggle(filtered, tag) {
+    // Important: filter from the tabFilteredPosts, not from all posts
+    // This ensures tags only filter within the current tab's scope
+    if (filtered.length === posts.length) {
+      // No tags selected, show all posts for current tab
+      filteredPosts = tabFilteredPosts;
+    } else {
+      // Filter the already tab-filtered posts by tag
+      const tagFiltered = filtered.filter(post => {
+        // For 'All' tab, include all tag-filtered posts
+        if (activeTab === 'All') return true;
+
+        // Otherwise, check if post belongs to active tab
+        return post.meta?.tabs?.includes(activeTab);
+      });
+
+      filteredPosts = tagFiltered;
+    }
   }
 
   // Reset all filters with proper state coordination
   function resetFilters() {
-    // First reset tab state
-    activeTab = 'All';
+    // Reset tab state via the component method
+    if (tabsComponent && typeof tabsComponent.resetState === 'function') {
+      tabsComponent.resetState('All');
+    }
 
-    // Reset filtered posts to original state
+    // Reset tag state via the component method
+    if (tagsComponent && typeof tagsComponent.resetState === 'function') {
+      tagsComponent.resetState();
+    }
+
+    // Reset local state
+    activeTab = 'All';
+    tabFilteredPosts = [...posts];
     filteredPosts = [...posts];
   }
+
+  // When posts data changes, update our derived states
+  onMount(() => {
+    posts = data.posts;
+    tabFilteredPosts = [...posts];
+    filteredPosts = [...posts];
+  });
 </script>
 
 <Metadata
@@ -97,7 +136,7 @@
       <div class="tags-wrapper">
         <Tags
           bind:this={tagsComponent}
-          payload={posts}
+          payload={tabFilteredPosts}
           toggleEvent={handleTagToggle}
           propPath={['meta', 'tags']}
           isTagCount={true}

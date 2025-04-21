@@ -1,5 +1,5 @@
-<!-- src/lib/features/blog/tabs/Tabs.svelte -->
 <script>
+  import {tick, onMount} from 'svelte';
   import {
     pipe,
     defaultTo,
@@ -53,6 +53,7 @@
   let showLeftArrow = $state(false);
   let showRightArrow = $state(true);
   let isScrolling = $state(false);
+  let selectedTab = $state('All'); // Track the currently selected tab
 
   // Update visual indicator position
   const updateIndicator = activeTab => {
@@ -65,24 +66,25 @@
   };
 
   // Create new tabs state with selected tab active
-  const updateTabs = selectedTab => {
+  const updateTabs = selectedTabName => {
+    selectedTab = selectedTabName;
     const newState = {};
     keys(tabs).forEach(key => {
-      newState[key] = key === selectedTab;
+      newState[key] = key === selectedTabName;
     });
     tabs = newState;
   };
 
   // Filter payload based on active tab
-  const filterPayload = selectedTab => {
+  const filterPayload = selectedTabName => {
     // Get the active tab value from tabs state
-    const isTabActive = tabs[selectedTab];
+    const isTabActive = tabs[selectedTabName];
 
-    if (!isTabActive || selectedTab === 'All') return payload;
+    if (!isTabActive || selectedTabName === 'All') return payload;
 
     return filter(item => {
       const itemTags = path(propPath, item);
-      return isValidArray(itemTags) && itemTags.includes(selectedTab);
+      return isValidArray(itemTags) && itemTags.includes(selectedTabName);
     }, payload);
   };
 
@@ -90,7 +92,8 @@
     updateTabs(tab);
     updateIndicator(tab);
     // Handle tab selection with filtering
-    triggerEvent(filterPayload(tab), tab);
+    const filteredItems = filterPayload(tab);
+    triggerEvent(filteredItems, tab);
 
     // Ensure the selected tab is visible by scrolling to it
     if (tabsContainer) {
@@ -105,6 +108,9 @@
   function resetState(defaultTab = 'All') {
     const tabToSelect = keys(tabs).includes(defaultTab) ? defaultTab : keys(tabs)[0];
 
+    // Update selected tab
+    selectedTab = tabToSelect;
+
     // Create a completely new tabs object to ensure reactivity
     const newTabs = {};
     keys(tabs).forEach(key => {
@@ -116,7 +122,8 @@
     setTimeout(() => updateIndicator(tabToSelect), 50);
 
     // Trigger the event to update the parent component
-    triggerEvent(payload, tabToSelect);
+    const filteredItems = filterPayload(tabToSelect);
+    triggerEvent(filteredItems, tabToSelect);
 
     // Scroll back to start when resetting
     if (tabsWrapper) {
@@ -191,12 +198,14 @@
     setTimeout(checkScrollPosition, 300);
   }
 
-  $effect(() => {
+  onMount(() => {
     if (tabsContainer && tabsWrapper) {
       // Find the initially selected tab (or the first one)
       const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
       if (activeTab) {
         updateIndicator(activeTab);
+        // Make sure initial selectedTab state is set
+        selectedTab = activeTab;
       }
 
       // Check initial scroll status
