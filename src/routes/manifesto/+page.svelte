@@ -146,7 +146,7 @@
   }
 
   .manifesto-content {
-    @apply space-y-16;
+    @apply space-y-16 max-md:px-2.5;
   }
 
   .manifesto-section {

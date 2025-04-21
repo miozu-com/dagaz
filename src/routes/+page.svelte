@@ -242,6 +242,7 @@ pnpm dev</code
 
   /* Hero Section */
   .hero {
+    @apply z-0;
     @apply pt-12 pb-20 md:pt-20 md:pb-32 bg-base0 relative overflow-hidden;
     &::before {
       content: '';

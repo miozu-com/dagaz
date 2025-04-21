@@ -1,3 +1,4 @@
+<!-- src/lib/features/layout/MobileMenu.svelte -->
 <script>
   import {browser} from '$app/environment';
   import {onMount, onDestroy} from 'svelte';
@@ -7,7 +8,7 @@
   import ThemeSwitcher from '$features/theme/ThemeSwitcher.svelte';
   import {Select} from '$components/jera';
   import {locales} from '$lib/data/locales.js';
-  import {Menu} from '$components/icons';
+  import {Menu, Languages} from '$components/icons';
 
   let {routes = [], l10n, theme} = $props();
 
@@ -15,11 +16,11 @@
   let menuButtonRef = $state(null);
   let isMenuOpen = $state(false);
 
-  // Create locale options for the Select component
+  // Create locale options for the Select component - simplified to not show flags in dropdown
   const localeOptions = $derived(
     Object.entries(locales).map(([value, locale]) => ({
       value,
-      label: `${locale.flag} ${locale.label}`
+      label: locale.label
     }))
   );
 
@@ -67,6 +68,13 @@
     if (browser) {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeydown);
+    }
+  });
+
+  onDestroy(() => {
+    if (browser) {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeydown);
     }
   });
 </script>
@@ -135,21 +143,15 @@
 
     <div class="mobile-menu-footer">
       <div class="mobile-menu-tools">
-        <div class="tool-item">
-          <span class="tool-label">Theme</span>
-          <ThemeSwitcher {theme} />
-        </div>
-
-        <div class="tool-item">
-          <span class="tool-label">Language</span>
-          <Select
-            options={localeOptions}
-            value={l10n?.value ?? 'en'}
-            onChange={handleLocaleChange}
-            class="locale-select"
-            buttonVariant="sm"
-          />
-        </div>
+        <ThemeSwitcher {theme} />
+        <Select
+          options={localeOptions}
+          value={l10n?.value ?? 'en'}
+          onChange={handleLocaleChange}
+          icon={{icon: Languages, position: 'left'}}
+          position="top"
+          class="locale-select"
+        />
       </div>
     </div>
   </div>
@@ -218,20 +220,21 @@
     @apply border-b border-base3/5;
   }
 
-  /* Mobile Menu Footer */
+  /* Mobile Menu Footer - SIMPLIFIED */
   .mobile-menu-footer {
     @apply p-4 border-t border-base3/10;
   }
 
   .mobile-menu-tools {
-    @apply flex flex-col gap-4;
+    @apply flex items-center justify-between gap-2;
   }
 
-  .tool-item {
-    @apply flex items-center justify-between;
+  /* Override Select styles in the mobile menu */
+  :global(.mobile-menu-tools .locale-select) {
+    @apply flex-1;
   }
 
-  .tool-label {
-    @apply text-base5 font-medium;
+  :global(.mobile-menu-tools .theme-toggle) {
+    @apply ml-auto;
   }
 </style>

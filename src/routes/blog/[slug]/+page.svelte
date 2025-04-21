@@ -228,7 +228,7 @@
   }
 
   .post-header {
-    @apply px-0.5 md:px-5 lg:px-8 pt-2 sm:pt-5 pb-4 sm:pb-6;
+    @apply px-2.5 md:px-5 lg:px-8 pt-2 sm:pt-5 pb-4 sm:pb-6;
   }
 
   .back-button {
@@ -271,21 +271,8 @@
   }
 
   .post-body {
-    @apply px-0.5 md:px-5 lg:px-8 py-6 sm:py-8;
+    @apply px-2.5 md:px-5 lg:px-8 py-6 sm:py-8;
     @apply font-serif;
-    min-height: 400px;
-    scrollbar-gutter: stable;
-    scrollbar-width: thin;
-
-    &::-webkit-scrollbar {
-      @apply w-2;
-    }
-    &::-webkit-scrollbar-track {
-      @apply bg-base1/30 rounded-full;
-    }
-    &::-webkit-scrollbar-thumb {
-      @apply bg-base4/40 rounded-full hover:bg-base4/60 transition-colors;
-    }
   }
 
   .post-footer {
