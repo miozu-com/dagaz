@@ -45,7 +45,7 @@
   }
 
   .header-content {
-    @apply max-w-7xl mx-auto px-4 py-4;
+    @apply max-w-7xl mx-auto px-2.5 py-4;
     @apply h-14 w-full;
     @apply flex items-center;
   }

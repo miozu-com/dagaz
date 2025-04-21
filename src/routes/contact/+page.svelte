@@ -1,5 +1,5 @@
 <script>
-  import {UserRound, Copy} from '$components/icons';
+  import {UserRound, Email} from '$components/icons';
   import {Button} from '$components/jera';
   import Divider from '$components/Divider.svelte';
   import {appName, author, contact} from '$settings/global';
@@ -184,7 +184,7 @@
                 class={validationErrors.email ? 'input-error' : ''}
               />
               <div class="input-icon">
-                <Copy
+                <Email
                   size={18}
                   color={validationErrors.email ? 'var(--color-base8)' : 'var(--color-base4)'}
                 />

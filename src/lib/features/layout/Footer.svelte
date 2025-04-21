@@ -224,18 +224,6 @@
           <div class="status-dot" style="background-color: {online ? '#6dd672' : '#ff9837'}"></div>
         </button>
       </div>
-
-      <!-- External links section -->
-      <div class="footer-links">
-        {#each externalRoutes as route}
-          {@const url = getExternalUrl(route.key)}
-          {#if url}
-            <a href={url} class="footer-link" target="_blank" rel="noopener noreferrer">
-              {route.translate ? safeTranslate(route.key) : route.key}
-            </a>
-          {/if}
-        {/each}
-      </div>
     </div>
 
     {#if statusExpanded}
@@ -255,7 +243,19 @@
 
     <div class="footer-legal">
       <p class="copyright">{safeTranslate('copyright', {year})}&nbsp;{author}</p>
-      <p class="built-with">{safeTranslate('builtWith')}</p>
+      <div class="project-repo-links">
+        {#each externalRoutes as route}
+          {@const url = getExternalUrl(route.key)}
+          {#if url}
+            <a href={url} class="project-repo-link" target="_blank" rel="noopener noreferrer">
+              {route.translate ? safeTranslate(route.key) : route.key}
+            </a>
+          {/if}
+        {/each}
+      </div>
+      <p class="built-with">
+        {safeTranslate('builtWith')}
+      </p>
     </div>
   </div>
 </footer>
@@ -268,7 +268,7 @@
   }
 
   .footer-container {
-    @apply max-w-7xl mx-auto px-4 py-4;
+    @apply max-w-7xl mx-auto px-2.5 py-4;
   }
 
   .footer-content {
@@ -276,7 +276,7 @@
   }
 
   .footer-branding {
-    @apply flex items-center flex-wrap gap-4;
+    @apply w-full flex items-center justify-between flex-wrap gap-4;
   }
 
   .footer-logo {
@@ -291,12 +291,12 @@
     @apply flex gap-4;
   }
 
-  .footer-links {
+  .project-repo-links {
     @apply flex gap-4;
   }
 
-  .footer-link {
-    @apply text-sm text-base5/80 hover:text-base14 transition-colors;
+  .project-repo-link {
+    @apply text-xs text-base4;
   }
 
   .footer-legal {
@@ -370,17 +370,8 @@
       @apply flex-col gap-3 items-start;
     }
 
-    .footer-nav,
-    .footer-links {
-      @apply mb-2 mr-auto;
-    }
-
     .footer-tools {
       @apply mr-0 ml-0 mt-2;
-    }
-
-    .footer-legal {
-      @apply flex-col items-start gap-1;
     }
 
     .status-items {
