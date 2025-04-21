@@ -1,6 +1,6 @@
 <script>
   import {fade} from 'svelte/transition';
-  import {onMount} from 'svelte';
+  import {onMount, tick} from 'svelte';
   import {appName, domain} from '$settings/global';
   import Metadata from '$features/seo/Metadata.svelte';
   import Tags from '$features/blog/tags/Tags.svelte';
@@ -13,88 +13,80 @@
 
   // Get data from +page.js
   let {data} = $props();
+  const l10n = data.l10n;
 
-  // State for active tab and filtered posts
-  let activeTab = $state('All'); // Default to 'All' tab
+  // State for posts and filtering
   let posts = $state(data.posts);
-  let tabFilteredPosts = $state(data.posts); // Posts filtered by tab
-  let filteredPosts = $state(data.posts); // Final filtered posts (tab + tags)
+  let activeTab = $state('All');
+  let filteredPosts = $state(data.posts);
 
   // References to child components for resetting their state
-  let tabsComponent;
-  let tagsComponent;
+  let tabsComponent = $state(null);
+  let tagsComponent = $state(null);
 
-  // Check if we have posts with tabs or tags
+  // Derived properties
   let hasTabs = $derived(posts.some(post => post.meta?.tabs?.length > 0));
   let hasTags = $derived(posts.some(post => post.meta?.tags?.length > 0));
+  let shouldDisableReset = $derived(filteredPosts.length === posts.length && activeTab === 'All');
 
-  // Add 'All' option to tabs when rendering
-  function getAllTabs(posts) {
-    if (!posts.length) return [];
-
-    const uniqueTabs = [...new Set(posts.flatMap(post => post.meta?.tabs || []))];
-    return ['All', ...uniqueTabs];
-  }
-
-  // Handle tab filtering - triggered by the Tabs component
-  function handleTabClick(filtered, tab) {
+  // Handle tab filtering
+  async function handleTabClick(filtered, tab) {
     activeTab = tab;
 
-    // Update posts filtered by tab
-    if (tab === 'All') {
-      tabFilteredPosts = [...posts];
-    } else {
-      tabFilteredPosts = filtered;
+    // Reset tag selection when changing tabs
+    if (tagsComponent && typeof tagsComponent.resetState === 'function') {
+      await tagsComponent.resetState();
     }
 
-    // Apply any active tag filters to the tab-filtered posts
-    // tagsComponent will be called if needed via $effect below
-    filteredPosts = tabFilteredPosts;
+    // Apply tab filtering
+    if (tab === 'All') {
+      filteredPosts = [...posts];
+    } else {
+      filteredPosts = filtered;
+    }
   }
 
-  // Handle tag filtering - triggered by the Tags component
-  function handleTagToggle(filtered, tag) {
-    // Important: filter from the tabFilteredPosts, not from all posts
-    // This ensures tags only filter within the current tab's scope
-    if (filtered.length === posts.length) {
-      // No tags selected, show all posts for current tab
-      filteredPosts = tabFilteredPosts;
+  // Handle tag filtering
+  function handleTagToggle(filtered) {
+    // Filter within current tab selection
+    if (activeTab === 'All') {
+      filteredPosts = filtered;
     } else {
-      // Filter the already tab-filtered posts by tag
-      const tagFiltered = filtered.filter(post => {
-        // For 'All' tab, include all tag-filtered posts
-        if (activeTab === 'All') return true;
-
-        // Otherwise, check if post belongs to active tab
-        return post.meta?.tabs?.includes(activeTab);
-      });
-
-      filteredPosts = tagFiltered;
+      // Only show posts that match both the active tab and selected tags
+      filteredPosts = filtered.filter(post => post.meta?.tabs?.includes(activeTab));
     }
   }
 
   // Reset all filters with proper state coordination
-  function resetFilters() {
-    // Reset tab state via the component method
+  async function resetFilters() {
+    // Reset tab state first
     if (tabsComponent && typeof tabsComponent.resetState === 'function') {
-      tabsComponent.resetState('All');
+      await tabsComponent.resetState('All');
     }
 
-    // Reset tag state via the component method
+    // Then reset tag selection
     if (tagsComponent && typeof tagsComponent.resetState === 'function') {
-      tagsComponent.resetState();
+      await tagsComponent.resetState();
     }
 
     // Reset local state
     activeTab = 'All';
-    tabFilteredPosts = [...posts];
     filteredPosts = [...posts];
+
+    // Force visual refresh
+    await tick();
   }
 
-  // When posts data changes, update our derived states
+  // Helper function to get all tabs
+  function getAllTabs() {
+    if (!posts.length) return [];
+    const uniqueTabs = [...new Set(posts.flatMap(post => post.meta?.tabs || []))];
+    return ['All', ...uniqueTabs];
+  }
+
+  // Update when posts data changes
   onMount(() => {
     posts = data.posts;
-    tabFilteredPosts = [...posts];
     filteredPosts = [...posts];
   });
 </script>
@@ -106,154 +98,82 @@
   ogType="website"
 />
 
-<div class="blog-container" in:fade={{duration: 300}}>
-  <header class="blog-header">
-    <div class="header-content">
-      <div class="title-and-tabs">
-        <h1 class="main-title">{data.l10n.t('articles')}</h1>
+<div class="w-full max-w-6xl mx-auto pb-8 sm:pb-16" in:fade={{duration: 300}}>
+  <header class="relative bg-gradient-to-r from-base14/5 to-transparent">
+    <div class="py-10 max-w-4xl mx-auto px-4">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-3">
+        <h1 class="text-3xl sm:text-4xl font-bold text-base14 whitespace-nowrap">
+          {l10n.t('articles')}
+        </h1>
       </div>
-      <p class="subtitle">{data.l10n.t('blogDescription')}</p>
-      <div class="header-accent"></div>
+      <p class="text-base5 text-lg max-w-2xl">{l10n.t('blogDescription')}</p>
+      <div class="h-1 w-16 bg-base14/50 mt-6 rounded-full"></div>
     </div>
 
     <!-- Tabs section -->
     {#if hasTabs}
-      <div class="category-tabs">
+      <div class="mt-2 sm:mt-0 max-w-4xl mx-auto px-4 w-full overflow-hidden">
         <Tabs
           bind:this={tabsComponent}
           payload={posts}
           triggerEvent={handleTabClick}
           propPath={['meta', 'tabs']}
-          customTabs={getAllTabs(posts)}
+          customTabs={getAllTabs()}
         />
       </div>
     {/if}
   </header>
 
   {#if hasTags}
-    <div class="filter-section">
+    <div class="px-4 mb-10">
       <Divider />
-      <div class="tags-wrapper">
+      <div class="flex flex-col sm:flex-row items-start justify-between gap-4 mt-5">
         <Tags
           bind:this={tagsComponent}
-          payload={tabFilteredPosts}
+          payload={activeTab === 'All' ? posts : filteredPosts}
           toggleEvent={handleTagToggle}
           propPath={['meta', 'tags']}
           isTagCount={true}
         />
         <Button
-          disabled={filteredPosts.length === posts.length && activeTab === 'All'}
+          disabled={shouldDisableReset}
           variant="secondary sm"
           onclick={resetFilters}
-          class="reset-button"
+          class="text-sm text-base5 hover:text-base14 transition-colors flex items-center gap-1.5 sm:ml-auto mt-2 sm:mt-0 self-center sm:self-end"
         >
           <RotateCcw size={12} class="mr-2" />
-          {data.l10n.t('resetFilters')}
+          {l10n.t('resetFilters')}
         </Button>
       </div>
     </div>
   {/if}
 
   {#if filteredPosts.length > 0}
-    <div class="results-header">
-      <p class="results-count">
+    <div class="mb-6 pb-3 border-b border-base3/10 px-4">
+      <p class="text-sm text-base4">
         {filteredPosts.length}
         {filteredPosts.length === 1 ? 'article' : 'articles'}
         {activeTab && activeTab !== 'All' ? `in "${activeTab}"` : ''}
       </p>
     </div>
 
-    <ul class="posts-grid">
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
       {#each filteredPosts as post, i (post.slug)}
-        <Post {post} index={i} l10n={data.l10n} />
+        <Post {post} index={i} {l10n} />
       {/each}
     </ul>
   {:else if posts.length > 0}
-    <div class="no-results">
-      <p>{data.l10n.t('noMatchingPosts')}</p>
+    <div
+      class="flex flex-col items-center justify-center text-center py-10 gap-4 mx-4 text-base4 bg-base1/30 rounded-xs border border-base3/10"
+    >
+      <p>{l10n.t('noMatchingPosts')}</p>
       <Button variant="secondary" onclick={resetFilters}>
-        {data.l10n.t('showAllPosts')}
+        {l10n.t('showAllPosts')}
       </Button>
     </div>
   {:else if data.error}
-    <NoPosts
-      l10n={data.l10n}
-      message="There was an error loading blog posts. Please try again later."
-    />
+    <NoPosts {l10n} message="There was an error loading blog posts. Please try again later." />
   {:else}
-    <NoPosts l10n={data.l10n} message="No blog posts found yet. Check back soon for new content!" />
+    <NoPosts {l10n} message="No blog posts found yet. Check back soon for new content!" />
   {/if}
 </div>
-
-<style lang="postcss">
-  @import '$styles/theme.css' theme(reference);
-
-  .blog-container {
-    @apply w-full max-w-6xl mx-auto pb-8 sm:pb-16;
-  }
-
-  .blog-header {
-    @apply relative;
-    background: linear-gradient(to right, rgba(255, 153, 130, 0.05), transparent);
-  }
-
-  .header-content {
-    @apply py-10 max-w-4xl mx-auto px-4;
-  }
-
-  .title-and-tabs {
-    @apply flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-3;
-  }
-
-  .main-title {
-    @apply text-3xl sm:text-4xl font-bold text-base14 whitespace-nowrap;
-    letter-spacing: -0.02em;
-  }
-
-  .category-tabs {
-    @apply mt-2 sm:mt-0 max-w-4xl mx-auto px-4;
-    /* Make tabs take full width on mobile */
-    @apply w-full overflow-hidden;
-  }
-
-  .subtitle {
-    @apply text-base5 text-lg max-w-2xl;
-  }
-
-  .header-accent {
-    @apply h-1 w-16 bg-base14/50 mt-6 rounded-full;
-  }
-
-  .filter-section {
-    @apply px-4 mb-10;
-  }
-
-  .tags-wrapper {
-    @apply flex flex-col sm:flex-row items-start justify-between gap-4 mt-5;
-  }
-
-  .results-header {
-    @apply mb-6 pb-3 border-b border-base3/10 px-4;
-  }
-
-  .results-count {
-    @apply text-sm text-base4;
-  }
-
-  .reset-button {
-    @apply text-sm text-base5 hover:text-base14 transition-colors;
-    @apply flex items-center gap-1.5;
-    @apply sm:ml-auto mt-2 sm:mt-0; /* Position button right on desktop, bottom on mobile */
-    @apply self-center sm:self-end;
-  }
-
-  .posts-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4;
-  }
-
-  .no-results {
-    @apply flex flex-col items-center justify-center text-center py-10 gap-4 mx-4;
-    @apply text-base4;
-    @apply bg-base1/30 rounded-xs border border-base3/10;
-  }
-</style>

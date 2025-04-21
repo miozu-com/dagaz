@@ -56,76 +56,77 @@
   let selectedTab = $state('All'); // Track the currently selected tab
 
   // Update visual indicator position
-  const updateIndicator = activeTab => {
+  async function updateIndicator(activeTab) {
+    await tick();
     if (!indicator || !tabsContainer) return;
+
     const activeElement = tabsContainer.querySelector(`[data-tab-id="${activeTab}"]`);
     if (!activeElement) return;
+
     const {offsetLeft, offsetWidth} = activeElement;
     indicator.style.transform = `translateX(${offsetLeft}px)`;
     indicator.style.width = `${offsetWidth}px`;
-  };
+  }
 
   // Create new tabs state with selected tab active
-  const updateTabs = selectedTabName => {
+  function updateTabs(selectedTabName) {
     selectedTab = selectedTabName;
+
+    // Create a new object to ensure reactivity
     const newState = {};
     keys(tabs).forEach(key => {
       newState[key] = key === selectedTabName;
     });
     tabs = newState;
-  };
+  }
 
   // Filter payload based on active tab
-  const filterPayload = selectedTabName => {
-    // Get the active tab value from tabs state
-    const isTabActive = tabs[selectedTabName];
+  function filterPayload(selectedTabName) {
+    // If 'All' tab or no active tab, return all items
+    if (selectedTabName === 'All') return payload;
 
-    if (!isTabActive || selectedTabName === 'All') return payload;
-
+    // Filter items that contain the selected tab
     return filter(item => {
       const itemTags = path(propPath, item);
       return isValidArray(itemTags) && itemTags.includes(selectedTabName);
     }, payload);
-  };
+  }
 
-  const selectTab = tab => {
+  // Handle tab selection
+  async function selectTab(tab) {
+    // Update visual and state
     updateTabs(tab);
+    await tick();
     updateIndicator(tab);
-    // Handle tab selection with filtering
+
+    // Filter items and notify parent
     const filteredItems = filterPayload(tab);
     triggerEvent(filteredItems, tab);
 
-    // Ensure the selected tab is visible by scrolling to it
+    // Ensure the selected tab is visible
     if (tabsContainer) {
       const tabElement = tabsContainer.querySelector(`[data-tab-id="${tab}"]`);
       if (tabElement) {
         scrollTabIntoView(tabElement);
       }
     }
-  };
+  }
 
-  // Public method to reset tab state - IMPROVED
-  function resetState(defaultTab = 'All') {
+  // Reset tab state - public method called by parent
+  async function resetState(defaultTab = 'All') {
+    // Select the default tab (usually 'All')
     const tabToSelect = keys(tabs).includes(defaultTab) ? defaultTab : keys(tabs)[0];
 
-    // Update selected tab
-    selectedTab = tabToSelect;
+    // Update visual and state
+    updateTabs(tabToSelect);
+    await tick();
+    updateIndicator(tabToSelect);
 
-    // Create a completely new tabs object to ensure reactivity
-    const newTabs = {};
-    keys(tabs).forEach(key => {
-      newTabs[key] = key === tabToSelect;
-    });
-    tabs = newTabs;
-
-    // Update the visual indicator
-    setTimeout(() => updateIndicator(tabToSelect), 50);
-
-    // Trigger the event to update the parent component
+    // Filter items and notify parent
     const filteredItems = filterPayload(tabToSelect);
     triggerEvent(filteredItems, tabToSelect);
 
-    // Scroll back to start when resetting
+    // Scroll back to start
     if (tabsWrapper) {
       tabsWrapper.scrollTo({
         left: 0,
@@ -134,13 +135,13 @@
     }
   }
 
-  // Handle scroll arrows visibility
+  // Check if scroll arrows should be shown
   function checkScrollPosition() {
     if (!tabsWrapper) return;
 
     const {scrollLeft, scrollWidth, clientWidth} = tabsWrapper;
-    showLeftArrow = scrollLeft > 5; // Small threshold to account for browsers
-    showRightArrow = scrollLeft < scrollWidth - clientWidth - 5; // Small threshold for right edge
+    showLeftArrow = scrollLeft > 5;
+    showRightArrow = scrollLeft < scrollWidth - clientWidth - 5;
   }
 
   // Scroll to previous tabs
@@ -154,7 +155,6 @@
       behavior: 'smooth'
     });
 
-    // Wait for scroll to complete
     setTimeout(() => {
       isScrolling = false;
       checkScrollPosition();
@@ -172,14 +172,13 @@
       behavior: 'smooth'
     });
 
-    // Wait for scroll to complete
     setTimeout(() => {
       isScrolling = false;
       checkScrollPosition();
     }, 300);
   }
 
-  // Scroll specific tab into view (centered if possible)
+  // Scroll specific tab into view
   function scrollTabIntoView(tabElement) {
     if (!tabsWrapper || !tabElement) return;
 
@@ -198,48 +197,42 @@
     setTimeout(checkScrollPosition, 300);
   }
 
-  onMount(() => {
-    if (tabsContainer && tabsWrapper) {
-      // Find the initially selected tab (or the first one)
-      const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
-      if (activeTab) {
-        updateIndicator(activeTab);
-        // Make sure initial selectedTab state is set
-        selectedTab = activeTab;
-      }
+  onMount(async () => {
+    // Find the initially selected tab
+    const activeTab = keys(tabs).find(key => tabs[key]) || keys(tabs)[0];
 
-      // Check initial scroll status
-      setTimeout(checkScrollPosition, 100);
+    if (activeTab) {
+      // Make sure initial selectedTab state is set
+      selectedTab = activeTab;
 
-      // Add scroll event listener
-      tabsWrapper.addEventListener('scroll', checkScrollPosition);
+      await tick();
+      updateIndicator(activeTab);
+    }
 
-      // Set up resize observer
-      if (typeof ResizeObserver !== 'undefined') {
-        const resizeObserver = new ResizeObserver(() => {
-          checkScrollPosition();
+    // Check initial scroll status
+    checkScrollPosition();
 
-          // Update indicator for the active tab
-          const activeTab = keys(tabs).find(key => tabs[key]);
-          if (activeTab) updateIndicator(activeTab);
-        });
+    // Set up resize observer
+    if (typeof ResizeObserver !== 'undefined' && tabsWrapper) {
+      const resizeObserver = new ResizeObserver(() => {
+        checkScrollPosition();
+        updateIndicator(selectedTab);
+      });
 
-        resizeObserver.observe(tabsWrapper);
+      resizeObserver.observe(tabsWrapper);
 
-        return () => {
-          resizeObserver.disconnect();
-          tabsWrapper.removeEventListener('scroll', checkScrollPosition);
-        };
-      }
+      return () => {
+        resizeObserver.disconnect();
+      };
     }
   });
 </script>
 
-<div class="tabs-container">
+<div class="relative flex items-center w-full">
   <!-- Left scroll arrow -->
   {#if showLeftArrow}
     <button
-      class="scroll-arrow left-arrow"
+      class="flex items-center justify-center w-8 md:w-8 h-8 md:h-8 bg-base1/80 rounded-full flex-shrink-0 text-base6 border border-base3/20 hover:bg-base1 hover:text-base14 transition-colors z-10 opacity-90 shadow-sm mr-1 disabled:opacity-50 disabled:cursor-not-allowed"
       onclick={scrollLeft}
       aria-label="Scroll tabs left"
       disabled={isScrolling}
@@ -249,22 +242,29 @@
   {/if}
 
   <!-- Tabs wrapper with horizontal scroll -->
-  <div class="tabs-wrapper" bind:this={tabsWrapper}>
-    <div class="tabs" bind:this={tabsContainer}>
+  <div
+    class="flex-1 overflow-x-auto overflow-y-hidden relative scroll-smooth scrollbar-none"
+    bind:this={tabsWrapper}
+    onscroll={checkScrollPosition}
+  >
+    <div class="flex flex-nowrap relative py-1 px-0.5 min-w-min" bind:this={tabsContainer}>
       {#each keys(tabs) as tab (tab)}
         <Tab onclick={() => selectTab(tab)} label={tab} selected={tabs[tab]} />
       {/each}
       {#if children}
         {@render children()}
       {/if}
-      <div class="sliding-indicator" bind:this={indicator}></div>
+      <div
+        class="absolute bottom-0 h-[2px] bg-base14 transition-all duration-300 ease-in-out opacity-100"
+        bind:this={indicator}
+      ></div>
     </div>
   </div>
 
   <!-- Right scroll arrow -->
   {#if showRightArrow}
     <button
-      class="scroll-arrow right-arrow"
+      class="flex items-center justify-center w-8 md:w-8 h-8 md:h-8 bg-base1/80 rounded-full flex-shrink-0 text-base6 border border-base3/20 hover:bg-base1 hover:text-base14 transition-colors z-10 opacity-90 shadow-sm ml-1 disabled:opacity-50 disabled:cursor-not-allowed"
       onclick={scrollRight}
       aria-label="Scroll tabs right"
       disabled={isScrolling}
@@ -274,85 +274,5 @@
   {/if}
 </div>
 
-<style lang="postcss">
-  @import '$styles/theme.css' theme(reference);
-
-  .tabs-container {
-    @apply relative flex items-center;
-    width: 100%;
-  }
-
-  .tabs-wrapper {
-    @apply flex-1 overflow-x-auto overflow-y-hidden relative;
-    scroll-behavior: smooth;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-
-  /* Hide scrollbar for Chrome/Safari/Opera */
-  .tabs-wrapper::-webkit-scrollbar {
-    display: none;
-  }
-
-  .tabs {
-    @apply flex flex-nowrap relative;
-    @apply py-1 px-0.5; /* Add padding to avoid edge clipping */
-    min-width: min-content; /* Ensure it expands to contain all tabs */
-  }
-
-  .sliding-indicator {
-    @apply absolute bottom-0 h-[2px] bg-base14;
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  /* Show indicator when there's an active tab */
-  :global(.tab.selected) ~ .sliding-indicator {
-    @apply opacity-100;
-  }
-
-  .scroll-arrow {
-    @apply flex items-center justify-center;
-    @apply w-8 h-8 bg-base1/80 rounded-full flex-shrink-0;
-    @apply text-base6 border border-base3/20;
-    @apply hover:bg-base1 hover:text-base14 transition-colors;
-    @apply z-10 opacity-90;
-    @apply shadow-sm;
-  }
-
-  .left-arrow {
-    @apply mr-1;
-  }
-
-  .right-arrow {
-    @apply ml-1;
-  }
-
-  /* Disabled state for arrows during animation */
-  .scroll-arrow:disabled {
-    @apply opacity-50 cursor-not-allowed;
-  }
-
-  /* Mobile optimization */
-  @media (max-width: 640px) {
-    .tabs-container {
-      @apply w-full px-1;
-    }
-
-    .tabs {
-      @apply gap-1;
-    }
-
-    .scroll-arrow {
-      @apply w-6 h-6;
-    }
-
-    :global(.tabs-container .tab) {
-      @apply flex-shrink-0 min-w-fit;
-      scroll-snap-align: start;
-    }
-
-    .tabs-wrapper {
-      scroll-snap-type: x mandatory;
-    }
-  }
+<style>
 </style>

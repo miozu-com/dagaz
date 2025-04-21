@@ -104,7 +104,7 @@
   {/if}
 </div>
 
-<style lang="postcss">
+<style>
   @import '$styles/theme.css' theme(reference);
 
   .select-container {
@@ -131,17 +131,5 @@
 
   .select-item-indicator {
     @apply absolute right-2 flex h-4 w-4 items-center justify-center;
-  }
-
-  /* Dark mode styles */
-  :global(.dark) {
-    .select-content {
-      @apply bg-base0/95 border-base4;
-    }
-
-    .select-item {
-      @apply text-base7/90;
-      @apply hover:bg-base1/30;
-    }
   }
 </style>

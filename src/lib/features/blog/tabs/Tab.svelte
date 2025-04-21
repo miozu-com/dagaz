@@ -14,7 +14,11 @@
 </script>
 
 <button
-  class="tab {selected ? 'selected' : ''} {className}"
+  class="inline-flex items-center relative px-4 py-2 text-sm font-medium whitespace-nowrap cursor-pointer text-base4 hover:text-base6 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-0 focus:ring-offset-0 flex-shrink-0 {(
+    selected
+  ) ?
+    'text-base14 bg-base1/60'
+  : ''} {className}"
   aria-pressed={selected}
   onclick={handleClick}
   data-tab-id={label}
@@ -27,29 +31,10 @@
   {/if}
 </button>
 
-<style lang="postcss">
+<style>
   @import '$styles/theme.css' theme(reference);
 
-  .tab {
-    @apply inline-flex items-center relative;
-    @apply px-4 py-2;
-    @apply text-sm font-medium whitespace-nowrap cursor-pointer;
-    @apply text-base4 hover:text-base6;
-    @apply transition-colors duration-200 ease-in-out;
-    @apply focus:outline-none focus:ring-0 focus:ring-offset-0;
-    /* Ensure width isn't overly constrained on mobile */
-    @apply flex-shrink-0;
-  }
-
-  .tab.selected {
-    @apply text-base14 bg-base1/60;
-  }
-
-  /* Mobile optimization */
-  @media (max-width: 640px) {
-    .tab {
-      @apply px-3 py-1.5;
-      min-width: max-content;
-    }
+  button {
+    @apply px-3 py-1.5 min-w-max;
   }
 </style>
