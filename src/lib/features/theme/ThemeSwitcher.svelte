@@ -3,13 +3,21 @@
 
   let {theme} = $props();
 
-  let isDarkMode = $derived(theme.isDark);
+  // Safely derive isDarkMode with null check to prevent the error
+  let isDarkMode = $derived(theme?.isDark ?? false);
+
+  // Safely toggle theme with null check
+  function toggleTheme() {
+    if (theme && typeof theme.toggle === 'function') {
+      theme.toggle();
+    }
+  }
 </script>
 
 <button
   type="button"
   class="theme-toggle"
-  onclick={() => theme.toggle()}
+  onclick={toggleTheme}
   aria-pressed={isDarkMode}
   aria-label="theme switcher"
 >

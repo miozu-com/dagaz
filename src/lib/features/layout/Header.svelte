@@ -1,4 +1,3 @@
-<!-- src/lib/features/layout/Header.svelte -->
 <script>
   import {githubRepo, codebergRepo, appName} from '$lib/settings/global';
   import {mainRoutes} from '$lib/settings/routes';
@@ -22,7 +21,7 @@
     <nav class="main-nav">
       {#each mainRoutes as route}
         <a href={route.path} class="nav-link">
-          {route.translate ? l10n.t(route.label) : route.label}
+          {route.translate ? (l10n?.t(route.label) ?? route.label) : route.label}
         </a>
       {/each}
     </nav>

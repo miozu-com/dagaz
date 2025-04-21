@@ -118,7 +118,7 @@
     }, 300);
   }
 
-  // Public method to reset tag state - IMPROVED
+  // Public method to reset tag state - IMPROVED with force update
   function resetState() {
     // Reset all tags to false with a brand new object to ensure reactivity
     const newTags = {};
@@ -137,6 +137,12 @@
         behavior: 'smooth'
       });
     }
+
+    // Force a re-render of badge elements
+    setTimeout(() => {
+      // This triggers a re-render by making a harmless state change
+      tags = {...tags};
+    }, 20);
   }
 
   $effect(() => {

@@ -1,4 +1,5 @@
 <script>
+  import {browser} from '$app/environment';
   import {onMount, onDestroy} from 'svelte';
   import {slide, fade} from 'svelte/transition';
   import DagazLogo from '$components/DagazLogo.svelte';
@@ -8,11 +9,12 @@
   import {locales} from '$lib/data/locales.js';
   import {Menu} from '$components/icons';
 
-  let {routes = [], l10n, theme, isOpen, menuButtonRef = $bindable()} = $props();
+  let {routes = [], l10n, theme} = $props();
 
   let menuRef = $state(null);
+  let menuButtonRef = $state(null);
+  let isMenuOpen = $state(false);
 
-  let isMenuOpen = $state(isOpen);
   // Create locale options for the Select component
   const localeOptions = $derived(
     Object.entries(locales).map(([value, locale]) => ({
@@ -21,9 +23,11 @@
     }))
   );
 
-  // Handle locale change
+  // Handle locale change with null check
   function handleLocaleChange(option) {
-    l10n.value = option.value;
+    if (l10n && typeof l10n.value !== 'undefined') {
+      l10n.value = option.value;
+    }
     // Close menu after changing language
     isMenuOpen = false;
   }
@@ -57,9 +61,17 @@
       isMenuOpen = false;
     }
   }
+
+  // Add event listeners on mount
+  onMount(() => {
+    if (browser) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeydown);
+    }
+  });
 </script>
 
-<!-- Hamburger Button -->
+<!-- Hamburger Button - No background, just icon -->
 <button
   bind:this={menuButtonRef}
   class="mobile-menu-button"
@@ -68,7 +80,7 @@
   aria-controls="mobile-menu"
   onclick={toggleMenu}
 >
-  <Menu size={18} />
+  <Menu size={24} />
 </button>
 
 <!-- Mobile Menu -->
@@ -116,7 +128,7 @@
     <nav class="mobile-nav">
       {#each routes as route}
         <a href={route.path} class="mobile-nav-link" onclick={closeMenu}>
-          {route.translate ? l10n.t(route.label) : route.label}
+          {route.translate ? (l10n?.t(route.label) ?? route.label) : route.label}
         </a>
       {/each}
     </nav>
@@ -132,7 +144,7 @@
           <span class="tool-label">Language</span>
           <Select
             options={localeOptions}
-            value={l10n.value}
+            value={l10n?.value ?? 'en'}
             onChange={handleLocaleChange}
             class="locale-select"
             buttonVariant="sm"
@@ -146,57 +158,26 @@
 <style lang="postcss">
   @import '$styles/theme.css' theme(reference);
 
-  /* Hamburger Button */
+  /* Hamburger Button - Minimal, no background */
   .mobile-menu-button {
-    @apply fixed right-4 top-4 z-50 h-10 w-10 rounded-full bg-base1/90 backdrop-blur-sm;
-    @apply flex items-center justify-center;
-    @apply border border-base3/20;
-    @apply shadow-md;
-    @apply focus:outline-none focus:ring-2 focus:ring-base14/30;
-    @apply transition-transform duration-300;
-
-    /* Only show on mobile */
-    @apply md:hidden;
-  }
-
-  .mobile-menu-button:active {
-    @apply transform scale-95;
-  }
-
-  .hamburger-icon {
-    @apply w-5 h-4 relative flex flex-col justify-between;
-
-    .hamburger-line {
-      @apply w-full h-0.5 bg-base14 rounded-full;
-      @apply transform transition-all duration-300;
-    }
-
-    &.open {
-      .hamburger-line:nth-child(1) {
-        @apply transform rotate-45 translate-y-1.5;
-      }
-
-      .hamburger-line:nth-child(2) {
-        @apply opacity-0;
-      }
-
-      .hamburger-line:nth-child(3) {
-        @apply transform -rotate-45 -translate-y-1.5;
-      }
-    }
+    @apply fixed right-4 top-4 z-50 text-base6 hover:text-base14;
+    @apply focus:outline-none;
+    @apply transition-colors duration-200;
+    @apply md:hidden; /* Only show on mobile */
   }
 
   /* Mobile Menu Overlay */
   .mobile-menu-overlay {
-    @apply fixed inset-0 z-40 bg-base0/70 backdrop-blur-sm;
+    @apply fixed inset-0 z-40 bg-base0/80 backdrop-blur-sm;
     @apply md:hidden; /* Hide on desktop */
   }
 
   /* Mobile Menu Panel */
   .mobile-menu {
-    @apply fixed top-0 right-0 z-50 h-full w-full max-w-[300px];
-    @apply bg-base0 shadow-xl;
+    @apply fixed top-0 right-0 z-50 h-full w-full max-w-[280px];
+    @apply bg-base1/95 backdrop-blur-md border-l border-base3/10;
     @apply flex flex-col;
+    @apply shadow-lg;
     @apply md:hidden; /* Hide on desktop */
   }
 
@@ -214,9 +195,8 @@
   }
 
   .mobile-menu-close {
-    @apply flex items-center justify-center h-10 w-10 rounded-full;
-    @apply bg-base1/70 text-base5 hover:text-base14;
-    @apply border border-base3/10;
+    @apply flex items-center justify-center h-9 w-9 rounded-full;
+    @apply text-base5 hover:text-base14;
     @apply transform transition-all duration-200;
     @apply focus:outline-none;
   }

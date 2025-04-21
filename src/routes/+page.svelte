@@ -237,7 +237,7 @@ pnpm dev</code
   }
 
   .container {
-    @apply max-w-6xl mx-auto px-6 py-12 md:py-24;
+    @apply max-w-6xl mx-auto px-2.5 min-md:px-6 py-12 md:py-24;
   }
 
   /* Hero Section */

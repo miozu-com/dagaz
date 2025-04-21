@@ -221,6 +221,16 @@ export default {
     contactFormError:
       "Une erreur s'est produite lors de l'envoi de votre message. Veuillez réessayer plus tard.",
 
+    contact: 'Contact',
+
+    // Make sure other translations exist:
+    close: 'Fermer',
+    blog: 'Blog',
+    github: 'GitHub',
+    codeberg: 'Codeberg',
+    builtWith: 'Créé avec Dagaz',
+    allRightsReserved: 'Tous droits réservés',
+
     // Manifesto page
     manifesto: 'Manifeste',
     manifestoTitle: 'Le Manifeste Dagaz',

@@ -53,9 +53,24 @@
     }
   }
 
-  // Handle locale change
+  // Handle locale change with defensive checks
   function handleLocaleChange(option) {
-    l10n.value = option.value;
+    if (l10n && typeof l10n.value !== 'undefined') {
+      l10n.value = option.value;
+    }
+  }
+
+  // Safely get translation with fallback
+  function safeTranslate(key, params = {}) {
+    if (l10n && typeof l10n.t === 'function') {
+      try {
+        return l10n.t(key, params);
+      } catch (e) {
+        console.warn(`Translation error for key: ${key}`, e);
+        return key; // Fallback to the key itself
+      }
+    }
+    return key; // Fallback if l10n is not available
   }
 
   onMount(() => {
@@ -183,7 +198,7 @@
         <div class="footer-nav">
           {#each mainRoutes as route}
             <a href={route.path} class="footer-link">
-              {route.translate ? l10n.t(route.label) : route.label}
+              {route.translate ? safeTranslate(route.label) : route.label}
             </a>
           {/each}
         </div>
@@ -193,7 +208,7 @@
         <ThemeSwitcher {theme} />
         <Select
           options={localeOptions}
-          value={l10n.value}
+          value={l10n?.value ?? 'en'}
           onChange={handleLocaleChange}
           class="locale-select"
           buttonVariant="sm"
@@ -216,7 +231,7 @@
           {@const url = getExternalUrl(route.key)}
           {#if url}
             <a href={url} class="footer-link" target="_blank" rel="noopener noreferrer">
-              {route.translate ? l10n.t(route.key) : route.key}
+              {route.translate ? safeTranslate(route.key) : route.key}
             </a>
           {/if}
         {/each}
@@ -239,8 +254,8 @@
     {/if}
 
     <div class="footer-legal">
-      <p class="copyright">{l10n.t('copyright', {year})}&nbsp;{author}</p>
-      <p class="built-with">{l10n.t('builtWith')}</p>
+      <p class="copyright">{safeTranslate('copyright', {year})}&nbsp;{author}</p>
+      <p class="built-with">{safeTranslate('builtWith')}</p>
     </div>
   </div>
 </footer>
